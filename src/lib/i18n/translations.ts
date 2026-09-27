@@ -23,7 +23,7 @@ export const translations = {
 
     // Footer
     "footer.disclaimer":
-      "GuildMasters est un projet de fan non officiel, non affilié à ArenaNet ou NCSoft. Guild Wars est une marque d'ArenaNet / NCSoft.",
+      "GWTCG est un projet de fan non officiel, non affilié à ArenaNet ou NCSoft. Guild Wars est une marque d'ArenaNet / NCSoft.",
     "footer.license": "Textes des cartes adaptés du Guild Wars Wiki sous licence GNU FDL.",
 
     // Rarity labels
@@ -293,7 +293,7 @@ export const translations = {
     "card.illustration": "Illustration {n}",
 
     "footer.disclaimer":
-      "GuildMasters is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
+      "GWTCG is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
     "footer.license": "Card text adapted from the Guild Wars Wiki under the GNU FDL license.",
 
     "rarity.COMMON": "Common",
