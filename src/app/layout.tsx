@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
@@ -20,6 +20,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GuildMasters",
   description: "Un TCG communautaire et non officiel autour du wiki Guild Wars 1.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
