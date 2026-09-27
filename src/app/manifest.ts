@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GuildMasters",
-    short_name: "GuildMasters",
+    name: "GWTCG",
+    short_name: "GWTCG",
     description: "Un TCG communautaire et non officiel autour du wiki Guild Wars 1.",
     start_url: "/",
     display: "standalone",

@@ -102,7 +102,7 @@ export const translations = {
     "gameChar.placeholder": "Prenom Nom",
 
     // Home
-    "home.title": "GuildMasters",
+    "home.title": "GWTCG",
     "home.welcomePrefix": "Bienvenue,",
     "home.boosterCount": "{available}/{limit} boosters standard (recharge à 5 après 12h)",
     "home.nextBoosterIn": "Recharge complète dans {time}",
@@ -208,12 +208,12 @@ export const translations = {
     "auction.sellerHandoffWho": "l'acheteur en jeu sous le nom {name}",
     "auction.sellerHandoffWhoUnknown": "l'acheteur en jeu (il n'a pas encore renseigné son nom de personnage)",
     "auction.sellerSecurityTip":
-      "Conseil : garde toi aussi une capture d'écran de l'échange en jeu (ectos reçus) - ça te protège en cas de désaccord, puisque GuildMasters ne peut pas trancher un litige sur une transaction qui se passe entièrement dans le jeu.",
+      "Conseil : garde toi aussi une capture d'écran de l'échange en jeu (ectos reçus) - ça te protège en cas de désaccord, puisque GWTCG ne peut pas trancher un litige sur une transaction qui se passe entièrement dans le jeu.",
     "auction.winnerHandoffMsg": "Tu as remporté cette enchère pour {amount} ecto ! Contacte {who} pour lui remettre les ectos. La carte te sera transférée une fois qu'il/elle aura confirmé.",
     "auction.winnerHandoffWhoKnown": "le vendeur en jeu sous le nom {name}",
     "auction.winnerHandoffWhoUnknown": "{pseudo} (il n'a pas encore renseigné son nom de personnage - reviens un peu plus tard, le temps qu'il le fasse)",
     "auction.winnerSecurityTip":
-      "Sécurise ton achat : prends une capture d'écran de l'échange en jeu (ectos donnés, avec le nom du vendeur visible) avant de valider. GuildMasters ne suit pas les ectos et ne peut donc pas trancher un litige - cette capture est ta seule preuve si le vendeur ne confirme jamais la remise ici.",
+      "Sécurise ton achat : prends une capture d'écran de l'échange en jeu (ectos donnés, avec le nom du vendeur visible) avant de valider. GWTCG ne suit pas les ectos et ne peut donc pas trancher un litige - cette capture est ta seule preuve si le vendeur ne confirme jamais la remise ici.",
     "auction.bystanderMsg": "Cette enchère est en attente de remise en jeu entre le vendeur et l'enchérisseur gagnant.",
     "auction.status.ACTIVE": "En cours",
     "auction.status.AWAITING_HANDOFF": "En attente de remise en jeu",
@@ -366,7 +366,7 @@ export const translations = {
     "gameChar.notSet": "not set",
     "gameChar.placeholder": "First Last",
 
-    "home.title": "GuildMasters",
+    "home.title": "GWTCG",
     "home.welcomePrefix": "Welcome,",
     "home.boosterCount": "{available}/{limit} standard boosters (refills to 5 after 12h)",
     "home.nextBoosterIn": "Full refill in {time}",
@@ -465,12 +465,12 @@ export const translations = {
     "auction.sellerHandoffWho": "the buyer in-game under the name {name}",
     "auction.sellerHandoffWhoUnknown": "the buyer in-game (they haven't set their character name yet)",
     "auction.sellerSecurityTip":
-      "Tip: keep a screenshot of the in-game trade too (ecto received) - it protects you in case of a dispute, since GuildMasters can't arbitrate a transaction that happens entirely in the game.",
+      "Tip: keep a screenshot of the in-game trade too (ecto received) - it protects you in case of a dispute, since GWTCG can't arbitrate a transaction that happens entirely in the game.",
     "auction.winnerHandoffMsg": "You won this auction for {amount} ecto! Contact {who} to hand over the ecto. The card will transfer to you once they confirm.",
     "auction.winnerHandoffWhoKnown": "the seller in-game under the name {name}",
     "auction.winnerHandoffWhoUnknown": "{pseudo} (they haven't set their character name yet - check back a bit later)",
     "auction.winnerSecurityTip":
-      "Secure your purchase: take a screenshot of the in-game trade (ecto given, with the seller's name visible) before confirming. GuildMasters doesn't track ecto and can't arbitrate a dispute - this screenshot is your only proof if the seller never confirms the handoff here.",
+      "Secure your purchase: take a screenshot of the in-game trade (ecto given, with the seller's name visible) before confirming. GWTCG doesn't track ecto and can't arbitrate a dispute - this screenshot is your only proof if the seller never confirms the handoff here.",
     "auction.bystanderMsg": "This auction is awaiting an in-game handoff between the seller and the winning bidder.",
     "auction.status.ACTIVE": "Active",
     "auction.status.AWAITING_HANDOFF": "Awaiting handoff",

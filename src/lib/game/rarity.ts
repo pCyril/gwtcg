@@ -1,5 +1,5 @@
 /**
- * Rarity scoring, per the GuildMasters spec:
+ * Rarity scoring, per the GWTCG spec:
  *   score = 40% backlinks normalisés + 40% bonus de données + 20% longueur de page normalisée
  * Thresholds are recomputed on every sync over the whole imported corpus so the
  * target shares below stay roughly accurate as the corpus grows.

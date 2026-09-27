@@ -6,7 +6,7 @@
 const WIKI_API_URL = process.env.WIKI_API_URL ?? "https://wiki.guildwars.com/api.php";
 const REQUEST_DELAY_MS = Number(process.env.WIKI_REQUEST_DELAY_MS ?? 1000);
 const USER_AGENT =
-  process.env.WIKI_USER_AGENT ?? "GuildMasters/0.1 (https://github.com/your-repo; contact@example.com)";
+  process.env.WIKI_USER_AGENT ?? "GWTCG/0.1 (https://gwtcg.net; contact@example.com)";
 
 const MAX_RETRIES = 3;
 const BACKOFF_BASE_MS = 2000;

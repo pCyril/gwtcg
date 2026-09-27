@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GuildMasters",
+  title: "GWTCG",
   description: "Un TCG communautaire et non officiel autour du wiki Guild Wars 1.",
 };
 
