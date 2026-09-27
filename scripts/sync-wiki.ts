@@ -142,7 +142,7 @@ function heroExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
 function weaponExtract(parsed: NonNullable<ReturnType<typeof parseWeapon>>): string {
   if (!parsed.isUnique) {
     const parts = [parsed.weaponType, parsed.damageType ? `dégâts ${parsed.damageType.toLowerCase()}` : null];
-    return `Arme (${[...parts.filter(Boolean)].join(", ")}). Rareté variable selon le tirage en jeu.`;
+    return `Arme (${[...parts.filter(Boolean)].join(", ")}).`;
   }
   const parts: string[] = [`${parsed.weaponType ?? "Arme"} unique.`];
   if (parsed.damageMin !== null && parsed.requirement !== null) {
