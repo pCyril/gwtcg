@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { createAuction, getSellerReputations, listActiveAuctions, type SellerReputation } from "@/lib/game/auction";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
-import { displayCardTitle } from "@/lib/game/cardArt";
 
 const STATUS_BY_ERROR: Record<string, number> = {
   INVALID_STARTING_PRICE: 400,
@@ -35,12 +34,7 @@ function serializeAuction(
       family: a.cardInstance.card.family,
       campaign: a.cardInstance.card.campaign,
       profession: a.cardInstance.card.profession,
-      title: displayCardTitle(
-        a.cardInstance.card.wikiPage.title,
-        a.cardInstance.card.family,
-        a.cardInstance.card.rarity,
-        a.cardInstance.card.attributes as Record<string, unknown>,
-      ),
+      title: a.cardInstance.card.wikiPage.title,
       extract: a.cardInstance.card.wikiPage.extract,
       url: a.cardInstance.card.wikiPage.url,
       imageUrls: a.cardInstance.card.wikiPage.imageUrls,

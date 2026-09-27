@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
-import { displayCardTitle } from "@/lib/game/cardArt";
 import type { CardFamily, Rarity } from "@prisma/client";
 
 export async function GET(request: Request) {
@@ -44,12 +43,7 @@ export async function GET(request: Request) {
       family: instance.card.family,
       campaign: instance.card.campaign,
       profession: instance.card.profession,
-      title: displayCardTitle(
-        instance.card.wikiPage.title,
-        instance.card.family,
-        instance.card.rarity,
-        instance.card.attributes as Record<string, unknown>,
-      ),
+      title: instance.card.wikiPage.title,
       extract: instance.card.wikiPage.extract,
       url: instance.card.wikiPage.url,
       imageUrls: instance.card.wikiPage.imageUrls,

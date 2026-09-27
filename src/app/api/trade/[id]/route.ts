@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { getTradeDetail } from "@/lib/game/trade";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
-import { displayCardTitle } from "@/lib/game/cardArt";
 
 function serializeTrade(
   trade: Awaited<ReturnType<typeof getTradeDetail>>,
@@ -16,12 +15,7 @@ function serializeTrade(
     family: item.cardInstance.card.family,
     campaign: item.cardInstance.card.campaign,
     profession: item.cardInstance.card.profession,
-    title: displayCardTitle(
-      item.cardInstance.card.wikiPage.title,
-      item.cardInstance.card.family,
-      item.cardInstance.card.rarity,
-      item.cardInstance.card.attributes as Record<string, unknown>,
-    ),
+    title: item.cardInstance.card.wikiPage.title,
     extract: item.cardInstance.card.wikiPage.extract,
     url: item.cardInstance.card.wikiPage.url,
     imageUrls: item.cardInstance.card.wikiPage.imageUrls,

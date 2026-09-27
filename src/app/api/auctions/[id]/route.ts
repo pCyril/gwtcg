@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { getAuctionDetail, getSellerReputations } from "@/lib/game/auction";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
-import { displayCardTitle } from "@/lib/game/cardArt";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/auctions/[id]">) {
   const me = await getOrCreateUser();
@@ -43,12 +42,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/auctions/[i
         family: auction.cardInstance.card.family,
         campaign: auction.cardInstance.card.campaign,
         profession: auction.cardInstance.card.profession,
-        title: displayCardTitle(
-          auction.cardInstance.card.wikiPage.title,
-          auction.cardInstance.card.family,
-          auction.cardInstance.card.rarity,
-          auction.cardInstance.card.attributes as Record<string, unknown>,
-        ),
+        title: auction.cardInstance.card.wikiPage.title,
         extract: auction.cardInstance.card.wikiPage.extract,
         url: auction.cardInstance.card.wikiPage.url,
         imageUrls: auction.cardInstance.card.wikiPage.imageUrls,
