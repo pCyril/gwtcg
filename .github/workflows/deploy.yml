@@ -68,6 +68,12 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      # DEPLOY_SSH_KEY is base64 of the private key, decoded to a file here -
+      # multi-line secrets pasted through the GitHub UI are prone to silent
+      # CRLF/whitespace corruption that breaks OpenSSH's PEM parser; a single
+      # base64 line has no line breaks to mangle.
+      - run: echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > /tmp/deploy_key && chmod 600 /tmp/deploy_key
+
       # The deploy key is locked to a forced command in the server's
       # authorized_keys (command="/var/www/guildmasters/deploy.sh") - whatever
       # we send here is ignored server-side, that script always runs instead.
@@ -77,5 +83,5 @@ jobs:
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          key_path: /tmp/deploy_key
           script: exit 0
