@@ -28,6 +28,11 @@ jobs:
         env:
           DATABASE_URL: "postgresql://placeholder:placeholder@localhost:5432/placeholder"
           SHADOW_DATABASE_URL: "postgresql://placeholder:placeholder@localhost:5432/placeholder"
+      # Generates the ambient RouteContext/LayoutProps/PageProps types that
+      # `next dev`/`next build` normally produce as a side effect - without
+      # this, a fresh checkout has none of them and tsc fails on every typed
+      # route/page.
+      - run: npx next typegen
       - run: npx tsc --noEmit
       - run: npm run lint
 
