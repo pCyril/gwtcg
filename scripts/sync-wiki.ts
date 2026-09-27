@@ -141,12 +141,12 @@ function heroExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
 
 function weaponExtract(parsed: NonNullable<ReturnType<typeof parseWeapon>>): string {
   if (!parsed.isUnique) {
-    const parts = [parsed.weaponType, parsed.damageType ? `dégâts ${parsed.damageType.toLowerCase()}` : null];
-    return `Arme (${[...parts.filter(Boolean)].join(", ")}).`;
+    const parts = [parsed.weaponType, parsed.damageType?.toLowerCase() ?? null];
+    return `Weapon (${[...parts.filter(Boolean)].join(", ")}).`;
   }
-  const parts: string[] = [`${parsed.weaponType ?? "Arme"} unique.`];
+  const parts: string[] = [`Unique ${parsed.weaponType ?? "weapon"}.`];
   if (parsed.damageMin !== null && parsed.requirement !== null) {
-    parts.push(`Dégâts ${parsed.damageMin}-${parsed.damageMax} (requiert ${parsed.requirement} ${parsed.attribute ?? ""}).`.trim());
+    parts.push(`Damage ${parsed.damageMin}-${parsed.damageMax} (requires ${parsed.requirement} ${parsed.attribute ?? ""}).`.trim());
   }
   if (parsed.bonuses.length) parts.push(parsed.bonuses.slice(0, 2).join(" "));
   return parts.join(" ");
