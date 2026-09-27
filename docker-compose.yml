@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: guildmasters
+      POSTGRES_PASSWORD: guildmasters
+      POSTGRES_DB: guildmasters
+    ports:
+      - "5442:5432"
+    volumes:
+      - guildmasters_db:/var/lib/postgresql/data
+
+volumes:
+  guildmasters_db:

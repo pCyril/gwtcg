@@ -1,0 +1,31 @@
+services:
+  app:
+    image: ghcr.io/pcyril/gwtcg:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3100:3000"
+    volumes:
+      - uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: guildmasters
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: guildmasters
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guildmasters"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:
+  uploads:

@@ -1,0 +1,552 @@
+export type Locale = "fr" | "en";
+export const LOCALES: Locale[] = ["fr", "en"];
+export const DEFAULT_LOCALE: Locale = "fr";
+
+export type TranslationKey = keyof typeof translations.fr;
+
+// Flat key -> string per locale. `{param}` placeholders are interpolated by t().
+export const translations = {
+  fr: {
+    // Common / shared
+    "common.close": "Fermer",
+    "common.cancel": "Annuler",
+    "common.save": "Enregistrer",
+    "common.edit": "modifier",
+    "common.set": "renseigner",
+    "common.back": "← Accueil",
+    "common.loading": "Chargement...",
+    "common.unknownError": "Erreur inconnue.",
+    "common.wikiLink": "wiki (GFDL)",
+    "common.pending": "En attente",
+    "common.confirmed": "✓ Confirmée",
+    "card.illustration": "Illustration {n}",
+
+    // Footer
+    "footer.disclaimer":
+      "GuildMasters est un projet de fan non officiel, non affilié à ArenaNet ou NCSoft. Guild Wars est une marque d'ArenaNet / NCSoft.",
+    "footer.license": "Textes des cartes adaptés du Guild Wars Wiki sous licence GNU FDL.",
+
+    // Rarity labels
+    "rarity.COMMON": "Commune",
+    "rarity.UNCOMMON": "Peu commune",
+    "rarity.RARE": "Rare",
+    "rarity.EPIC": "Épique",
+    "rarity.LEGENDARY": "Légendaire",
+    "rarity.MYTHIC": "Mythique",
+
+    // Family labels
+    "family.SKILL": "Compétence",
+    "family.BOSS": "Boss / Monstre",
+    "family.HERO_NPC": "Héros / PNJ",
+    "family.LOCATION": "Lieu",
+    "family.ITEM": "Objet",
+    "family.WEAPON": "Arme",
+    "family.LORE": "Lore",
+
+    // Shared error codes (reused across trade/auction/discard/art/auth)
+    "error.INVALID_EMAIL": "Adresse email invalide.",
+    "error.PASSWORD_TOO_SHORT": "Le mot de passe doit faire au moins 8 caractères.",
+    "error.INVALID_PSEUDO": "Pseudo invalide (lettres, chiffres, _ ou -, 3 à 24 caractères).",
+    "error.ALREADY_REGISTERED": "Ce compte a déjà un mot de passe.",
+    "error.EMAIL_TAKEN": "Cet email est déjà utilisé.",
+    "error.PSEUDO_TAKEN": "Ce pseudo est déjà pris.",
+    "error.INVALID_CREDENTIALS": "Email ou mot de passe incorrect.",
+    "error.INVALID_CHARACTER_NAME": "Nom invalide (lettres, espaces, apostrophes ou tirets, 3 à 32 caractères).",
+    "error.CARD_IN_TRADE": "Cette carte est actuellement proposée dans un échange.",
+    "error.CARD_IN_AUCTION": "Cette carte est déjà aux enchères.",
+    "error.INVALID_CARD_SELECTION": "Cette carte ne t'appartient plus.",
+    "error.TOO_MANY_ITEMS": "Maximum {max} cartes par échange.",
+    "error.TRADE_NOT_PENDING": "Cet échange n'est plus modifiable.",
+    "error.TRADE_NO_LONGER_VALID":
+      "L'échange n'est plus valide (une carte a été échangée ou vendue entretemps). Réessaie.",
+    "error.CONSENT_REQUIRED": "Merci de confirmer que l'illustration est originale.",
+    "error.UNSUPPORTED_FILE_TYPE": "Format non supporté (jpeg, png ou webp uniquement).",
+    "error.FILE_TOO_LARGE": "Fichier trop lourd (8 Mo max).",
+    "error.WIKI_PAGE_NOT_FOUND": "Carte introuvable.",
+    "error.TOO_MANY_PENDING": "Tu as déjà trop de propositions en attente de modération.",
+    "error.INVALID_STARTING_PRICE": "La mise à prix doit être un entier positif.",
+    "error.INVALID_BUYOUT_PRICE": "Le prix d'achat immédiat doit être supérieur à la mise à prix.",
+    "error.INVALID_DURATION": "La durée doit être comprise entre 1 et 72 heures.",
+    "error.AUCTION_NOT_ACTIVE": "Cette enchère n'est plus active.",
+    "error.AUCTION_ENDED": "L'enchère vient de se terminer.",
+    "error.CANNOT_BID_OWN_AUCTION": "Tu ne peux pas enchérir sur ta propre vente.",
+    "error.BID_TOO_LOW": "Ta mise doit être supérieure à l'enchère actuelle.",
+    "error.INVALID_AMOUNT": "Montant invalide.",
+    "error.NOT_THE_SELLER": "Tu n'es pas le vendeur.",
+    "error.CANNOT_CANCEL_WITH_BIDS": "Impossible d'annuler : des enchères ont déjà été placées.",
+    "error.AUCTION_NOT_AWAITING_HANDOFF": "Cette enchère n'attend pas de remise.",
+    "error.NO_WINNING_BID": "Aucune enchère gagnante.",
+    "error.NO_BOOSTER_AVAILABLE": "Aucun booster disponible pour l'instant.",
+    "error.NO_STARTING_PROFESSION": "Choisis d'abord ta profession de départ.",
+    "error.EMPTY_CARD_POOL": "Aucune carte disponible pour ce tirage.",
+    "error.MISSING_RECIPIENT": "Indique le pseudo du joueur.",
+    "error.CANNOT_TRADE_SELF": "Tu ne peux pas échanger avec toi-même.",
+    "error.USER_NOT_FOUND": "Aucun joueur avec ce pseudo.",
+
+    // Auth widget
+    "auth.connectedAs": "Connecté : {email}",
+    "auth.logout": "Se déconnecter",
+    "auth.login": "Se connecter",
+    "auth.register": "Créer un compte",
+    "auth.loginTitle": "Connexion",
+    "auth.registerTitle": "Créer un compte (garde ta collection actuelle)",
+    "auth.pseudoOptional": "Pseudo (optionnel)",
+    "auth.email": "Email",
+    "auth.password": "Mot de passe",
+    "auth.submitLogin": "Se connecter",
+    "auth.submitRegister": "Créer mon compte",
+
+    // Game character name field
+    "gameChar.title": "Perso in-game :",
+    "gameChar.notSet": "non renseigné",
+    "gameChar.placeholder": "Prenom Nom",
+
+    // Home
+    "home.title": "GuildMasters",
+    "home.welcomePrefix": "Bienvenue,",
+    "home.boosterCount": "{available}/{limit} boosters standard (recharge à 5 après 12h)",
+    "home.nextBoosterIn": "Recharge complète dans {time}",
+    "home.standardBoosterTitle": "Booster standard",
+    "home.standardBoosterDesc": "5 cartes, toutes familles confondues, avec au moins une carte peu commune ou mieux garantie.",
+    "home.chooseProfessionTitle": "Choisis ta profession de départ",
+    "home.chooseProfessionDesc": "Débloque un booster Profession gratuit.",
+    "home.viewCollection": "Voir ma collection →",
+    "home.trade": "Échanger des cartes →",
+    "home.market": "Le Kamadan →",
+    "home.moderation": "Modération illustrations →",
+    "home.packLabelStandard": "Booster standard",
+    "home.packLabelProfession": "Booster profession",
+
+    // Collection
+    "collection.title": "Mon classeur",
+    "collection.progress": "{owned} / {total} cartes uniques ({percent}%)",
+    "collection.allFamilies": "Toutes familles",
+    "collection.allRarities": "Toutes raretés",
+    "collection.selectMode": "Défausser des cartes",
+    "collection.cancelSelectMode": "Annuler la sélection",
+    "collection.selectedCount": "{count} carte(s) sélectionnée(s)",
+    "collection.discardSelected": "Défausser la sélection",
+    "collection.empty": "Aucune carte ne correspond à ces filtres pour l'instant. Ouvre un booster depuis l'accueil !",
+    "collection.viewIn3d": "Voir {title} en 3D",
+    "collection.selectCard": "Sélectionner {title}",
+    "collection.discardConfirm": "Défausser {count} carte(s) ? Cette action est définitive.",
+    "collection.discardSingleConfirm": "Défausser « {title} » ? Cette action est définitive.",
+
+    // Card detail modal
+    "cardDetail.dragHint": "Glisse la carte pour la faire tourner",
+    "cardDetail.sellButton": "Mettre aux enchères",
+    "cardDetail.discardButton": "Défausser",
+
+    // Art submission
+    "art.proposeButton": "Proposer une illustration",
+    "art.formTitle": "Proposer une illustration pour « {title} »",
+    "art.step1": "1. Ouvre la fiche wiki de la carte.",
+    "art.copyUrl": "Copier l'URL",
+    "art.copied": "Copié !",
+    "art.step2": "2. Enregistre l'image principale de l'infobox du wiki.",
+    "art.step3": "3. Colle le prompt ci-dessous + l'image dans Gemini (ou une autre IA générative).",
+    "art.copyPrompt": "Copier le prompt",
+    "art.step4": "4. Importe le résultat ci-dessous (ratio conseillé {ratio}, ex. {resolution}).",
+    "art.privacyNote":
+      "On ne stocke ni ne republie jamais l'image du wiki elle-même : elle sert uniquement de référence privée pour générer ton illustration. Seul le résultat original que tu importes ici est envoyé.",
+    "art.consentLabel":
+      "Je certifie qu'il s'agit d'une illustration originale (IA ou dessin perso), pas une capture du jeu ni un visuel officiel ArenaNet.",
+    "art.submit": "Envoyer",
+    "art.submitted": "Proposition envoyée, en attente de modération. Merci !",
+    "art.promptIntro":
+      "Illustration façon fan art de jeu de cartes à collectionner, style digital painting, éclairage dramatique, couleurs riches, univers dark fantasy médiéval proche de Guild Wars.",
+    "art.promptSubject": "Sujet : {subject} — « {title} »{campaign}. {extract}",
+    "art.promptReference":
+      "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
+    "art.promptFormat":
+      "Format paysage, ratio environ {ratio} (par exemple {resolution}). Sujet principal centré. Pas de texte, pas de logo, pas de watermark, pas d'interface de jeu visible.",
+    "art.subject.SKILL": "un effet de compétence ou de sort",
+    "art.subject.BOSS": "un personnage (boss / monstre)",
+    "art.subject.HERO_NPC": "un personnage (héros / PNJ)",
+    "art.subject.LOCATION": "un lieu / paysage",
+    "art.subject.ITEM": "un objet",
+    "art.subject.WEAPON": "une arme",
+    "art.subject.LORE": "une scène narrative",
+    "art.subject.default": "un sujet",
+
+    // Rarity legend already covered by rarity.* keys
+
+    // Market / Kamadan
+    "market.title": "Le Kamadan",
+    "market.myAuctions": "Mes enchères",
+    "market.intro":
+      "Enchères en ecto : le site ne fait que la mise en relation, l'échange des ectos se fait entre joueurs directement dans Guild Wars. Pour vendre une carte, ouvre-la depuis {link}.",
+    "market.introLink": "ta collection",
+    "market.empty": "Aucune enchère active pour l'instant.",
+    "market.currentBid": "Enchère: {amount} ecto",
+    "market.startingPrice": "Mise à prix: {amount} ecto",
+    "market.buyoutPrice": "Achat immédiat: {amount} ecto",
+    "market.sellerLine": "{pseudo} · {time}",
+    "market.completedSales": "{count} vente{plural} conclue{plural}",
+    "market.fallenThrough": "{count} remise{plural} non aboutie{plural}",
+    "market.timeLeftEnded": "terminé",
+    "market.timeLeftHours": "{hours}h {minutes}min",
+    "market.timeLeftMinutes": "{minutes}min",
+
+    // Auction detail
+    "auction.title": "Enchère",
+    "auction.backToMarket": "← Le Kamadan",
+    "auction.soldBy": "Vendue par {pseudo}",
+    "auction.startingPriceLabel": "Mise à prix : {amount} ecto",
+    "auction.buyoutPriceLabel": "Achat immédiat : {amount} ecto",
+    "auction.currentBidLabel": "Enchère actuelle : {amount}",
+    "auction.currentBidNone": "aucune",
+    "auction.endsAtLabel": "Fin : {date}",
+    "auction.history": "Historique",
+    "auction.bid": "Enchérir",
+    "auction.buyoutButton": "Achat immédiat ({amount} ecto)",
+    "auction.cancelAuction": "Annuler l'enchère",
+    "auction.confirmHandoff": "J'ai reçu mes ectos, transférer la carte",
+    "auction.cancelHandoff": "L'acheteur n'a pas payé",
+    "auction.sellerHandoffMsg":
+      "Enchère remportée pour {amount} ecto. Retrouve {who}. Une fois que tu as reçu les ectos, confirme ici pour transférer la carte. Si l'acheteur ne s'est pas manifesté, tu peux annuler.",
+    "auction.sellerHandoffWho": "l'acheteur en jeu sous le nom {name}",
+    "auction.sellerHandoffWhoUnknown": "l'acheteur en jeu (il n'a pas encore renseigné son nom de personnage)",
+    "auction.sellerSecurityTip":
+      "Conseil : garde toi aussi une capture d'écran de l'échange en jeu (ectos reçus) - ça te protège en cas de désaccord, puisque GuildMasters ne peut pas trancher un litige sur une transaction qui se passe entièrement dans le jeu.",
+    "auction.winnerHandoffMsg": "Tu as remporté cette enchère pour {amount} ecto ! Contacte {who} pour lui remettre les ectos. La carte te sera transférée une fois qu'il/elle aura confirmé.",
+    "auction.winnerHandoffWhoKnown": "le vendeur en jeu sous le nom {name}",
+    "auction.winnerHandoffWhoUnknown": "{pseudo} (il n'a pas encore renseigné son nom de personnage - reviens un peu plus tard, le temps qu'il le fasse)",
+    "auction.winnerSecurityTip":
+      "Sécurise ton achat : prends une capture d'écran de l'échange en jeu (ectos donnés, avec le nom du vendeur visible) avant de valider. GuildMasters ne suit pas les ectos et ne peut donc pas trancher un litige - cette capture est ta seule preuve si le vendeur ne confirme jamais la remise ici.",
+    "auction.bystanderMsg": "Cette enchère est en attente de remise en jeu entre le vendeur et l'enchérisseur gagnant.",
+    "auction.status.ACTIVE": "En cours",
+    "auction.status.AWAITING_HANDOFF": "En attente de remise en jeu",
+    "auction.status.COMPLETED": "Terminée",
+    "auction.status.EXPIRED": "Terminée sans enchère",
+    "auction.status.CANCELLED": "Annulée",
+
+    // My auctions
+    "myAuctions.title": "Mes enchères",
+    "myAuctions.selling": "Mes ventes",
+    "myAuctions.bidOn": "Mes enchères placées",
+    "myAuctions.empty": "Rien pour l'instant.",
+    "myAuctions.startingPrice": "Mise à prix : {amount} ecto",
+
+    // Sell card
+    "sell.title": "Mettre aux enchères",
+    "sell.cancel": "← Annuler",
+    "sell.startingPrice": "Mise à prix (ecto)",
+    "sell.buyoutPrice": "Achat immédiat (ecto, optionnel)",
+    "sell.duration": "Durée (1 à 72 heures)",
+    "sell.noFeeNote": "Aucun frais : une fois l'enchère remportée, échangez les ectos en jeu puis confirme la vente ici pour transférer la carte.",
+    "sell.submit": "Mettre en vente",
+
+    // Trade
+    "trade.title": "Échange avec {pseudo}",
+    "trade.backToList": "← Mes échanges",
+    "trade.accepted": "Échange conclu ! Les cartes ont changé de mains.",
+    "trade.declined": "Cet échange a été refusé.",
+    "trade.cancelled": "Cet échange a été annulé.",
+    "trade.yourOffer": "Ton offre",
+    "trade.theirOffer": "Offre de {pseudo}",
+    "trade.nothingYet": "Rien pour l'instant.",
+    "trade.selectedCount": "{count}/{max} cartes sélectionnées",
+    "trade.updateOffer": "Mettre à jour mon offre",
+    "trade.confirm": "Confirmer l'échange",
+    "trade.cancel": "Annuler",
+    "trade.status.PENDING": "En cours",
+    "trade.status.ACCEPTED": "Conclu",
+    "trade.status.DECLINED": "Refusé",
+    "trade.status.CANCELLED": "Annulé",
+
+    // Trade list
+    "tradeList.title": "Échanges",
+    "tradeList.newTrade": "Nouvel échange",
+    "tradeList.pseudoPlaceholder": "Pseudo du joueur",
+    "tradeList.propose": "Proposer",
+    "tradeList.myTrades": "Mes échanges",
+    "tradeList.empty": "Aucun échange pour l'instant.",
+    "tradeList.to": "Vers ",
+    "tradeList.from": "De ",
+
+    // Admin art review
+    "admin.title": "Modération des illustrations",
+    "admin.forbidden": "Réservé aux administrateurs.",
+    "admin.backHome": "Retour à l'accueil",
+    "admin.empty": "Aucune proposition en attente.",
+    "admin.by": "par {pseudo} · {wikiLink}",
+    "admin.approve": "Approuver",
+    "admin.reject": "Rejeter",
+
+    // Booster overlay
+    "booster.revealAll": "Tout révéler",
+    "booster.cardsObtained": "Cartes obtenues",
+  },
+  en: {
+    "common.close": "Close",
+    "common.cancel": "Cancel",
+    "common.save": "Save",
+    "common.edit": "edit",
+    "common.set": "set",
+    "common.back": "← Home",
+    "common.loading": "Loading...",
+    "common.unknownError": "Unknown error.",
+    "common.wikiLink": "wiki (GFDL)",
+    "common.pending": "Pending",
+    "common.confirmed": "✓ Confirmed",
+    "card.illustration": "Illustration {n}",
+
+    "footer.disclaimer":
+      "GuildMasters is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
+    "footer.license": "Card text adapted from the Guild Wars Wiki under the GNU FDL license.",
+
+    "rarity.COMMON": "Common",
+    "rarity.UNCOMMON": "Uncommon",
+    "rarity.RARE": "Rare",
+    "rarity.EPIC": "Epic",
+    "rarity.LEGENDARY": "Legendary",
+    "rarity.MYTHIC": "Mythic",
+
+    "family.SKILL": "Skill",
+    "family.BOSS": "Boss / Monster",
+    "family.HERO_NPC": "Hero / NPC",
+    "family.LOCATION": "Location",
+    "family.ITEM": "Item",
+    "family.WEAPON": "Weapon",
+    "family.LORE": "Lore",
+
+    "error.INVALID_EMAIL": "Invalid email address.",
+    "error.PASSWORD_TOO_SHORT": "Password must be at least 8 characters.",
+    "error.INVALID_PSEUDO": "Invalid handle (letters, digits, _ or -, 3 to 24 characters).",
+    "error.ALREADY_REGISTERED": "This account already has a password.",
+    "error.EMAIL_TAKEN": "This email is already in use.",
+    "error.PSEUDO_TAKEN": "This handle is already taken.",
+    "error.INVALID_CREDENTIALS": "Incorrect email or password.",
+    "error.INVALID_CHARACTER_NAME": "Invalid name (letters, spaces, apostrophes or hyphens, 3 to 32 characters).",
+    "error.CARD_IN_TRADE": "This card is currently offered in a trade.",
+    "error.CARD_IN_AUCTION": "This card is already up for auction.",
+    "error.INVALID_CARD_SELECTION": "This card doesn't belong to you anymore.",
+    "error.TOO_MANY_ITEMS": "Maximum {max} cards per trade.",
+    "error.TRADE_NOT_PENDING": "This trade can no longer be edited.",
+    "error.TRADE_NO_LONGER_VALID":
+      "This trade is no longer valid (a card was traded or sold in the meantime). Try again.",
+    "error.CONSENT_REQUIRED": "Please confirm the illustration is original.",
+    "error.UNSUPPORTED_FILE_TYPE": "Unsupported format (jpeg, png or webp only).",
+    "error.FILE_TOO_LARGE": "File too large (8 MB max).",
+    "error.WIKI_PAGE_NOT_FOUND": "Card not found.",
+    "error.TOO_MANY_PENDING": "You already have too many submissions awaiting review.",
+    "error.INVALID_STARTING_PRICE": "The starting price must be a positive whole number.",
+    "error.INVALID_BUYOUT_PRICE": "The buyout price must be higher than the starting price.",
+    "error.INVALID_DURATION": "Duration must be between 1 and 72 hours.",
+    "error.AUCTION_NOT_ACTIVE": "This auction is no longer active.",
+    "error.AUCTION_ENDED": "This auction just ended.",
+    "error.CANNOT_BID_OWN_AUCTION": "You can't bid on your own auction.",
+    "error.BID_TOO_LOW": "Your bid must be higher than the current one.",
+    "error.INVALID_AMOUNT": "Invalid amount.",
+    "error.NOT_THE_SELLER": "You're not the seller.",
+    "error.CANNOT_CANCEL_WITH_BIDS": "Can't cancel: bids have already been placed.",
+    "error.AUCTION_NOT_AWAITING_HANDOFF": "This auction isn't awaiting a handoff.",
+    "error.NO_WINNING_BID": "No winning bid.",
+    "error.NO_BOOSTER_AVAILABLE": "No booster available right now.",
+    "error.NO_STARTING_PROFESSION": "Choose your starting profession first.",
+    "error.EMPTY_CARD_POOL": "No cards available for this draw.",
+    "error.MISSING_RECIPIENT": "Enter the player's handle.",
+    "error.CANNOT_TRADE_SELF": "You can't trade with yourself.",
+    "error.USER_NOT_FOUND": "No player with that handle.",
+
+    "auth.connectedAs": "Signed in: {email}",
+    "auth.logout": "Sign out",
+    "auth.login": "Sign in",
+    "auth.register": "Create an account",
+    "auth.loginTitle": "Sign in",
+    "auth.registerTitle": "Create an account (keeps your current collection)",
+    "auth.pseudoOptional": "Handle (optional)",
+    "auth.email": "Email",
+    "auth.password": "Password",
+    "auth.submitLogin": "Sign in",
+    "auth.submitRegister": "Create my account",
+
+    "gameChar.title": "In-game character:",
+    "gameChar.notSet": "not set",
+    "gameChar.placeholder": "First Last",
+
+    "home.title": "GuildMasters",
+    "home.welcomePrefix": "Welcome,",
+    "home.boosterCount": "{available}/{limit} standard boosters (refills to 5 after 12h)",
+    "home.nextBoosterIn": "Full refill in {time}",
+    "home.standardBoosterTitle": "Standard booster",
+    "home.standardBoosterDesc": "5 cards, all families mixed, with at least one uncommon-or-better card guaranteed.",
+    "home.chooseProfessionTitle": "Choose your starting profession",
+    "home.chooseProfessionDesc": "Unlocks a free Profession booster.",
+    "home.viewCollection": "View my collection →",
+    "home.trade": "Trade cards →",
+    "home.market": "The Kamadan →",
+    "home.moderation": "Art moderation →",
+    "home.packLabelStandard": "Standard booster",
+    "home.packLabelProfession": "Profession booster",
+
+    "collection.title": "My binder",
+    "collection.progress": "{owned} / {total} unique cards ({percent}%)",
+    "collection.allFamilies": "All families",
+    "collection.allRarities": "All rarities",
+    "collection.selectMode": "Discard cards",
+    "collection.cancelSelectMode": "Cancel selection",
+    "collection.selectedCount": "{count} card(s) selected",
+    "collection.discardSelected": "Discard selection",
+    "collection.empty": "No cards match these filters yet. Open a booster from the home page!",
+    "collection.viewIn3d": "View {title} in 3D",
+    "collection.selectCard": "Select {title}",
+    "collection.discardConfirm": "Discard {count} card(s)? This action is final.",
+    "collection.discardSingleConfirm": "Discard « {title} »? This action is final.",
+
+    "cardDetail.dragHint": "Drag the card to rotate it",
+    "cardDetail.sellButton": "Put up for auction",
+    "cardDetail.discardButton": "Discard",
+
+    "art.proposeButton": "Suggest an illustration",
+    "art.formTitle": "Suggest an illustration for « {title} »",
+    "art.step1": "1. Open the card's wiki page.",
+    "art.copyUrl": "Copy the URL",
+    "art.copied": "Copied!",
+    "art.step2": "2. Save the wiki infobox's main image.",
+    "art.step3": "3. Paste the prompt below + the image into Gemini (or another generative AI).",
+    "art.copyPrompt": "Copy the prompt",
+    "art.step4": "4. Upload the result below (recommended ratio {ratio}, e.g. {resolution}).",
+    "art.privacyNote":
+      "We never store or republish the wiki image itself: it's only used as a private reference to generate your illustration. Only the original result you upload here is submitted.",
+    "art.consentLabel":
+      "I certify this is an original illustration (AI-generated or hand-drawn), not a game screenshot or an official ArenaNet visual.",
+    "art.submit": "Submit",
+    "art.submitted": "Submission sent, awaiting review. Thank you!",
+    "art.promptIntro":
+      "Fan art illustration for a trading card game, digital painting style, dramatic lighting, rich colors, dark medieval fantasy universe close to Guild Wars.",
+    "art.promptSubject": "Subject: {subject} — « {title} »{campaign}. {extract}",
+    "art.promptReference":
+      "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",
+    "art.promptFormat":
+      "Landscape format, ratio around {ratio} (e.g. {resolution}). Main subject centered. No text, no logo, no watermark, no game UI visible.",
+    "art.subject.SKILL": "a skill or spell effect",
+    "art.subject.BOSS": "a character (boss / monster)",
+    "art.subject.HERO_NPC": "a character (hero / NPC)",
+    "art.subject.LOCATION": "a location / landscape",
+    "art.subject.ITEM": "an item",
+    "art.subject.WEAPON": "a weapon",
+    "art.subject.LORE": "a narrative scene",
+    "art.subject.default": "a subject",
+
+    "market.title": "The Kamadan",
+    "market.myAuctions": "My auctions",
+    "market.intro":
+      "Ecto auctions: the site only handles the matchmaking, the actual ecto exchange happens between players directly in Guild Wars. To sell a card, open it from {link}.",
+    "market.introLink": "your collection",
+    "market.empty": "No active auctions right now.",
+    "market.currentBid": "Bid: {amount} ecto",
+    "market.startingPrice": "Starting price: {amount} ecto",
+    "market.buyoutPrice": "Buyout: {amount} ecto",
+    "market.sellerLine": "{pseudo} · {time}",
+    "market.completedSales": "{count} completed sale{plural}",
+    "market.fallenThrough": "{count} handoff{plural} fell through",
+    "market.timeLeftEnded": "ended",
+    "market.timeLeftHours": "{hours}h {minutes}min",
+    "market.timeLeftMinutes": "{minutes}min",
+
+    "auction.title": "Auction",
+    "auction.backToMarket": "← The Kamadan",
+    "auction.soldBy": "Sold by {pseudo}",
+    "auction.startingPriceLabel": "Starting price: {amount} ecto",
+    "auction.buyoutPriceLabel": "Buyout price: {amount} ecto",
+    "auction.currentBidLabel": "Current bid: {amount}",
+    "auction.currentBidNone": "none",
+    "auction.endsAtLabel": "Ends: {date}",
+    "auction.history": "History",
+    "auction.bid": "Bid",
+    "auction.buyoutButton": "Buy now ({amount} ecto)",
+    "auction.cancelAuction": "Cancel auction",
+    "auction.confirmHandoff": "I've received my ecto, transfer the card",
+    "auction.cancelHandoff": "The buyer never paid",
+    "auction.sellerHandoffMsg":
+      "Auction won for {amount} ecto. Find {who}. Once you've received the ecto, confirm here to transfer the card. If the buyer never showed up, you can cancel.",
+    "auction.sellerHandoffWho": "the buyer in-game under the name {name}",
+    "auction.sellerHandoffWhoUnknown": "the buyer in-game (they haven't set their character name yet)",
+    "auction.sellerSecurityTip":
+      "Tip: keep a screenshot of the in-game trade too (ecto received) - it protects you in case of a dispute, since GuildMasters can't arbitrate a transaction that happens entirely in the game.",
+    "auction.winnerHandoffMsg": "You won this auction for {amount} ecto! Contact {who} to hand over the ecto. The card will transfer to you once they confirm.",
+    "auction.winnerHandoffWhoKnown": "the seller in-game under the name {name}",
+    "auction.winnerHandoffWhoUnknown": "{pseudo} (they haven't set their character name yet - check back a bit later)",
+    "auction.winnerSecurityTip":
+      "Secure your purchase: take a screenshot of the in-game trade (ecto given, with the seller's name visible) before confirming. GuildMasters doesn't track ecto and can't arbitrate a dispute - this screenshot is your only proof if the seller never confirms the handoff here.",
+    "auction.bystanderMsg": "This auction is awaiting an in-game handoff between the seller and the winning bidder.",
+    "auction.status.ACTIVE": "Active",
+    "auction.status.AWAITING_HANDOFF": "Awaiting handoff",
+    "auction.status.COMPLETED": "Completed",
+    "auction.status.EXPIRED": "Ended, no bids",
+    "auction.status.CANCELLED": "Cancelled",
+
+    "myAuctions.title": "My auctions",
+    "myAuctions.selling": "My sales",
+    "myAuctions.bidOn": "My bids",
+    "myAuctions.empty": "Nothing here yet.",
+    "myAuctions.startingPrice": "Starting price: {amount} ecto",
+
+    "sell.title": "Put up for auction",
+    "sell.cancel": "← Cancel",
+    "sell.startingPrice": "Starting price (ecto)",
+    "sell.buyoutPrice": "Buyout price (ecto, optional)",
+    "sell.duration": "Duration (1 to 72 hours)",
+    "sell.noFeeNote": "No fees: once the auction is won, trade the ecto in-game then confirm the sale here to transfer the card.",
+    "sell.submit": "List for auction",
+
+    "trade.title": "Trade with {pseudo}",
+    "trade.backToList": "← My trades",
+    "trade.accepted": "Trade completed! The cards have changed hands.",
+    "trade.declined": "This trade was declined.",
+    "trade.cancelled": "This trade was cancelled.",
+    "trade.yourOffer": "Your offer",
+    "trade.theirOffer": "{pseudo}'s offer",
+    "trade.nothingYet": "Nothing here yet.",
+    "trade.selectedCount": "{count}/{max} cards selected",
+    "trade.updateOffer": "Update my offer",
+    "trade.confirm": "Confirm trade",
+    "trade.cancel": "Cancel",
+    "trade.status.PENDING": "Pending",
+    "trade.status.ACCEPTED": "Completed",
+    "trade.status.DECLINED": "Declined",
+    "trade.status.CANCELLED": "Cancelled",
+
+    "tradeList.title": "Trades",
+    "tradeList.newTrade": "New trade",
+    "tradeList.pseudoPlaceholder": "Player's handle",
+    "tradeList.propose": "Propose",
+    "tradeList.myTrades": "My trades",
+    "tradeList.empty": "No trades yet.",
+    "tradeList.to": "To ",
+    "tradeList.from": "From ",
+
+    "admin.title": "Illustration moderation",
+    "admin.forbidden": "Admins only.",
+    "admin.backHome": "Back to home",
+    "admin.empty": "No submissions pending.",
+    "admin.by": "by {pseudo} · {wikiLink}",
+    "admin.approve": "Approve",
+    "admin.reject": "Reject",
+
+    "booster.revealAll": "Reveal all",
+    "booster.cardsObtained": "Cards obtained",
+  },
+} as const;
+
+/** Looks up "error.{code}" for a server error code, falling back to a generic message if unknown. */
+export function tError(locale: Locale, code: string | undefined | null): string {
+  const key = `error.${code}`;
+  if (code && Object.prototype.hasOwnProperty.call(translations.fr, key)) {
+    return t(locale, key as TranslationKey);
+  }
+  return t(locale, "common.unknownError");
+}
+
+export function t(locale: Locale, key: TranslationKey, params?: Record<string, string | number>): string {
+  const dict = translations[locale] as Record<string, string>;
+  let text = dict[key] ?? (translations[DEFAULT_LOCALE] as Record<string, string>)[key] ?? key;
+  if (params) {
+    for (const [name, value] of Object.entries(params)) {
+      text = text.replaceAll(`{${name}}`, String(value));
+    }
+  }
+  return text;
+}

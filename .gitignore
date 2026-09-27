@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# user-submitted art (src/lib/game/artSubmission.ts) - runtime data, persisted
+# via a Docker volume in production, not part of the source tree
+/public/uploads
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

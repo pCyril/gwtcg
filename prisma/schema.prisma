@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// One row per wiki page that has been imported, regardless of card family.
+model WikiPage {
+  id         String   @id @default(cuid())
+  title      String   @unique
+  url        String
+  revisionId Int
+  categories    String[]
+  extract       String
+  imageUrls     String[] @default([])
+  backlinks     Int      @default(0)
+  contentLength Int      @default(0)
+  syncedAt      DateTime @default(now())
+
+  cards Card[]
+  artSubmissions ArtSubmission[]
+
+  @@index([syncedAt])
+}
+
+enum CardFamily {
+  SKILL
+  BOSS
+  HERO_NPC
+  LOCATION
+  ITEM
+  WEAPON
+  LORE
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+// The reference card definition. Usually one per wiki page, but a non-unique
+// weapon skin gets up to 4 (one per real in-game quality color) - variantKey
+// disambiguates those, and is "DEFAULT" for every other 1-card-per-page family.
+model Card {
+  id         String     @id @default(cuid())
+  wikiPageId String
+  wikiPage   WikiPage   @relation(fields: [wikiPageId], references: [id], onDelete: Cascade)
+  variantKey String     @default("DEFAULT")
+  family     CardFamily
+  campaign   String?
+  profession String?
+  attributes Json
+  score      Float      @default(0)
+  rarity     Rarity     @default(COMMON)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  instances CardInstance[]
+
+  @@unique([wikiPageId, variantKey])
+  @@index([family])
+  @@index([rarity])
+  @@index([campaign])
+  @@index([profession])
+}
+
+enum AcquisitionSource {
+  BOOSTER
+  TRADE
+  AUCTION
+}
+
+model CardInstance {
+  id         String            @id @default(cuid())
+  cardId     String
+  card       Card              @relation(fields: [cardId], references: [id])
+  ownerId    String
+  owner      User              @relation(fields: [ownerId], references: [id])
+  source     AcquisitionSource
+  obtainedAt DateTime          @default(now())
+  discardedAt DateTime?
+
+  boosterOpeningId String?
+  boosterOpening   BoosterOpening? @relation(fields: [boosterOpeningId], references: [id])
+
+  tradeItems TradeItem[]
+  auctions   Auction[]
+
+  @@index([ownerId])
+  @@index([cardId])
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  sessionToken       String    @unique
+  pseudo             String    @unique
+  email              String?   @unique
+  passwordHash       String?
+  isGuest            Boolean   @default(true)
+  isAdmin            Boolean   @default(false)
+  startingProfession String?
+  gameCharacterName  String?
+  createdAt          DateTime  @default(now())
+
+  cardInstances    CardInstance[]
+  boosterOpenings  BoosterOpening[]
+  tradesInitiated  Trade[]          @relation("TradeInitiator")
+  tradesReceived   Trade[]          @relation("TradeRecipient")
+  auctionsSelling  Auction[]        @relation("AuctionSeller")
+  bids             Bid[]            @relation("Bidder")
+  artSubmissions   ArtSubmission[]
+}
+
+enum ArtSubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// A community-proposed illustration for a card, awaiting admin review before
+// it's merged into WikiPage.imageUrls and shown in the actual card art.
+model ArtSubmission {
+  id          String              @id @default(cuid())
+  wikiPageId  String
+  wikiPage    WikiPage            @relation(fields: [wikiPageId], references: [id], onDelete: Cascade)
+  submitterId String
+  submitter   User                @relation(fields: [submitterId], references: [id])
+  imageUrl    String
+  status      ArtSubmissionStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  reviewedAt  DateTime?
+  reviewNote  String?
+
+  @@index([wikiPageId])
+  @@index([status])
+  @@index([submitterId])
+}
+
+enum BoosterType {
+  STANDARD
+  CAMPAIGN
+  PROFESSION
+  BOSS_CHEST
+  ZAISHEN
+}
+
+model BoosterOpening {
+  id       String      @id @default(cuid())
+  userId   String
+  user     User        @relation(fields: [userId], references: [id])
+  type     BoosterType
+  openedAt DateTime    @default(now())
+
+  cards CardInstance[]
+
+  @@index([userId])
+}
+
+enum TradeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+enum TradeSide {
+  INITIATOR
+  RECIPIENT
+}
+
+// An async version of the game's trade window: either side can add/remove
+// their own cards at any time while PENDING; editing your side clears both
+// confirmations, and the swap only executes once both are set.
+model Trade {
+  id          String      @id @default(cuid())
+  initiatorId String
+  initiator   User        @relation("TradeInitiator", fields: [initiatorId], references: [id])
+  recipientId String
+  recipient   User        @relation("TradeRecipient", fields: [recipientId], references: [id])
+  status      TradeStatus @default(PENDING)
+
+  initiatorConfirmed Boolean @default(false)
+  recipientConfirmed Boolean @default(false)
+
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  items TradeItem[]
+
+  @@index([initiatorId])
+  @@index([recipientId])
+  @@index([status])
+}
+
+model TradeItem {
+  id             String       @id @default(cuid())
+  tradeId        String
+  trade          Trade        @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  cardInstanceId String
+  cardInstance   CardInstance @relation(fields: [cardInstanceId], references: [id])
+  side           TradeSide
+
+  @@unique([tradeId, cardInstanceId])
+  @@index([tradeId])
+}
+
+enum AuctionStatus {
+  ACTIVE
+  AWAITING_HANDOFF
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+// The Kamadan: sell a card to the highest bidder, priced in ecto - the game's
+// real high-value currency, which only ever changes hands in the actual game
+// client, never on this platform. Bids here are just price discovery: no
+// balance is tracked or escrowed. When an auction ends (or is bought out), it
+// moves to AWAITING_HANDOFF; the two players trade the real ecto in GW1
+// themselves, and only then does the seller confirm here, which is what
+// actually transfers the card. Auctions past `endsAt` are resolved lazily the
+// next time they're read (no background worker yet).
+model Auction {
+  id             String        @id @default(cuid())
+  sellerId       String
+  seller         User          @relation("AuctionSeller", fields: [sellerId], references: [id])
+  cardInstanceId String
+  cardInstance   CardInstance  @relation(fields: [cardInstanceId], references: [id])
+  startingPrice  Int
+  buyoutPrice    Int?
+  status         AuctionStatus @default(ACTIVE)
+  endsAt         DateTime
+  createdAt      DateTime      @default(now())
+  resolvedAt     DateTime?
+
+  bids Bid[]
+
+  @@index([sellerId])
+  @@index([cardInstanceId])
+  @@index([status])
+  @@index([endsAt])
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  bidderId  String
+  bidder    User     @relation("Bidder", fields: [bidderId], references: [id])
+  amount    Int
+  createdAt DateTime @default(now())
+
+  @@index([auctionId])
+  @@index([bidderId])
+}
