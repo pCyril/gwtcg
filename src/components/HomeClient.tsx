@@ -218,9 +218,14 @@ export function HomeClient() {
           {t("home.market")}
         </Link>
         {me.isAdmin && (
-          <Link href="/admin/art" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-            {t("home.moderation")}
-          </Link>
+          <>
+            <Link href="/admin/art" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+              {t("home.moderation")}
+            </Link>
+            <Link href="/admin/stats" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+              {t("home.stats")}
+            </Link>
+          </>
         )}
       </div>
 
