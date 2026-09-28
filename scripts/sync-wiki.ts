@@ -2,11 +2,12 @@
  * Import/update cards from the Guild Wars 1 wiki.
  *
  * Usage:
- *   npx tsx scripts/sync-wiki.ts             # skills + bosses + heroes + weapons
+ *   npx tsx scripts/sync-wiki.ts             # skills + bosses + heroes + weapons + locations
  *   npx tsx scripts/sync-wiki.ts --only=skills
  *   npx tsx scripts/sync-wiki.ts --only=bosses
  *   npx tsx scripts/sync-wiki.ts --only=heroes
  *   npx tsx scripts/sync-wiki.ts --only=weapons
+ *   npx tsx scripts/sync-wiki.ts --only=locations
  *
  * Requires outbound network access to wiki.guildwars.com (1 req/s, see
  * src/lib/wiki/client.ts) - not available in every sandboxed environment.
@@ -17,6 +18,7 @@ import { WikiClient, pageUrl } from "@/lib/wiki/client";
 import { parseSkill } from "@/lib/wiki/parseSkill";
 import { parseNpc } from "@/lib/wiki/parseNpc";
 import { parseWeapon } from "@/lib/wiki/parseWeapon";
+import { parseLocation } from "@/lib/wiki/parseLocation";
 import {
   dataBonus,
   forcedRarityFor,
@@ -103,6 +105,20 @@ const WEAPON_SKIN_CATEGORIES = [
 
 const WEAPON_CATEGORIES = [...UNIQUE_WEAPON_CATEGORIES, ...WEAPON_SKIN_CATEGORIES];
 
+// Every location "type" as its own wiki category (no single umbrella category
+// covers them all - confirmed live: Lion's Arch is in "Ports", Doomlore
+// Shrine in "Towns", neither in "Outposts" despite being outpost-like).
+const LOCATION_CATEGORIES = [
+  "Category:Explorable areas",
+  "Category:Outposts",
+  "Category:Towns",
+  "Category:Ports",
+  "Category:Missions",
+  "Category:Dungeons",
+  "Category:Arenas",
+  "Category:Guild halls",
+].map((c) => c.replace(/ /g, "_"));
+
 const SKIP_TITLE_PREFIXES = ["List of", "Category:"];
 const MIN_PAGE_LENGTH = 300;
 
@@ -135,6 +151,14 @@ function heroExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
   const professions = [parsed.profession, parsed.profession2].filter(Boolean).join(" / ");
   parts.push(["Hero", professions].filter(Boolean).join(" "));
   if (parsed.affiliation) parts.push(`Affiliated with ${parsed.affiliation}.`);
+  if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
+  return parts.filter(Boolean).join(" ");
+}
+
+function locationExtract(parsed: NonNullable<ReturnType<typeof parseLocation>>): string {
+  const parts: string[] = [];
+  const kind = [parsed.profession, parsed.region ? `in ${parsed.region}` : null].filter(Boolean).join(" ");
+  if (kind) parts.push(`${kind}.`);
   if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
   return parts.filter(Boolean).join(" ");
 }
@@ -417,6 +441,10 @@ async function main() {
 
   if (!only || only === "weapons") {
     await syncWeaponFamily(client);
+  }
+
+  if (!only || only === "locations") {
+    await syncFamily(client, LOCATION_CATEGORIES, "LOCATION", parseLocation, locationExtract, (p) => ({ ...p }));
   }
 
   await recomputeRarity();
