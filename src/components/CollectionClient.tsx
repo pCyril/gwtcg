@@ -8,6 +8,7 @@ import { CardDetailModal } from "@/components/CardDetailModal";
 import { RarityLegend } from "@/components/RarityLegend";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
 const FAMILY_KEYS = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 const RARITY_KEYS = Object.keys(RARITY_STYLES) as RarityKey[];
@@ -21,7 +22,10 @@ interface Progress {
 interface Filters {
   family: string;
   rarity: string;
+  sort: string;
 }
+
+const SORT_KEYS = ["recent", "family", "rarity", "copies"];
 
 export function CollectionClient() {
   const { t } = useLocale();
@@ -33,6 +37,7 @@ export function CollectionClient() {
   const [filters, setFilters] = useState<Filters>({
     family: searchParams.get("family") ?? "",
     rarity: searchParams.get("rarity") ?? "",
+    sort: searchParams.get("sort") ?? "recent",
   });
 
   // Keep the URL in sync so filters survive a refresh/back-button and can be
@@ -42,6 +47,7 @@ export function CollectionClient() {
     const params = new URLSearchParams();
     if (next.family) params.set("family", next.family);
     if (next.rarity) params.set("rarity", next.rarity);
+    if (next.sort && next.sort !== "recent") params.set("sort", next.sort);
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
@@ -61,6 +67,7 @@ export function CollectionClient() {
     const params = new URLSearchParams();
     if (filters.family) params.set("family", filters.family);
     if (filters.rarity) params.set("rarity", filters.rarity);
+    if (filters.sort && filters.sort !== "recent") params.set("sort", filters.sort);
 
     return fetch(`/api/collection?${params.toString()}`)
       .then((res) => res.json())
@@ -156,6 +163,17 @@ export function CollectionClient() {
           {RARITY_KEYS.map((key) => (
             <option key={key} value={key}>
               {t(rarityLabelKey(key))}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filters.sort}
+          onChange={(e) => updateFilters({ ...filters, sort: e.target.value })}
+          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+        >
+          {SORT_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {t(`collection.sort.${key}` as TranslationKey)}
             </option>
           ))}
         </select>

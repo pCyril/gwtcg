@@ -144,6 +144,10 @@ export const translations = {
     "collection.discardConfirm": "Défausser {count} carte(s) ? Cette action est définitive.",
     "collection.discardSingleConfirm": "Défausser « {title} » ? Cette action est définitive.",
     "collection.copiesTooltip": "Tu possèdes {count} exemplaires de cette carte",
+    "collection.sort.recent": "Trier : plus récentes",
+    "collection.sort.family": "Trier : famille",
+    "collection.sort.rarity": "Trier : rareté",
+    "collection.sort.copies": "Trier : nombre d'exemplaires",
 
     // Card detail modal
     "cardDetail.dragHint": "Glisse la carte pour la faire tourner",
@@ -433,6 +437,10 @@ export const translations = {
     "collection.discardConfirm": "Discard {count} card(s)? This action is final.",
     "collection.discardSingleConfirm": "Discard « {title} »? This action is final.",
     "collection.copiesTooltip": "You own {count} copies of this card",
+    "collection.sort.recent": "Sort: most recent",
+    "collection.sort.family": "Sort: family",
+    "collection.sort.rarity": "Sort: rarity",
+    "collection.sort.copies": "Sort: number of copies",
 
     "cardDetail.dragHint": "Drag the card to rotate it",
     "cardDetail.sellButton": "Put up for auction",
