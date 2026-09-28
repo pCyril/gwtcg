@@ -396,21 +396,21 @@ A sunstone-tipped staff carved with Sunspear motifs.`,
 ];
 
 function skillExtract(parsed: NonNullable<ReturnType<typeof parseSkill>>): string {
-  return parsed.conciseDescription || parsed.description || "Compétence.";
+  return parsed.conciseDescription || parsed.description || "Skill.";
 }
 
 function npcExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
-  const kind = parsed.isBoss ? "Boss" : "Monstre";
+  const kind = parsed.isBoss ? "Boss" : "Monster";
   const level = parsed.hardModeLevel
-    ? `niveau ${parsed.level} (${parsed.hardModeLevel} en mode difficile)`
+    ? `level ${parsed.level} (${parsed.hardModeLevel} in Hard Mode)`
     : parsed.level
-      ? `niveau ${parsed.level}`
+      ? `level ${parsed.level}`
       : null;
   const parts = [
     [kind, parsed.species, level].filter(Boolean).join(" "),
-    parsed.affiliation ? `Affilié à ${parsed.affiliation}.` : null,
-    parsed.locationText ? `Rencontré : ${parsed.locationText}.` : null,
-    parsed.campaign ? `Campagne ${parsed.campaign}.` : null,
+    parsed.affiliation ? `Affiliated with ${parsed.affiliation}.` : null,
+    parsed.locationText ? `Found: ${parsed.locationText}.` : null,
+    parsed.campaign ? `Campaign: ${parsed.campaign}.` : null,
   ];
   return parts.filter(Boolean).join(" ");
 }

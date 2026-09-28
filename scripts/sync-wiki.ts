@@ -115,27 +115,27 @@ function isRedirect(wikitext: string): boolean {
 }
 
 function skillExtract(parsed: NonNullable<ReturnType<typeof parseSkill>>): string {
-  const text = parsed.conciseDescription || parsed.description || `Compétence ${parsed.profession ?? ""}.`.trim();
+  const text = parsed.conciseDescription || parsed.description || (parsed.profession ? `${parsed.profession} skill.` : "Skill.");
   return text.length > 280 ? `${text.slice(0, 277)}...` : text;
 }
 
 function npcExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
   const parts: string[] = [];
-  const kind = parsed.isBoss ? "Boss" : "Monstre";
-  const level = parsed.hardModeLevel ? `niveau ${parsed.level} (${parsed.hardModeLevel} en mode difficile)` : parsed.level ? `niveau ${parsed.level}` : null;
+  const kind = parsed.isBoss ? "Boss" : "Monster";
+  const level = parsed.hardModeLevel ? `level ${parsed.level} (${parsed.hardModeLevel} in Hard Mode)` : parsed.level ? `level ${parsed.level}` : null;
   parts.push([kind, parsed.species, level].filter(Boolean).join(" "));
-  if (parsed.affiliation) parts.push(`Affilié à ${parsed.affiliation}.`);
-  if (parsed.locationText) parts.push(`Rencontré : ${parsed.locationText}.`);
-  if (parsed.campaign) parts.push(`Campagne ${parsed.campaign}.`);
+  if (parsed.affiliation) parts.push(`Affiliated with ${parsed.affiliation}.`);
+  if (parsed.locationText) parts.push(`Found: ${parsed.locationText}.`);
+  if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
   return parts.filter(Boolean).join(" ");
 }
 
 function heroExtract(parsed: NonNullable<ReturnType<typeof parseNpc>>): string {
   const parts: string[] = [];
   const professions = [parsed.profession, parsed.profession2].filter(Boolean).join(" / ");
-  parts.push(["Héros", professions].filter(Boolean).join(" "));
-  if (parsed.affiliation) parts.push(`Affilié à ${parsed.affiliation}.`);
-  if (parsed.campaign) parts.push(`Campagne ${parsed.campaign}.`);
+  parts.push(["Hero", professions].filter(Boolean).join(" "));
+  if (parsed.affiliation) parts.push(`Affiliated with ${parsed.affiliation}.`);
+  if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
   return parts.filter(Boolean).join(" ");
 }
 
