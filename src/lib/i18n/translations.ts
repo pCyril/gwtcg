@@ -20,6 +20,7 @@ export const translations = {
     "common.pending": "En attente",
     "common.confirmed": "✓ Confirmée",
     "card.illustration": "Illustration {n}",
+    "card.new": "Nouveau",
 
     // Footer
     "footer.disclaimer":
@@ -142,6 +143,7 @@ export const translations = {
     "collection.selectCard": "Sélectionner {title}",
     "collection.discardConfirm": "Défausser {count} carte(s) ? Cette action est définitive.",
     "collection.discardSingleConfirm": "Défausser « {title} » ? Cette action est définitive.",
+    "collection.copiesTooltip": "Tu possèdes {count} exemplaires de cette carte",
 
     // Card detail modal
     "cardDetail.dragHint": "Glisse la carte pour la faire tourner",
@@ -316,6 +318,7 @@ export const translations = {
     "common.pending": "Pending",
     "common.confirmed": "✓ Confirmed",
     "card.illustration": "Illustration {n}",
+    "card.new": "New",
 
     "footer.disclaimer":
       "GWTCG is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
@@ -429,6 +432,7 @@ export const translations = {
     "collection.selectCard": "Select {title}",
     "collection.discardConfirm": "Discard {count} card(s)? This action is final.",
     "collection.discardSingleConfirm": "Discard « {title} »? This action is final.",
+    "collection.copiesTooltip": "You own {count} copies of this card",
 
     "cardDetail.dragHint": "Drag the card to rotate it",
     "cardDetail.sellButton": "Put up for auction",

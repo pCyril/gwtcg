@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const user = await getOrCreateUser();
 
   try {
-    const { instances } = await openBooster(user.id, type);
+    const { instances, isNewByCardId } = await openBooster(user.id, type);
     const credits = await getImageCreditsByWikiPage(instances.map((i) => i.card.wikiPageId));
     const { available, nextAvailableAt } = await getBoosterAvailability(user.id);
 
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         url: instance.card.wikiPage.url,
         imageUrls: instance.card.wikiPage.imageUrls,
         imageCredits: credits.get(instance.card.wikiPageId) ?? {},
+        isNew: isNewByCardId.get(instance.cardId) ?? false,
       })),
       boostersAvailable: available,
       dailyBoosterLimit: DAILY_BOOSTER_LIMIT,

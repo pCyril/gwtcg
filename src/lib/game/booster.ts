@@ -159,6 +159,16 @@ export async function openBooster(
       data: { userId, type },
     });
 
+    // Snapshot ownership before creating this draw's instances, so a card
+    // drawn twice in different boosters isn't miscounted against itself.
+    const uniqueCardIds = [...new Set(drawn.map((d) => d.cardId))];
+    const existingCounts = await tx.cardInstance.groupBy({
+      by: ["cardId"],
+      where: { ownerId: userId, cardId: { in: uniqueCardIds }, discardedAt: null },
+      _count: { _all: true },
+    });
+    const alreadyOwned = new Set(existingCounts.filter((c) => c._count._all > 0).map((c) => c.cardId));
+
     const instances = await Promise.all(
       drawn.map((d) =>
         tx.cardInstance.create({
@@ -173,6 +183,8 @@ export async function openBooster(
       ),
     );
 
-    return { opening, instances };
+    const isNewByCardId = new Map(uniqueCardIds.map((id) => [id, !alreadyOwned.has(id)]));
+
+    return { opening, instances, isNewByCardId };
   });
 }

@@ -18,6 +18,8 @@ export interface CardData {
   url: string;
   imageUrls?: string[];
   imageCredits?: Record<string, string>;
+  isNew?: boolean;
+  copies?: number;
 }
 
 // Standard trading-card proportions (2.5in x 3.5in), so every card - grid
@@ -37,12 +39,26 @@ export function CardTile({ card, size = "sm" }: { card: CardData; size?: "sm" | 
       className={`relative flex aspect-[5/7] w-full flex-col overflow-hidden rounded-[10px] border-[3px] ${style.border} ${style.bg} ${style.glow}`}
     >
       {/* Title bar */}
-      <div className="flex shrink-0 items-center border-b border-black/50 bg-neutral-900/80 px-2 py-1">
+      <div className="flex shrink-0 items-center justify-between gap-1 border-b border-black/50 bg-neutral-900/80 px-2 py-1">
         <h3 className={`truncate font-bold text-neutral-50 ${large ? "text-base" : "text-[11px]"}`}>{card.title}</h3>
+        {card.copies !== undefined && card.copies > 1 && (
+          <span
+            className="shrink-0 rounded-full bg-black/60 px-1.5 py-0.5 text-[8px] font-bold text-neutral-100"
+            title={t("collection.copiesTooltip", { count: card.copies })}
+          >
+            ×{card.copies}
+          </span>
+        )}
       </div>
 
       {/* Art window */}
       <div className="relative mx-[6%] mt-[3%] overflow-hidden rounded-[4px] border border-black/60" style={{ flex: "0 0 42%" }}>
+        {card.isNew && (
+          <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
+            {t("card.new")}
+          </span>
+        )}
+
         {activeImage ? (
           // eslint-disable-next-line @next/next/no-img-element -- arbitrary/original card art, not an optimizable local asset set
           <img

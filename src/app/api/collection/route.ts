@@ -34,6 +34,11 @@ export async function GET(request: Request) {
   const uniqueOwned = new Set(instances.map((i) => i.cardId)).size;
   const credits = await getImageCreditsByWikiPage(instances.map((i) => i.card.wikiPageId));
 
+  const copyCounts = new Map<string, number>();
+  for (const instance of instances) {
+    copyCounts.set(instance.cardId, (copyCounts.get(instance.cardId) ?? 0) + 1);
+  }
+
   return NextResponse.json({
     cards: instances.map((instance) => ({
       instanceId: instance.id,
@@ -49,6 +54,7 @@ export async function GET(request: Request) {
       imageUrls: instance.card.wikiPage.imageUrls,
       imageCredits: credits.get(instance.card.wikiPageId) ?? {},
       attributes: instance.card.attributes,
+      copies: copyCounts.get(instance.cardId) ?? 1,
     })),
     progress: {
       uniqueOwned,
