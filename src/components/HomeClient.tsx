@@ -211,10 +211,7 @@ export function HomeClient() {
         </section>
       )}
 
-      <ArtCompletionGauge />
-      <ArtLeaderboard />
-
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">
           {t("home.viewCollection")}
         </Link>
@@ -240,6 +237,9 @@ export function HomeClient() {
           {t("footer.changelog")}
         </Link>
       </div>
+
+      <ArtCompletionGauge />
+      <ArtLeaderboard />
 
       {showOverlay && (
         <BoosterOverlay
