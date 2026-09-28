@@ -128,6 +128,9 @@ export const translations = {
     "leaderboard.count": "{count} illustration{plural}",
     "leaderboard.emptyAllTime": "Aucune illustration approuvée pour l'instant.",
     "leaderboard.empty24h": "Aucune illustration approuvée ces dernières 24h.",
+    "completion.title": "Illustrations de la communauté",
+    "completion.subtitle": "Part des cartes qui ont déjà une illustration.",
+    "completion.progress": "{illustrated} / {total} cartes illustrées ({percent}%)",
 
     // Collection
     "collection.title": "Mon classeur",
@@ -422,6 +425,9 @@ export const translations = {
     "leaderboard.count": "{count} illustration{plural}",
     "leaderboard.emptyAllTime": "No approved illustrations yet.",
     "leaderboard.empty24h": "No approved illustrations in the last 24h.",
+    "completion.title": "Community illustrations",
+    "completion.subtitle": "Share of cards that already have an illustration.",
+    "completion.progress": "{illustrated} / {total} cards illustrated ({percent}%)",
 
     "collection.title": "My binder",
     "collection.progress": "{owned} / {total} unique cards ({percent}%)",

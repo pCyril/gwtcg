@@ -8,6 +8,7 @@ import { AuthWidget } from "@/components/AuthWidget";
 import { GameCharacterNameField } from "@/components/GameCharacterNameField";
 import { PseudoField } from "@/components/PseudoField";
 import { ArtLeaderboard } from "@/components/ArtLeaderboard";
+import { ArtCompletionGauge } from "@/components/ArtCompletionGauge";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
@@ -210,6 +211,7 @@ export function HomeClient() {
         </section>
       )}
 
+      <ArtCompletionGauge />
       <ArtLeaderboard />
 
       <div className="flex gap-4">

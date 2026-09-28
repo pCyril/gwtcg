@@ -126,6 +126,24 @@ export async function getArtLeaderboard(): Promise<{ allTime: ArtLeaderboardEntr
   return { allTime: toEntries(allTimeGroups), last24h: toEntries(last24hGroups) };
 }
 
+/** Share of the card corpus that already has at least one community illustration. */
+export async function getArtCompletionStats(): Promise<{
+  illustratedCards: number;
+  totalCards: number;
+  percent: number;
+}> {
+  const [illustratedCards, totalCards] = await Promise.all([
+    prisma.card.count({ where: { wikiPage: { imageUrls: { isEmpty: false } } } }),
+    prisma.card.count(),
+  ]);
+
+  return {
+    illustratedCards,
+    totalCards,
+    percent: totalCards === 0 ? 0 : Math.round((illustratedCards / totalCards) * 1000) / 10,
+  };
+}
+
 export async function listPendingArtSubmissions() {
   return prisma.artSubmission.findMany({
     where: { status: "PENDING" },
