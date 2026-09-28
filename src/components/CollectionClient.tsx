@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { CardDetailModal } from "@/components/CardDetailModal";
 import { RarityLegend } from "@/components/RarityLegend";
@@ -24,9 +25,26 @@ interface Filters {
 
 export function CollectionClient() {
   const { t } = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [cards, setCards] = useState<CardData[] | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
-  const [filters, setFilters] = useState<Filters>({ family: "", rarity: "" });
+  const [filters, setFilters] = useState<Filters>({
+    family: searchParams.get("family") ?? "",
+    rarity: searchParams.get("rarity") ?? "",
+  });
+
+  // Keep the URL in sync so filters survive a refresh/back-button and can be
+  // shared as a link, without cluttering browser history per filter change.
+  function updateFilters(next: Filters) {
+    setFilters(next);
+    const params = new URLSearchParams();
+    if (next.family) params.set("family", next.family);
+    if (next.rarity) params.set("rarity", next.rarity);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -119,7 +137,7 @@ export function CollectionClient() {
       <div className="flex flex-wrap gap-3">
         <select
           value={filters.family}
-          onChange={(e) => setFilters((f) => ({ ...f, family: e.target.value }))}
+          onChange={(e) => updateFilters({ ...filters, family: e.target.value })}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           <option value="">{t("collection.allFamilies")}</option>
@@ -131,7 +149,7 @@ export function CollectionClient() {
         </select>
         <select
           value={filters.rarity}
-          onChange={(e) => setFilters((f) => ({ ...f, rarity: e.target.value }))}
+          onChange={(e) => updateFilters({ ...filters, rarity: e.target.value })}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           <option value="">{t("collection.allRarities")}</option>
