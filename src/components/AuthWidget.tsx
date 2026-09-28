@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { RegisterForm } from "@/components/RegisterForm";
 
 interface AuthWidgetProps {
   isGuest: boolean;
@@ -14,7 +15,7 @@ type Mode = "closed" | "login" | "register";
 export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
   const { t, tError } = useLocale();
   const [mode, setMode] = useState<Mode>("closed");
-  const [form, setForm] = useState({ pseudo: "", email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -48,12 +49,30 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
     );
   }
 
+  if (mode === "register") {
+    return (
+      <div className="flex flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-900/50 p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-neutral-200">{t("auth.registerTitle")}</span>
+          <button onClick={() => setMode("closed")} className="text-neutral-500 hover:text-neutral-300">
+            ✕
+          </button>
+        </div>
+        <RegisterForm
+          onSuccess={() => {
+            setMode("closed");
+            onAuthChange();
+          }}
+        />
+      </div>
+    );
+  }
+
   async function submit() {
     setPending(true);
     setError(null);
     try {
-      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -73,22 +92,12 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-neutral-800 bg-neutral-900/50 p-3 text-sm">
       <div className="flex items-center justify-between">
-        <span className="font-semibold text-neutral-200">
-          {mode === "login" ? t("auth.loginTitle") : t("auth.registerTitle")}
-        </span>
+        <span className="font-semibold text-neutral-200">{t("auth.loginTitle")}</span>
         <button onClick={() => setMode("closed")} className="text-neutral-500 hover:text-neutral-300">
           ✕
         </button>
       </div>
 
-      {mode === "register" && (
-        <input
-          placeholder={t("auth.pseudoOptional")}
-          value={form.pseudo}
-          onChange={(e) => setForm((f) => ({ ...f, pseudo: e.target.value }))}
-          className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1"
-        />
-      )}
       <input
         type="email"
         placeholder={t("auth.email")}
@@ -111,7 +120,7 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
         disabled={pending}
         className="rounded bg-emerald-600 px-3 py-1.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
       >
-        {mode === "login" ? t("auth.submitLogin") : t("auth.submitRegister")}
+        {t("auth.submitLogin")}
       </button>
     </div>
   );

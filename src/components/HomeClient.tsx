@@ -243,6 +243,8 @@ export function HomeClient() {
           cards={cards}
           label={packLabel}
           onClose={() => setCards(null)}
+          isGuest={me.isGuest}
+          onAuthChange={refreshMe}
         />
       )}
     </main>

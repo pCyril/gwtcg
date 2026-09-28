@@ -300,6 +300,7 @@ export const translations = {
 
     // Booster overlay
     "booster.revealAll": "Tout révéler",
+    "booster.guestCta": "Crée un compte pour sécuriser ta collection et la retrouver sur n'importe quel appareil !",
     "booster.cardsObtained": "Cartes obtenues",
   },
   en: {
@@ -574,6 +575,7 @@ export const translations = {
     "admin.stats.pending": "{count} pending",
 
     "booster.revealAll": "Reveal all",
+    "booster.guestCta": "Create an account to secure your collection and access it from any device!",
     "booster.cardsObtained": "Cards obtained",
   },
 } as const;

@@ -5,6 +5,7 @@ import { CardTile, type CardData } from "@/components/CardTile";
 import { RarityLegend } from "@/components/RarityLegend";
 import { RARITY_STYLES, type RarityKey } from "@/lib/game/rarityStyles";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { RegisterForm } from "@/components/RegisterForm";
 
 const DRAMATIC_RARITIES: RarityKey[] = ["EPIC", "LEGENDARY", "MYTHIC"];
 
@@ -45,15 +46,21 @@ export function BoosterOverlay({
   cards,
   label,
   onClose,
+  isGuest = false,
+  onAuthChange,
 }: {
   pending: boolean;
   cards: CardData[] | null;
   label: string;
   onClose: () => void;
+  isGuest?: boolean;
+  onAuthChange?: () => void;
 }) {
   const { t } = useLocale();
   const [revealStarted, setRevealStarted] = useState(false);
   const [revealIndex, setRevealIndex] = useState(0);
+  const [showRegister, setShowRegister] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   const resolved = !pending && cards !== null && cards.length > 0;
   const revealing = resolved && revealStarted;
@@ -130,6 +137,31 @@ export function BoosterOverlay({
                 </div>
               ))}
             </div>
+            {isGuest && !registered && (
+              <div className="flex w-full max-w-sm flex-col items-center gap-3 rounded-lg border border-emerald-800/60 bg-emerald-950/20 p-4 text-center">
+                <p className="text-sm text-emerald-200">{t("booster.guestCta")}</p>
+                {!showRegister ? (
+                  <button
+                    onClick={() => setShowRegister(true)}
+                    className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                  >
+                    {t("auth.register")}
+                  </button>
+                ) : (
+                  <div className="w-full max-w-xs text-left">
+                    <RegisterForm
+                      onSuccess={() => {
+                        setRegistered(true);
+                        setShowRegister(false);
+                        onAuthChange?.();
+                      }}
+                      onCancel={() => setShowRegister(false)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             <button
               onClick={onClose}
               className="rounded-lg border border-neutral-700 px-5 py-2 text-sm text-neutral-200 hover:border-neutral-500"
