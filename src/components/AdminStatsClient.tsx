@@ -6,6 +6,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 
 interface Stats {
   totalUsers: number;
+  registeredAccounts: number;
   usersLast1h: number;
   usersLast24h: number;
   totalBoosters: number;
@@ -82,6 +83,13 @@ export function AdminStatsClient() {
             label={t("admin.stats.users")}
             value={stats.totalUsers}
             sub={t("admin.stats.last1h24h", { h1: stats.usersLast1h, h24: stats.usersLast24h })}
+          />
+          <StatCard
+            label={t("admin.stats.registered")}
+            value={stats.registeredAccounts}
+            sub={t("admin.stats.registeredShare", {
+              percent: stats.totalUsers > 0 ? Math.round((stats.registeredAccounts / stats.totalUsers) * 100) : 0,
+            })}
           />
           <StatCard
             label={t("admin.stats.boosters")}

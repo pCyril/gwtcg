@@ -9,6 +9,7 @@ export async function getAdminStats() {
 
   const [
     totalUsers,
+    registeredAccounts,
     usersLast1h,
     usersLast24h,
     totalBoosters,
@@ -22,6 +23,7 @@ export async function getAdminStats() {
     totalCardInstances,
   ] = await Promise.all([
     prisma.user.count(),
+    prisma.user.count({ where: { isGuest: false } }),
     prisma.user.count({ where: { createdAt: { gte: since1h } } }),
     prisma.user.count({ where: { createdAt: { gte: since24h } } }),
     prisma.boosterOpening.count(),
@@ -37,6 +39,7 @@ export async function getAdminStats() {
 
   return {
     totalUsers,
+    registeredAccounts,
     usersLast1h,
     usersLast24h,
     totalBoosters,
