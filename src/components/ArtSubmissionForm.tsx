@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 import type { CardData } from "@/components/CardTile";
 import { buildArtPrompt, RECOMMENDED_ART_RATIO, RECOMMENDED_ART_RESOLUTION } from "@/lib/game/artPrompt";
 import { useLocale } from "@/lib/i18n/LocaleContext";
@@ -12,7 +13,7 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
   const [certified, setCertified] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<"pending" | "approved" | null>(null);
   const [copied, setCopied] = useState<"url" | "prompt" | null>(null);
 
   if (!card.wikiPageId) return null;
@@ -44,7 +45,7 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
         setError(tError(data.error));
         return;
       }
-      setDone(true);
+      setDone(data.status === "APPROVED" ? "approved" : "pending");
     } finally {
       setPending(false);
     }
@@ -62,7 +63,11 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
   }
 
   if (done) {
-    return <p className="max-w-xs text-center text-sm text-emerald-300">{t("art.submitted")}</p>;
+    return (
+      <p className="max-w-xs text-center text-sm text-emerald-300">
+        {done === "approved" ? t("art.submittedApproved") : t("art.submitted")}
+      </p>
+    );
   }
 
   return (
@@ -72,14 +77,16 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
       <ol className="flex flex-col gap-2 text-xs text-neutral-400">
         <li>
           {t("art.step1")}{" "}
-          <button onClick={() => copy(card.url, "url")} className="underline hover:text-neutral-200">
+          <button onClick={() => copy(card.url, "url")} className="inline-flex items-center gap-1 underline hover:text-neutral-200">
+            {copied === "url" ? <Check size={12} /> : <Copy size={12} />}
             {copied === "url" ? t("art.copied") : t("art.copyUrl")}
           </button>
         </li>
         <li>{t("art.step2")}</li>
         <li>
           {t("art.step3")}{" "}
-          <button onClick={() => copy(prompt, "prompt")} className="underline hover:text-neutral-200">
+          <button onClick={() => copy(prompt, "prompt")} className="inline-flex items-center gap-1 underline hover:text-neutral-200">
+            {copied === "prompt" ? <Check size={12} /> : <Copy size={12} />}
             {copied === "prompt" ? t("art.copied") : t("art.copyPrompt")}
           </button>
         </li>

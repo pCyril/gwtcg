@@ -18,6 +18,7 @@ export async function createArtSubmission(
   wikiPageId: string,
   file: File,
   certifiedOriginal: boolean,
+  autoApprove = false,
 ) {
   if (!certifiedOriginal) throw new Error("CONSENT_REQUIRED");
 
@@ -28,23 +29,32 @@ export async function createArtSubmission(
   const wikiPage = await prisma.wikiPage.findUnique({ where: { id: wikiPageId } });
   if (!wikiPage) throw new Error("WIKI_PAGE_NOT_FOUND");
 
-  const pendingCount = await prisma.artSubmission.count({
-    where: { submitterId, status: "PENDING" },
-  });
-  if (pendingCount >= MAX_PENDING_PER_USER) throw new Error("TOO_MANY_PENDING");
+  if (!autoApprove) {
+    const pendingCount = await prisma.artSubmission.count({
+      where: { submitterId, status: "PENDING" },
+    });
+    if (pendingCount >= MAX_PENDING_PER_USER) throw new Error("TOO_MANY_PENDING");
+  }
 
   await mkdir(UPLOAD_DIR, { recursive: true });
   const filename = `${randomUUID()}.${extension}`;
   const bytes = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOAD_DIR, filename), bytes);
+  const imageUrl = `/uploads/card-art/${filename}`;
 
-  return prisma.artSubmission.create({
-    data: {
-      wikiPageId,
-      submitterId,
-      imageUrl: `/uploads/card-art/${filename}`,
-    },
-  });
+  // Admins skip the moderation queue entirely - their submission goes
+  // straight into WikiPage.imageUrls in the same transaction, same as
+  // approveArtSubmission does for everyone else's after review.
+  if (autoApprove) {
+    return prisma.$transaction(async (tx) => {
+      await tx.wikiPage.update({ where: { id: wikiPageId }, data: { imageUrls: { push: imageUrl } } });
+      return tx.artSubmission.create({
+        data: { wikiPageId, submitterId, imageUrl, status: "APPROVED", reviewedAt: new Date() },
+      });
+    });
+  }
+
+  return prisma.artSubmission.create({ data: { wikiPageId, submitterId, imageUrl } });
 }
 
 /**

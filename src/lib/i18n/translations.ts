@@ -155,8 +155,9 @@ export const translations = {
       "Je certifie qu'il s'agit d'une illustration originale (IA ou dessin perso), pas une capture du jeu ni un visuel officiel ArenaNet.",
     "art.submit": "Envoyer",
     "art.submitted": "Proposition envoyée, en attente de modération. Merci !",
+    "art.submittedApproved": "Illustration ajoutée directement à la carte (statut administrateur, pas de modération). Merci !",
     "art.promptIntro":
-      "Illustration façon fan art de jeu de cartes à collectionner, style digital painting, éclairage dramatique, couleurs riches, univers dark fantasy médiéval proche de Guild Wars.",
+      "Illustration façon fan art de jeu de cartes à collectionner, style digital painting, couleurs riches, univers fantasy médiéval proche de Guild Wars.",
     "art.promptSubject": "Sujet : {subject} — « {title} »{campaign}. {extract}",
     "art.promptReference":
       "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
@@ -428,8 +429,9 @@ export const translations = {
       "I certify this is an original illustration (AI-generated or hand-drawn), not a game screenshot or an official ArenaNet visual.",
     "art.submit": "Submit",
     "art.submitted": "Submission sent, awaiting review. Thank you!",
+    "art.submittedApproved": "Illustration added directly to the card (admin status, no moderation needed). Thank you!",
     "art.promptIntro":
-      "Fan art illustration for a trading card game, digital painting style, dramatic lighting, rich colors, dark medieval fantasy universe close to Guild Wars.",
+      "Fan art illustration for a trading card game, digital painting style, rich colors, medieval fantasy universe close to Guild Wars.",
     "art.promptSubject": "Subject: {subject} — « {title} »{campaign}. {extract}",
     "art.promptReference":
       "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",

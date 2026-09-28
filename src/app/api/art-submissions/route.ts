@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const submission = await createArtSubmission(me.id, wikiPageId, file, certifiedOriginal);
+    const submission = await createArtSubmission(me.id, wikiPageId, file, certifiedOriginal, me.isAdmin);
     return NextResponse.json({ id: submission.id, status: submission.status });
   } catch (err) {
     const message = err instanceof Error ? err.message : "UNKNOWN_ERROR";
