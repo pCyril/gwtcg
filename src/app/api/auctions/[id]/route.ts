@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { getAuctionDetail, getSellerReputations } from "@/lib/game/auction";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
+import { isMarketEnabled } from "@/lib/config";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/auctions/[id]">) {
+  if (!isMarketEnabled()) return NextResponse.json({ error: "MARKET_DISABLED" }, { status: 503 });
+
   const me = await getOrCreateUser();
   const { id } = await ctx.params;
 

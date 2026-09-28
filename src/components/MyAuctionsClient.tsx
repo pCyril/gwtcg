@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { TranslationKey } from "@/lib/i18n/translations";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 interface AuctionRow {
   id: string;
@@ -28,14 +29,30 @@ function AuctionList({ rows }: { rows: AuctionRow[] }) {
 }
 
 export function MyAuctionsClient() {
-  const { t } = useLocale();
+  const { t, tError } = useLocale();
+  const marketEnabled = useMarketEnabled();
   const [data, setData] = useState<{ selling: AuctionRow[]; bidOn: AuctionRow[] } | null>(null);
 
   useEffect(() => {
+    if (!marketEnabled) return;
     fetch("/api/auctions/mine")
       .then((res) => res.json())
       .then(setData);
-  }, []);
+  }, [marketEnabled]);
+
+  if (!marketEnabled) {
+    return (
+      <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-10">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">{t("myAuctions.title")}</h1>
+          <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+            {t("common.back")}
+          </Link>
+        </div>
+        <p className="text-neutral-400">{marketEnabled === null ? t("common.loading") : tError("MARKET_DISABLED")}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-10">

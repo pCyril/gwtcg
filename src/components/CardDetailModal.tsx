@@ -6,6 +6,7 @@ import { CardTile, type CardData } from "@/components/CardTile";
 import { CardBackVisual } from "@/components/BoosterOverlay";
 import { ArtSubmissionForm } from "@/components/ArtSubmissionForm";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 const ROTATION_X_LIMIT = 60;
 
@@ -19,6 +20,7 @@ export function CardDetailModal({
   onDiscarded?: () => void;
 }) {
   const { t, tError } = useLocale();
+  const marketEnabled = useMarketEnabled();
   // Starts at a slight showcase angle so it's obvious the card can be turned.
   const [rotation, setRotation] = useState({ x: 10, y: -18 });
   const [dragging, setDragging] = useState(false);
@@ -134,7 +136,7 @@ export function CardDetailModal({
           >
             {t("common.close")}
           </button>
-          {card.instanceId && (
+          {card.instanceId && marketEnabled && (
             <Link
               href={`/market/sell/${card.instanceId}`}
               className="rounded-lg border border-emerald-700 px-4 py-1.5 text-sm text-emerald-300 hover:border-emerald-400"

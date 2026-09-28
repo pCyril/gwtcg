@@ -45,6 +45,8 @@ function serializeAuction(
 }
 
 export async function GET() {
+  if (!isMarketEnabled()) return NextResponse.json({ error: "MARKET_DISABLED" }, { status: 503 });
+
   const auctions = await listActiveAuctions();
   const [credits, reputations] = await Promise.all([
     getImageCreditsByWikiPage(auctions.map((a) => a.cardInstance.card.wikiPageId)),

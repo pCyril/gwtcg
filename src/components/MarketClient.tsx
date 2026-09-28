@@ -37,10 +37,25 @@ export function MarketClient() {
   const marketEnabled = useMarketEnabled();
 
   useEffect(() => {
+    if (!marketEnabled) return;
     fetch("/api/auctions")
       .then((res) => res.json())
       .then((data) => setAuctions(data.auctions));
-  }, []);
+  }, [marketEnabled]);
+
+  if (!marketEnabled) {
+    return (
+      <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight">{t("market.title")}</h1>
+          <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+            {t("common.back")}
+          </Link>
+        </div>
+        <p className="text-neutral-400">{marketEnabled === null ? t("common.loading") : tError("MARKET_DISABLED")}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10">
@@ -64,11 +79,6 @@ export function MarketClient() {
           </Link>,
         )}
       </p>
-      {!marketEnabled && (
-        <p className="rounded-lg border border-amber-800/50 bg-amber-950/30 px-4 py-2 text-sm text-amber-300">
-          {tError("MARKET_DISABLED")}
-        </p>
-      )}
 
       {!auctions ? (
         <p className="text-neutral-400">{t("common.loading")}</p>

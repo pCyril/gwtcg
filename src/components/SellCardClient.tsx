@@ -41,6 +41,20 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
     }
   }
 
+  if (!marketEnabled) {
+    return (
+      <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">{t("sell.title")}</h1>
+          <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+            {t("sell.cancel")}
+          </Link>
+        </div>
+        <p className="text-neutral-400">{marketEnabled === null ? t("common.loading") : tError("MARKET_DISABLED")}</p>
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
       <div className="flex items-center justify-between">
@@ -84,12 +98,11 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
         </label>
 
         <p className="text-xs text-neutral-500">{t("sell.noFeeNote")}</p>
-        {!marketEnabled && <p className="text-sm text-amber-300">{tError("MARKET_DISABLED")}</p>}
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <button
           onClick={submit}
-          disabled={pending || !marketEnabled}
+          disabled={pending}
           className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
           {t("sell.submit")}

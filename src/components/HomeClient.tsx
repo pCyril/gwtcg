@@ -8,6 +8,7 @@ import { AuthWidget } from "@/components/AuthWidget";
 import { GameCharacterNameField } from "@/components/GameCharacterNameField";
 import { PseudoField } from "@/components/PseudoField";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 interface Me {
   pseudo: string;
@@ -43,6 +44,7 @@ function formatCountdown(ms: number): string {
 
 export function HomeClient() {
   const { t, tError } = useLocale();
+  const marketEnabled = useMarketEnabled();
   const [me, setMe] = useState<Me | null>(null);
   const [cards, setCards] = useState<CardData[] | null>(null);
   const [opening, setOpening] = useState(false);
@@ -214,9 +216,11 @@ export function HomeClient() {
         <Link href="/trade" className="text-sm text-neutral-400 underline hover:text-neutral-200">
           {t("home.trade")}
         </Link>
-        <Link href="/market" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("home.market")}
-        </Link>
+        {marketEnabled && (
+          <Link href="/market" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+            {t("home.market")}
+          </Link>
+        )}
         {me.isAdmin && (
           <>
             <Link href="/admin/art" className="text-sm text-neutral-400 underline hover:text-neutral-200">
