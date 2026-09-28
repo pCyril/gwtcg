@@ -7,6 +7,7 @@ import { BoosterOverlay, PackVisual } from "@/components/BoosterOverlay";
 import { AuthWidget } from "@/components/AuthWidget";
 import { GameCharacterNameField } from "@/components/GameCharacterNameField";
 import { PseudoField } from "@/components/PseudoField";
+import { ArtLeaderboard } from "@/components/ArtLeaderboard";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
@@ -208,6 +209,8 @@ export function HomeClient() {
           </div>
         </section>
       )}
+
+      <ArtLeaderboard />
 
       <div className="flex gap-4">
         <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">

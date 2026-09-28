@@ -119,6 +119,15 @@ export const translations = {
     "home.packLabelStandard": "Booster standard",
     "home.packLabelProfession": "Booster profession",
 
+    // Art submission leaderboard
+    "leaderboard.title": "Top illustrateurs",
+    "leaderboard.subtitle": "Les joueurs qui ont le plus contribué d'illustrations approuvées.",
+    "leaderboard.allTime": "Depuis le début",
+    "leaderboard.last24h": "Dernières 24h",
+    "leaderboard.count": "{count} illustration{plural}",
+    "leaderboard.emptyAllTime": "Aucune illustration approuvée pour l'instant.",
+    "leaderboard.empty24h": "Aucune illustration approuvée ces dernières 24h.",
+
     // Collection
     "collection.title": "Mon classeur",
     "collection.progress": "{owned} / {total} cartes uniques ({percent}%)",
@@ -397,6 +406,14 @@ export const translations = {
     "home.stats": "Stats →",
     "home.packLabelStandard": "Standard booster",
     "home.packLabelProfession": "Profession booster",
+
+    "leaderboard.title": "Top illustrators",
+    "leaderboard.subtitle": "Players who've contributed the most approved illustrations.",
+    "leaderboard.allTime": "All time",
+    "leaderboard.last24h": "Last 24h",
+    "leaderboard.count": "{count} illustration{plural}",
+    "leaderboard.emptyAllTime": "No approved illustrations yet.",
+    "leaderboard.empty24h": "No approved illustrations in the last 24h.",
 
     "collection.title": "My binder",
     "collection.progress": "{owned} / {total} unique cards ({percent}%)",

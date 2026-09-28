@@ -82,6 +82,50 @@ export async function getImageCreditsByWikiPage(wikiPageIds: string[]): Promise<
   return byPage;
 }
 
+export interface ArtLeaderboardEntry {
+  pseudo: string;
+  count: number;
+}
+
+const LEADERBOARD_SIZE = 10;
+
+/**
+ * Top submitters by approved illustration count - only counts submissions
+ * that actually made it onto a card (not pending/rejected), so it rewards
+ * quality over raw volume. "last24h" ranks by createdAt (when they actually
+ * submitted), not reviewedAt, so a fresh submission counts toward today's
+ * board even before an admin gets to review it and it becomes reflected here.
+ */
+export async function getArtLeaderboard(): Promise<{ allTime: ArtLeaderboardEntry[]; last24h: ArtLeaderboardEntry[] }> {
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  const [allTimeGroups, last24hGroups] = await Promise.all([
+    prisma.artSubmission.groupBy({
+      by: ["submitterId"],
+      where: { status: "APPROVED" },
+      _count: { _all: true },
+      orderBy: { _count: { submitterId: "desc" } },
+      take: LEADERBOARD_SIZE,
+    }),
+    prisma.artSubmission.groupBy({
+      by: ["submitterId"],
+      where: { status: "APPROVED", createdAt: { gte: since24h } },
+      _count: { _all: true },
+      orderBy: { _count: { submitterId: "desc" } },
+      take: LEADERBOARD_SIZE,
+    }),
+  ]);
+
+  const submitterIds = [...new Set([...allTimeGroups, ...last24hGroups].map((g) => g.submitterId))];
+  const users = await prisma.user.findMany({ where: { id: { in: submitterIds } }, select: { id: true, pseudo: true } });
+  const pseudoById = new Map(users.map((u) => [u.id, u.pseudo]));
+
+  const toEntries = (groups: typeof allTimeGroups): ArtLeaderboardEntry[] =>
+    groups.map((g) => ({ pseudo: pseudoById.get(g.submitterId) ?? "?", count: g._count._all }));
+
+  return { allTime: toEntries(allTimeGroups), last24h: toEntries(last24hGroups) };
+}
+
 export async function listPendingArtSubmissions() {
   return prisma.artSubmission.findMany({
     where: { status: "PENDING" },
