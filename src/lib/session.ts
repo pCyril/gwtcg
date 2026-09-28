@@ -8,7 +8,7 @@ function generateToken(): string {
   return randomBytes(32).toString("hex");
 }
 
-function generatePseudo(): string {
+export function generatePseudo(): string {
   return `Voyageur${randomBytes(3).toString("hex")}`;
 }
 
@@ -28,6 +28,18 @@ export async function setSessionCookie(token: string) {
 export async function clearSessionCookie() {
   const jar = await cookies();
   jar.delete(COOKIE_NAME);
+}
+
+/**
+ * Resolve the current user from the session cookie without creating one -
+ * for read-only checks (like /api/me on page load) that shouldn't turn every
+ * passing visitor into a row in the users table and skew engagement stats.
+ */
+export async function getSessionUser() {
+  const jar = await cookies();
+  const token = jar.get(COOKIE_NAME)?.value;
+  if (!token) return null;
+  return prisma.user.findUnique({ where: { sessionToken: token } });
 }
 
 /**

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrCreateUser } from "@/lib/session";
+import { getOrCreateUser, getSessionUser, generatePseudo } from "@/lib/session";
 import { DAILY_BOOSTER_LIMIT, getBoosterAvailability } from "@/lib/game/booster";
 import { prisma } from "@/lib/prisma";
 
@@ -7,7 +7,25 @@ const GAME_CHARACTER_NAME_PATTERN = /^[\p{L}][\p{L}' -]{1,30}[\p{L}]$/u;
 const PSEUDO_PATTERN = /^[\p{L}\p{N}_-]{3,24}$/u;
 
 export async function GET() {
-  const user = await getOrCreateUser();
+  const user = await getSessionUser();
+
+  // No account yet - a first-time visitor just landed on the page. Answer
+  // with what a fresh account would look like without actually creating one,
+  // so mere pageviews don't get counted as accounts (see getOrCreateUser()).
+  if (!user) {
+    return NextResponse.json({
+      pseudo: generatePseudo(),
+      email: null,
+      isGuest: true,
+      isAdmin: false,
+      boostersAvailable: DAILY_BOOSTER_LIMIT,
+      dailyBoosterLimit: DAILY_BOOSTER_LIMIT,
+      startingProfession: null,
+      gameCharacterName: null,
+      nextBoosterInMs: null,
+    });
+  }
+
   const { available, nextAvailableAt } = await getBoosterAvailability(user.id);
 
   return NextResponse.json({
