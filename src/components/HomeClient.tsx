@@ -236,6 +236,9 @@ export function HomeClient() {
             </Link>
           </>
         )}
+        <Link href="/changelog" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+          {t("footer.changelog")}
+        </Link>
       </div>
 
       {showOverlay && (

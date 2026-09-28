@@ -26,6 +26,7 @@ export const translations = {
     "footer.disclaimer":
       "GWTCG est un projet de fan non officiel, non affilié à ArenaNet ou NCSoft. Guild Wars est une marque d'ArenaNet / NCSoft.",
     "footer.license": "Textes des cartes adaptés du Guild Wars Wiki sous licence GNU FDL.",
+    "footer.changelog": "Nouveautés",
 
     // Rarity labels
     "rarity.COMMON": "Commune",
@@ -131,6 +132,10 @@ export const translations = {
     "completion.title": "Illustrations de la communauté",
     "completion.subtitle": "Part des cartes qui ont déjà une illustration.",
     "completion.progress": "{illustrated} / {total} cartes illustrées ({percent}%)",
+
+    // Changelog
+    "changelog.title": "Journal des mises à jour",
+    "changelog.subtitle": "Ce qui a changé récemment sur GWTCG.",
 
     // Collection
     "collection.title": "Mon classeur",
@@ -330,6 +335,7 @@ export const translations = {
     "footer.disclaimer":
       "GWTCG is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
     "footer.license": "Card text adapted from the Guild Wars Wiki under the GNU FDL license.",
+    "footer.changelog": "What's new",
 
     "rarity.COMMON": "Common",
     "rarity.UNCOMMON": "Uncommon",
@@ -428,6 +434,9 @@ export const translations = {
     "completion.title": "Community illustrations",
     "completion.subtitle": "Share of cards that already have an illustration.",
     "completion.progress": "{illustrated} / {total} cards illustrated ({percent}%)",
+
+    "changelog.title": "Changelog",
+    "changelog.subtitle": "What's changed recently on GWTCG.",
 
     "collection.title": "My binder",
     "collection.progress": "{owned} / {total} unique cards ({percent}%)",
