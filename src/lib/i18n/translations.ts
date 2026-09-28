@@ -105,7 +105,7 @@ export const translations = {
     // Home
     "home.title": "GWTCG",
     "home.welcomePrefix": "Bienvenue,",
-    "home.boosterCount": "{available}/{limit} boosters standard (recharge à 5 après 12h)",
+    "home.boosterCount": "{available}/{limit} boosters standard (recharge à 5 après 1h)",
     "home.nextBoosterIn": "Recharge complète dans {time}",
     "home.standardBoosterTitle": "Booster standard",
     "home.standardBoosterDesc": "5 cartes, toutes familles confondues, avec au moins une carte peu commune ou mieux garantie.",
@@ -384,7 +384,7 @@ export const translations = {
 
     "home.title": "GWTCG",
     "home.welcomePrefix": "Welcome,",
-    "home.boosterCount": "{available}/{limit} standard boosters (refills to 5 after 12h)",
+    "home.boosterCount": "{available}/{limit} standard boosters (refills to 5 after 1h)",
     "home.nextBoosterIn": "Full refill in {time}",
     "home.standardBoosterTitle": "Standard booster",
     "home.standardBoosterDesc": "5 cards, all families mixed, with at least one uncommon-or-better card guaranteed.",

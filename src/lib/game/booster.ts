@@ -4,7 +4,7 @@ import { RARITY_TARGET_SHARES } from "@/lib/game/rarity";
 import type { BoosterType, CardFamily, Rarity } from "@prisma/client";
 
 export const DAILY_BOOSTER_LIMIT = 5;
-export const BOOSTER_WINDOW_MS = 12 * 60 * 60 * 1000;
+export const BOOSTER_WINDOW_MS = 60 * 60 * 1000;
 const STANDARD_BOOSTER_SIZE = 5;
 const NON_COMMON_RARITIES: Rarity[] = ["UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
 
@@ -16,11 +16,11 @@ export interface BoosterAvailability {
 
 /**
  * Batch refill anchored to the *last* opening: every new opening resets the
- * 12h countdown, and once 12h pass without a new one, all 5 come back at
- * once (never one at a time). So "used in the current batch" is however many
- * openings chain back-to-back from the most recent one with no gap between
- * consecutive opens reaching 12h - that streak can never exceed 5 since
- * openBooster blocks once available hits 0.
+ * BOOSTER_WINDOW_MS countdown, and once that time passes without a new one,
+ * all 5 come back at once (never one at a time). So "used in the current
+ * batch" is however many openings chain back-to-back from the most recent
+ * one with no gap between consecutive opens reaching the window - that
+ * streak can never exceed 5 since openBooster blocks once available hits 0.
  */
 function computeBoosterAvailability(recentOpeningsDesc: { openedAt: Date }[]): BoosterAvailability {
   if (recentOpeningsDesc.length === 0) {
