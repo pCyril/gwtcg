@@ -60,8 +60,18 @@ export async function GET(request: Request) {
     });
   }
 
+  // One tile per unique card - keeps whichever instance sorted first as the
+  // representative (its instanceId is what card-detail actions like discard
+  // or "sell one" act on); the "copies" badge still reflects the full count.
+  const seenCardIds = new Set<string>();
+  const uniqueInstances = instances.filter((instance) => {
+    if (seenCardIds.has(instance.cardId)) return false;
+    seenCardIds.add(instance.cardId);
+    return true;
+  });
+
   return NextResponse.json({
-    cards: instances.map((instance) => ({
+    cards: uniqueInstances.map((instance) => ({
       instanceId: instance.id,
       wikiPageId: instance.card.wikiPageId,
       obtainedAt: instance.obtainedAt,
