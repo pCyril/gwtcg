@@ -7,6 +7,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
 import type { Locale } from "@/lib/i18n/translations";
 import { t as translate } from "@/lib/i18n/translations";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 interface AuctionSummary {
   id: string;
@@ -31,8 +32,9 @@ function timeLeft(locale: Locale, endsAt: string): string {
 }
 
 export function MarketClient() {
-  const { t, locale } = useLocale();
+  const { t, tError, locale } = useLocale();
   const [auctions, setAuctions] = useState<AuctionSummary[] | null>(null);
+  const marketEnabled = useMarketEnabled();
 
   useEffect(() => {
     fetch("/api/auctions")
@@ -62,6 +64,11 @@ export function MarketClient() {
           </Link>,
         )}
       </p>
+      {!marketEnabled && (
+        <p className="rounded-lg border border-amber-800/50 bg-amber-950/30 px-4 py-2 text-sm text-amber-300">
+          {tError("MARKET_DISABLED")}
+        </p>
+      )}
 
       {!auctions ? (
         <p className="text-neutral-400">{t("common.loading")}</p>

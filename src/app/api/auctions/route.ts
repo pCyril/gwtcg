@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { createAuction, getSellerReputations, listActiveAuctions, type SellerReputation } from "@/lib/game/auction";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
+import { isMarketEnabled } from "@/lib/config";
 
 const STATUS_BY_ERROR: Record<string, number> = {
   INVALID_STARTING_PRICE: 400,
@@ -53,6 +54,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!isMarketEnabled()) return NextResponse.json({ error: "MARKET_DISABLED" }, { status: 503 });
+
   const me = await getOrCreateUser();
   const body = await request.json().catch(() => ({}));
 

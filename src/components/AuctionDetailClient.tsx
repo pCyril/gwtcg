@@ -6,6 +6,7 @@ import { CardTile, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
 import type { TranslationKey } from "@/lib/i18n/translations";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 interface AuctionDetail {
   id: string;
@@ -26,6 +27,7 @@ interface AuctionDetail {
 
 export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
   const { t, tError, locale } = useLocale();
+  const marketEnabled = useMarketEnabled();
   const [auction, setAuction] = useState<AuctionDetail | null>(null);
   const [bidAmount, setBidAmount] = useState<number | "">("");
   const [error, setError] = useState<string | null>(null);
@@ -189,6 +191,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
 
       {isActive && !auction.isSeller && (
         <div className="flex flex-col gap-2">
+          {!marketEnabled && <p className="text-sm text-amber-300">{tError("MARKET_DISABLED")}</p>}
           <div className="flex gap-2">
             <input
               type="number"
@@ -196,11 +199,12 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value === "" ? "" : Number(e.target.value))}
               placeholder={`${(topBid ?? auction.startingPrice - 1) + 1}+`}
-              className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
+              disabled={!marketEnabled}
+              className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm disabled:opacity-50"
             />
             <button
               onClick={() => bidAmount !== "" && bid(bidAmount)}
-              disabled={pending || bidAmount === ""}
+              disabled={pending || bidAmount === "" || !marketEnabled}
               className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
             >
               {t("auction.bid")}
@@ -209,7 +213,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
           {auction.buyoutPrice && (
             <button
               onClick={() => bid(auction.buyoutPrice!)}
-              disabled={pending}
+              disabled={pending || !marketEnabled}
               className="rounded border border-amber-600 px-4 py-1.5 text-sm font-medium text-amber-300 hover:border-amber-400 disabled:opacity-50"
             >
               {t("auction.buyoutButton", { amount: auction.buyoutPrice })}

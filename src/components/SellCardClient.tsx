@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
 export function SellCardClient({ instanceId }: { instanceId: string }) {
   const { t, tError } = useLocale();
   const router = useRouter();
+  const marketEnabled = useMarketEnabled();
   const [startingPrice, setStartingPrice] = useState(1);
   const [buyoutPrice, setBuyoutPrice] = useState<number | "">("");
   const [durationHours, setDurationHours] = useState(24);
@@ -82,11 +84,12 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
         </label>
 
         <p className="text-xs text-neutral-500">{t("sell.noFeeNote")}</p>
+        {!marketEnabled && <p className="text-sm text-amber-300">{tError("MARKET_DISABLED")}</p>}
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <button
           onClick={submit}
-          disabled={pending}
+          disabled={pending || !marketEnabled}
           className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
           {t("sell.submit")}
