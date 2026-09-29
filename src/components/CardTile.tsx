@@ -8,6 +8,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 
 export interface CardData {
   instanceId?: string;
+  cardId?: string;
   wikiPageId?: string;
   rarity: RarityKey;
   family: string;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { createTrade } from "@/lib/game/trade";
 
 export async function GET() {
   const me = await getOrCreateUser();
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
   const me = await getOrCreateUser();
   const body = await request.json().catch(() => ({}));
   const recipientPseudo = typeof body?.recipientPseudo === "string" ? body.recipientPseudo.trim() : "";
+  const requestedCardId = typeof body?.requestedCardId === "string" ? body.requestedCardId : undefined;
 
   if (!recipientPseudo) {
     return NextResponse.json({ error: "MISSING_RECIPIENT" }, { status: 400 });
@@ -39,9 +41,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "USER_NOT_FOUND" }, { status: 404 });
   }
 
-  const trade = await prisma.trade.create({
-    data: { initiatorId: me.id, recipientId: recipient.id },
-  });
+  const trade = await createTrade(me.id, recipient.id, requestedCardId);
 
   return NextResponse.json({ id: trade.id });
 }

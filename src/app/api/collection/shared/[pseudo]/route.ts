@@ -19,9 +19,13 @@ export async function GET(request: Request, { params }: RouteContext<"/api/colle
 
   // Omit instanceId - it only matters for the owner's own instance-scoped
   // actions (discard, sell), which a public viewer never has access to.
+  // cardId is safe to expose (it only identifies the card template, not a
+  // specific owned instance) - it's what lets a viewer request this exact
+  // card when proposing a trade with the owner.
   return NextResponse.json({
     pseudo: owner.pseudo,
     cards: result.cards.map((card) => ({
+      cardId: card.cardId,
       wikiPageId: card.wikiPageId,
       obtainedAt: card.obtainedAt,
       rarity: card.rarity,

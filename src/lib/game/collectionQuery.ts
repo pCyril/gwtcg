@@ -102,6 +102,7 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
   return {
     cards: visibleInstances.map((instance) => ({
       instanceId: instance.id,
+      cardId: instance.cardId,
       wikiPageId: instance.card.wikiPageId,
       obtainedAt: instance.obtainedAt,
       rarity: instance.card.rarity,

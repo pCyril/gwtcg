@@ -9,6 +9,33 @@ export function sideOf(trade: { initiatorId: string; recipientId: string }, user
   throw new Error("NOT_A_PARTICIPANT");
 }
 
+/**
+ * Starts a new trade, optionally pre-filling the recipient's side with a
+ * specific card the initiator wants (e.g. clicked from the recipient's
+ * shared collection). Best-effort: if the recipient no longer owns an
+ * instance of that card (discarded, traded away, ...) the trade is still
+ * created, just without the pre-fill - the recipient's own setOffer() call
+ * later fully replaces this side anyway, so it's only ever a starting hint.
+ */
+export async function createTrade(initiatorId: string, recipientId: string, requestedCardId?: string) {
+  return prisma.$transaction(async (tx) => {
+    const trade = await tx.trade.create({ data: { initiatorId, recipientId } });
+
+    if (requestedCardId) {
+      const instance = await tx.cardInstance.findFirst({
+        where: { cardId: requestedCardId, ownerId: recipientId, discardedAt: null },
+      });
+      if (instance) {
+        await tx.tradeItem.create({
+          data: { tradeId: trade.id, cardInstanceId: instance.id, side: "RECIPIENT" },
+        });
+      }
+    }
+
+    return trade;
+  });
+}
+
 export async function getTradeDetail(tradeId: string, userId: string) {
   const trade = await prisma.trade.findUnique({
     where: { id: tradeId },

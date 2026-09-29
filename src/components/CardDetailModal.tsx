@@ -96,7 +96,7 @@ export function CardDetailModal({
       const res = await fetch("/api/trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipientPseudo: tradeWithPseudo }),
+        body: JSON.stringify({ recipientPseudo: tradeWithPseudo, requestedCardId: card.cardId }),
       });
       const data = await res.json();
       if (!res.ok) {
