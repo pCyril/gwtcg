@@ -196,3 +196,43 @@ export async function openBooster(
     return { opening, instances, isNewByCardId };
   });
 }
+
+export interface BoosterLeaderboardEntry {
+  pseudo: string;
+  count: number;
+}
+
+const BOOSTER_LEADERBOARD_SIZE = 10;
+
+/** Top players by number of boosters opened (any type), all-time and in the last 24h. */
+export async function getBoosterLeaderboard(): Promise<{
+  allTime: BoosterLeaderboardEntry[];
+  last24h: BoosterLeaderboardEntry[];
+}> {
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  const [allTimeGroups, last24hGroups] = await Promise.all([
+    prisma.boosterOpening.groupBy({
+      by: ["userId"],
+      _count: { _all: true },
+      orderBy: { _count: { userId: "desc" } },
+      take: BOOSTER_LEADERBOARD_SIZE,
+    }),
+    prisma.boosterOpening.groupBy({
+      by: ["userId"],
+      where: { openedAt: { gte: since24h } },
+      _count: { _all: true },
+      orderBy: { _count: { userId: "desc" } },
+      take: BOOSTER_LEADERBOARD_SIZE,
+    }),
+  ]);
+
+  const userIds = [...new Set([...allTimeGroups, ...last24hGroups].map((g) => g.userId))];
+  const users = await prisma.user.findMany({ where: { id: { in: userIds } }, select: { id: true, pseudo: true } });
+  const pseudoById = new Map(users.map((u) => [u.id, u.pseudo]));
+
+  const toEntries = (groups: typeof allTimeGroups): BoosterLeaderboardEntry[] =>
+    groups.map((g) => ({ pseudo: pseudoById.get(g.userId) ?? "?", count: g._count._all }));
+
+  return { allTime: toEntries(allTimeGroups), last24h: toEntries(last24hGroups) };
+}

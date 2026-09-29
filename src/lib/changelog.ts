@@ -23,6 +23,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Ajout des familles de cartes Objet (377 cartes : matériaux, miniatures, objets de quête, clés, monnaies, consommables) et Lore (16 cartes), synchronisées depuis le wiki.",
       "En consultant la collection partagée de quelqu'un, un bouton « Proposer un échange » apparaît maintenant sur chaque carte, et pré-remplit directement l'offre de cette personne avec la carte souhaitée.",
       "Les comptes invités ne peuvent plus proposer ni recevoir d'échanges - il faut créer un compte pour échanger des cartes.",
+      "Ajout d'un classement des joueurs qui ont ouvert le plus de boosters sur l'accueil (depuis le début / 24h glissantes).",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
@@ -35,6 +36,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Added the Item (377 cards: materials, miniatures, quest items, keys, currencies, consumables) and Lore (16 cards) card families, synced from the wiki.",
       "When browsing someone else's shared collection, a \"Propose a trade\" button now appears on each card, and pre-fills their offer with the exact card you wanted.",
       "Guest accounts can no longer propose or receive trades - you need an account to trade cards.",
+      "Added a top booster-openers leaderboard to the home page (all time / last 24h).",
     ],
   },
   {
