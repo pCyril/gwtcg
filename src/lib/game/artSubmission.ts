@@ -2,6 +2,10 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
+import type { CardFamily } from "@prisma/client";
+
+// Matches the fixed family order shown in the collection filters.
+const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 
 export const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 export const MAX_PENDING_PER_USER = 10;
@@ -161,21 +165,50 @@ export async function getArtLeaderboard(): Promise<{ allTime: ArtLeaderboardEntr
   return { allTime: toEntries(allTimeGroups), last24h: toEntries(last24hGroups) };
 }
 
-/** Share of the card corpus that already has at least one community illustration. */
+export interface ArtCompletionByFamily {
+  family: CardFamily;
+  illustratedCards: number;
+  totalCards: number;
+  percent: number;
+}
+
+/** Share of the card corpus that already has at least one community illustration, overall and per family. */
 export async function getArtCompletionStats(): Promise<{
   illustratedCards: number;
   totalCards: number;
   percent: number;
+  byFamily: ArtCompletionByFamily[];
 }> {
-  const [illustratedCards, totalCards] = await Promise.all([
+  const [illustratedCards, totalCards, illustratedByFamily, totalByFamily] = await Promise.all([
     prisma.card.count({ where: { wikiPage: { imageUrls: { isEmpty: false } } } }),
     prisma.card.count(),
+    prisma.card.groupBy({
+      by: ["family"],
+      where: { wikiPage: { imageUrls: { isEmpty: false } } },
+      _count: { _all: true },
+    }),
+    prisma.card.groupBy({ by: ["family"], _count: { _all: true } }),
   ]);
+
+  const illustratedByFamilyMap = new Map(illustratedByFamily.map((r) => [r.family, r._count._all]));
+  const byFamily = totalByFamily
+    .map((r) => {
+      const illustrated = illustratedByFamilyMap.get(r.family) ?? 0;
+      const total = r._count._all;
+      return {
+        family: r.family,
+        illustratedCards: illustrated,
+        totalCards: total,
+        percent: total === 0 ? 0 : Math.round((illustrated / total) * 1000) / 10,
+      };
+    })
+    .sort((a, b) => FAMILY_ORDER.indexOf(a.family) - FAMILY_ORDER.indexOf(b.family));
 
   return {
     illustratedCards,
     totalCards,
     percent: totalCards === 0 ? 0 : Math.round((illustratedCards / totalCards) * 1000) / 10,
+    byFamily,
   };
 }
 

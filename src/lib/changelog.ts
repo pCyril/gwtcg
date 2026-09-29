@@ -24,6 +24,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       "En consultant la collection partagée de quelqu'un, un bouton « Proposer un échange » apparaît maintenant sur chaque carte, et pré-remplit directement l'offre de cette personne avec la carte souhaitée.",
       "Les comptes invités ne peuvent plus proposer ni recevoir d'échanges - il faut créer un compte pour échanger des cartes.",
       "Ajout d'un classement des joueurs qui ont ouvert le plus de boosters sur l'accueil (depuis le début / 24h glissantes).",
+      "La jauge d'illustrations de la communauté se déplie maintenant au clic pour montrer le détail par famille de carte.",
+      "Les pseudos des classements (illustrateurs, ouvreurs de boosters) sont maintenant cliquables et mènent vers la collection du joueur.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
@@ -37,6 +39,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       "When browsing someone else's shared collection, a \"Propose a trade\" button now appears on each card, and pre-fills their offer with the exact card you wanted.",
       "Guest accounts can no longer propose or receive trades - you need an account to trade cards.",
       "Added a top booster-openers leaderboard to the home page (all time / last 24h).",
+      "The community illustrations gauge now expands on click to show a breakdown by card family.",
+      "Leaderboard handles (illustrators, booster openers) are now clickable and link to that player's collection.",
     ],
   },
   {

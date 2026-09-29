@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 
 interface Entry {
@@ -20,14 +21,19 @@ function Board({
   return (
     <ol className="flex flex-col gap-1">
       {entries.map((e, i) => (
-        <li key={e.pseudo} className="flex items-center justify-between rounded px-2 py-1 text-sm odd:bg-neutral-900/40">
-          <span className="text-neutral-300">
-            <span className="mr-2 text-neutral-500">#{i + 1}</span>
-            {e.pseudo}
-          </span>
-          <span className="font-semibold text-emerald-300">
-            {t("boosterLeaderboard.count", { count: e.count, plural: e.count > 1 ? "s" : "" })}
-          </span>
+        <li key={e.pseudo} className="odd:bg-neutral-900/40">
+          <Link
+            href={`/collection/${encodeURIComponent(e.pseudo)}`}
+            className="flex items-center justify-between rounded px-2 py-1 text-sm hover:bg-neutral-800/60"
+          >
+            <span className="text-neutral-300">
+              <span className="mr-2 text-neutral-500">#{i + 1}</span>
+              {e.pseudo}
+            </span>
+            <span className="font-semibold text-emerald-300">
+              {t("boosterLeaderboard.count", { count: e.count, plural: e.count > 1 ? "s" : "" })}
+            </span>
+          </Link>
         </li>
       ))}
     </ol>
