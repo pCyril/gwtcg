@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { CardBackVisual } from "@/components/BoosterOverlay";
 import { ArtSubmissionForm } from "@/components/ArtSubmissionForm";
@@ -14,12 +15,16 @@ export function CardDetailModal({
   card,
   onClose,
   onDiscarded,
+  tradeWithPseudo,
 }: {
   card: CardData;
   onClose: () => void;
   onDiscarded?: () => void;
+  /** When set (viewing someone else's shared collection), shows a "Propose a trade" button that starts a new trade with them. */
+  tradeWithPseudo?: string;
 }) {
   const { t, tError } = useLocale();
+  const router = useRouter();
   const marketEnabled = useMarketEnabled();
   // Starts at a slight showcase angle so it's obvious the card can be turned.
   const [rotation, setRotation] = useState({ x: 10, y: -18 });
@@ -27,6 +32,8 @@ export function CardDetailModal({
   const lastPointer = useRef<{ x: number; y: number } | null>(null);
   const [discardPending, setDiscardPending] = useState(false);
   const [discardError, setDiscardError] = useState<string | null>(null);
+  const [tradePending, setTradePending] = useState(false);
+  const [tradeError, setTradeError] = useState<string | null>(null);
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -78,6 +85,27 @@ export function CardDetailModal({
       onClose();
     } finally {
       setDiscardPending(false);
+    }
+  }
+
+  async function proposeTrade() {
+    if (!tradeWithPseudo) return;
+    setTradePending(true);
+    setTradeError(null);
+    try {
+      const res = await fetch("/api/trade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientPseudo: tradeWithPseudo }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTradeError(tError(data.error));
+        return;
+      }
+      router.push(`/trade/${data.id}`);
+    } finally {
+      setTradePending(false);
     }
   }
 
@@ -153,9 +181,19 @@ export function CardDetailModal({
               {t("cardDetail.discardButton")}
             </button>
           )}
+          {tradeWithPseudo && (
+            <button
+              onClick={proposeTrade}
+              disabled={tradePending}
+              className="rounded-lg border border-emerald-700 px-4 py-1.5 text-sm text-emerald-300 hover:border-emerald-400 disabled:opacity-50"
+            >
+              {t("collection.shared.proposeTrade")}
+            </button>
+          )}
         </div>
 
         {discardError && <p className="text-xs text-red-400">{discardError}</p>}
+        {tradeError && <p className="text-xs text-red-400">{tradeError}</p>}
 
         <ArtSubmissionForm card={card} />
       </div>

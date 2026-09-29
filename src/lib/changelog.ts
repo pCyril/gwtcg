@@ -21,6 +21,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Les cartes s'affichent maintenant sur 2 colonnes sur mobile au lieu d'une seule, pour éviter qu'elles ne soient trop larges.",
       "Corrigé : les boosters standard ne tiraient jamais de cartes Lieu ou Héros/PNJ, elles sont maintenant bien dans le pool.",
       "Ajout des familles de cartes Objet (377 cartes : matériaux, miniatures, objets de quête, clés, monnaies, consommables) et Lore (16 cartes), synchronisées depuis le wiki.",
+      "En consultant la collection partagée de quelqu'un, un bouton « Proposer un échange » apparaît maintenant sur chaque carte.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
@@ -31,6 +32,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Cards now display in 2 columns on mobile instead of 1, so they no longer look oversized.",
       "Fixed: standard boosters never drew Location or Hero/NPC cards - they're now properly in the pool.",
       "Added the Item (377 cards: materials, miniatures, quest items, keys, currencies, consumables) and Lore (16 cards) card families, synced from the wiki.",
+      "When browsing someone else's shared collection, a \"Propose a trade\" button now appears on each card.",
     ],
   },
   {

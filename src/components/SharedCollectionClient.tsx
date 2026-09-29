@@ -262,7 +262,9 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
         </div>
       )}
 
-      {selectedCard && <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} />}
+      {selectedCard && (
+        <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} tradeWithPseudo={pseudo} />
+      )}
     </main>
   );
 }
