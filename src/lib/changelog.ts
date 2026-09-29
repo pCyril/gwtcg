@@ -15,10 +15,12 @@ export const CHANGELOG: ChangelogEntry[] = [
     fr: [
       "Un compte invité n'est désormais créé qu'à l'ouverture de ton premier booster, plutôt qu'à ta simple arrivée sur le site.",
       "En filtrant le classeur par « Compétence », tu peux maintenant affiner par profession grâce à des chips multi-sélection.",
+      "Le compteur du classeur (X / Y cartes uniques) tient maintenant compte des filtres actifs pour le total, pas seulement pour ce que tu possèdes.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
       "When filtering the binder by \"Skill\", you can now further narrow it down by profession using multi-select chips.",
+      "The binder's counter (X / Y unique cards) now applies active filters to the total too, not just to what you own.",
     ],
   },
   {

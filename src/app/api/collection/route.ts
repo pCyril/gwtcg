@@ -19,22 +19,24 @@ export async function GET(request: Request) {
   const professions = searchParams.get("professions")?.split(",").filter(Boolean) ?? [];
   const sort = searchParams.get("sort");
 
+  const cardWhere = {
+    ...(family ? { family } : {}),
+    ...(rarity ? { rarity } : {}),
+    ...(campaign ? { campaign } : {}),
+    ...(professions.length ? { profession: { in: professions } } : {}),
+  };
+
   const [instances, corpusSize] = await Promise.all([
     prisma.cardInstance.findMany({
       where: {
         ownerId: user.id,
         discardedAt: null,
-        card: {
-          ...(family ? { family } : {}),
-          ...(rarity ? { rarity } : {}),
-          ...(campaign ? { campaign } : {}),
-          ...(professions.length ? { profession: { in: professions } } : {}),
-        },
+        card: cardWhere,
       },
       include: { card: { include: { wikiPage: true } } },
       orderBy: { obtainedAt: "desc" },
     }),
-    prisma.card.count(),
+    prisma.card.count({ where: cardWhere }),
   ]);
 
   const uniqueOwned = new Set(instances.map((i) => i.cardId)).size;
