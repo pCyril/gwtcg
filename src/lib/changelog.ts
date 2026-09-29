@@ -19,6 +19,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Tu peux désormais partager ta collection : un bouton « Partager ma collection » copie un lien public en lecture seule vers ton classeur.",
       "Le classeur (et sa version partagée) chargent maintenant les cartes par pages de 100 au défilement, avec le numéro de page conservé dans l'URL.",
       "Les cartes s'affichent maintenant sur 2 colonnes sur mobile au lieu d'une seule, pour éviter qu'elles ne soient trop larges.",
+      "Corrigé : les boosters standard ne tiraient jamais de cartes Lieu ou Héros/PNJ, elles sont maintenant bien dans le pool.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
@@ -27,6 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "You can now share your collection: a \"Share my collection\" button copies a public, read-only link to your binder.",
       "The binder (and its shared view) now load cards in pages of 100 as you scroll, with the page number kept in the URL.",
       "Cards now display in 2 columns on mobile instead of 1, so they no longer look oversized.",
+      "Fixed: standard boosters never drew Location or Hero/NPC cards - they're now properly in the pool.",
     ],
   },
   {

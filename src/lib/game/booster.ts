@@ -148,7 +148,15 @@ export async function openBooster(
 
     const drawn =
       type === "STANDARD"
-        ? await drawStandardPool(STANDARD_BOOSTER_SIZE, ["SKILL", "BOSS", "WEAPON"])
+        ? await drawStandardPool(STANDARD_BOOSTER_SIZE, [
+            "SKILL",
+            "BOSS",
+            "HERO_NPC",
+            "LOCATION",
+            "ITEM",
+            "WEAPON",
+            "LORE",
+          ])
         : await drawStandardPool(STANDARD_BOOSTER_SIZE, ["SKILL"], user.startingProfession!);
 
     if (drawn.length === 0) {
