@@ -2,12 +2,14 @@
  * Import/update cards from the Guild Wars 1 wiki.
  *
  * Usage:
- *   npx tsx scripts/sync-wiki.ts             # skills + bosses + heroes + weapons + locations
+ *   npx tsx scripts/sync-wiki.ts             # skills + bosses + heroes + weapons + locations + items + lore
  *   npx tsx scripts/sync-wiki.ts --only=skills
  *   npx tsx scripts/sync-wiki.ts --only=bosses
  *   npx tsx scripts/sync-wiki.ts --only=heroes
  *   npx tsx scripts/sync-wiki.ts --only=weapons
  *   npx tsx scripts/sync-wiki.ts --only=locations
+ *   npx tsx scripts/sync-wiki.ts --only=items
+ *   npx tsx scripts/sync-wiki.ts --only=lore
  *
  * Requires outbound network access to wiki.guildwars.com (1 req/s, see
  * src/lib/wiki/client.ts) - not available in every sandboxed environment.
@@ -19,6 +21,8 @@ import { parseSkill } from "@/lib/wiki/parseSkill";
 import { parseNpc } from "@/lib/wiki/parseNpc";
 import { parseWeapon } from "@/lib/wiki/parseWeapon";
 import { parseLocation } from "@/lib/wiki/parseLocation";
+import { parseItem } from "@/lib/wiki/parseItem";
+import { parseLore } from "@/lib/wiki/parseLore";
 import {
   dataBonus,
   forcedRarityFor,
@@ -119,6 +123,25 @@ const LOCATION_CATEGORIES = [
   "Category:Guild halls",
 ].map((c) => c.replace(/ /g, "_"));
 
+// Curated leaf categories under the sprawling "Category:Items" tree - the
+// well-known, cleanly-templated item groups (armor/salvage-only categories
+// deliberately left out as noisier/lower-signal - confirmed live).
+const ITEM_CATEGORIES = [
+  "Category:Common crafting materials",
+  "Category:Rare crafting materials",
+  "Category:Miniatures",
+  "Category:Quest items",
+  "Category:Keys",
+  "Category:Currencies",
+  "Category:Consumables",
+].map((c) => c.replace(/ /g, "_"));
+
+// "Category:Lore" itself is genuinely tiny on this wiki (~13 direct pages) -
+// almost everything under it is further subcategories with barely any direct
+// members of their own (confirmed live), so "Game storylines" is the only
+// other leaf worth pulling in.
+const LORE_CATEGORIES = ["Category:Lore", "Category:Game storylines"].map((c) => c.replace(/ /g, "_"));
+
 const SKIP_TITLE_PREFIXES = ["List of", "Category:"];
 const MIN_PAGE_LENGTH = 300;
 
@@ -161,6 +184,13 @@ function locationExtract(parsed: NonNullable<ReturnType<typeof parseLocation>>):
   if (kind) parts.push(`${kind}.`);
   if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
   return parts.filter(Boolean).join(" ");
+}
+
+function itemExtract(parsed: NonNullable<ReturnType<typeof parseItem>>): string {
+  const parts: string[] = [];
+  if (parsed.profession) parts.push(`${parsed.profession}.`);
+  if (parsed.campaign) parts.push(`Campaign: ${parsed.campaign}.`);
+  return parts.filter(Boolean).join(" ") || "Item.";
 }
 
 function weaponExtract(parsed: NonNullable<ReturnType<typeof parseWeapon>>): string {
@@ -445,6 +475,14 @@ async function main() {
 
   if (!only || only === "locations") {
     await syncFamily(client, LOCATION_CATEGORIES, "LOCATION", parseLocation, locationExtract, (p) => ({ ...p }));
+  }
+
+  if (!only || only === "items") {
+    await syncFamily(client, ITEM_CATEGORIES, "ITEM", parseItem, itemExtract, (p) => ({ ...p }));
+  }
+
+  if (!only || only === "lore") {
+    await syncFamily(client, LORE_CATEGORIES, "LORE", parseLore, (p) => p.extract, (p) => ({ ...p }));
   }
 
   await recomputeRarity();
