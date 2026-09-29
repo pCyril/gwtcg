@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { TranslationKey } from "@/lib/i18n/translations";
+import { RegisterForm } from "@/components/RegisterForm";
 
 interface TradeSummary {
   id: string;
@@ -21,6 +22,10 @@ export function TradeListClient() {
   const [pseudo, setPseudo] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  // Defaults to true (hidden-until-confirmed) so a guest never briefly sees
+  // the trade form flash before we know their real status.
+  const [isGuest, setIsGuest] = useState(true);
+  const [showRegister, setShowRegister] = useState(false);
 
   function refresh() {
     fetch("/api/trade")
@@ -28,7 +33,14 @@ export function TradeListClient() {
       .then((data) => setTrades(data.trades));
   }
 
+  function refreshMe() {
+    fetch("/api/me")
+      .then((res) => res.json())
+      .then((data) => setIsGuest(data.isGuest));
+  }
+
   useEffect(refresh, []);
+  useEffect(refreshMe, []);
 
   async function createTrade() {
     setPending(true);
@@ -61,21 +73,45 @@ export function TradeListClient() {
 
       <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6">
         <h2 className="text-lg font-semibold">{t("tradeList.newTrade")}</h2>
-        <div className="flex gap-2">
-          <input
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            placeholder={t("tradeList.pseudoPlaceholder")}
-            className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
-          />
-          <button
-            onClick={createTrade}
-            disabled={pending || !pseudo.trim()}
-            className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-          >
-            {t("tradeList.propose")}
-          </button>
-        </div>
+        {isGuest ? (
+          !showRegister ? (
+            <div className="flex flex-col items-start gap-2">
+              <p className="text-sm text-neutral-400">{t("error.GUEST_CANNOT_TRADE")}</p>
+              <button
+                onClick={() => setShowRegister(true)}
+                className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+              >
+                {t("auth.register")}
+              </button>
+            </div>
+          ) : (
+            <div className="max-w-xs">
+              <RegisterForm
+                onSuccess={() => {
+                  setShowRegister(false);
+                  refreshMe();
+                }}
+                onCancel={() => setShowRegister(false)}
+              />
+            </div>
+          )
+        ) : (
+          <div className="flex gap-2">
+            <input
+              value={pseudo}
+              onChange={(e) => setPseudo(e.target.value)}
+              placeholder={t("tradeList.pseudoPlaceholder")}
+              className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
+            />
+            <button
+              onClick={createTrade}
+              disabled={pending || !pseudo.trim()}
+              className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {t("tradeList.propose")}
+            </button>
+          </div>
+        )}
         {error && <p className="text-sm text-red-400">{error}</p>}
       </section>
 

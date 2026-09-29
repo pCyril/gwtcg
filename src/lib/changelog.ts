@@ -22,6 +22,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Corrigé : les boosters standard ne tiraient jamais de cartes Lieu ou Héros/PNJ, elles sont maintenant bien dans le pool.",
       "Ajout des familles de cartes Objet (377 cartes : matériaux, miniatures, objets de quête, clés, monnaies, consommables) et Lore (16 cartes), synchronisées depuis le wiki.",
       "En consultant la collection partagée de quelqu'un, un bouton « Proposer un échange » apparaît maintenant sur chaque carte, et pré-remplit directement l'offre de cette personne avec la carte souhaitée.",
+      "Les comptes invités ne peuvent plus proposer ni recevoir d'échanges - il faut créer un compte pour échanger des cartes.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
@@ -33,6 +34,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Fixed: standard boosters never drew Location or Hero/NPC cards - they're now properly in the pool.",
       "Added the Item (377 cards: materials, miniatures, quest items, keys, currencies, consumables) and Lore (16 cards) card families, synced from the wiki.",
       "When browsing someone else's shared collection, a \"Propose a trade\" button now appears on each card, and pre-fills their offer with the exact card you wanted.",
+      "Guest accounts can no longer propose or receive trades - you need an account to trade cards.",
     ],
   },
   {

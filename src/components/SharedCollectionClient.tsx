@@ -50,6 +50,9 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
+  // Defaults to true (hidden-until-confirmed) so a guest viewer never briefly
+  // sees the "propose a trade" button flash before we know their real status.
+  const [viewerIsGuest, setViewerIsGuest] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -85,6 +88,12 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     setLoadingMore(true);
     updateFilters({ ...filters, page: filters.page + 1 });
   }
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((res) => res.json())
+      .then((data) => setViewerIsGuest(data.isGuest));
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -263,7 +272,12 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
       )}
 
       {selectedCard && (
-        <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} tradeWithPseudo={pseudo} />
+        <CardDetailModal
+          card={selectedCard}
+          onClose={() => setSelectedCard(null)}
+          tradeWithPseudo={pseudo}
+          viewerIsGuest={viewerIsGuest}
+        />
       )}
     </main>
   );

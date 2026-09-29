@@ -35,10 +35,21 @@ export async function POST(request: Request) {
   if (recipientPseudo === me.pseudo) {
     return NextResponse.json({ error: "CANNOT_TRADE_SELF" }, { status: 400 });
   }
+  // Guests are free, disposable accounts - allowing them into trades would
+  // let someone farm boosters across throwaway sessions and consolidate the
+  // cards into one account for free. Blocking both sides at creation time is
+  // enough: a trade can never end up with a guest on either side, and
+  // isGuest never flips back to true once someone registers.
+  if (me.isGuest) {
+    return NextResponse.json({ error: "GUEST_CANNOT_TRADE" }, { status: 403 });
+  }
 
   const recipient = await prisma.user.findUnique({ where: { pseudo: recipientPseudo } });
   if (!recipient) {
     return NextResponse.json({ error: "USER_NOT_FOUND" }, { status: 404 });
+  }
+  if (recipient.isGuest) {
+    return NextResponse.json({ error: "RECIPIENT_IS_GUEST" }, { status: 400 });
   }
 
   const trade = await createTrade(me.id, recipient.id, requestedCardId);

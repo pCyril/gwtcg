@@ -85,6 +85,8 @@ export const translations = {
     "error.MISSING_RECIPIENT": "Indique le pseudo du joueur.",
     "error.CANNOT_TRADE_SELF": "Tu ne peux pas échanger avec toi-même.",
     "error.USER_NOT_FOUND": "Aucun joueur avec ce pseudo.",
+    "error.GUEST_CANNOT_TRADE": "Crée un compte pour pouvoir proposer des échanges.",
+    "error.RECIPIENT_IS_GUEST": "Ce joueur n'a pas encore créé de compte, il ne peut pas encore échanger.",
 
     // Auth widget
     "auth.connectedAs": "Connecté : {email}",
@@ -397,6 +399,8 @@ export const translations = {
     "error.MISSING_RECIPIENT": "Enter the player's handle.",
     "error.CANNOT_TRADE_SELF": "You can't trade with yourself.",
     "error.USER_NOT_FOUND": "No player with that handle.",
+    "error.GUEST_CANNOT_TRADE": "Create an account to be able to propose trades.",
+    "error.RECIPIENT_IS_GUEST": "This player hasn't created an account yet, so they can't trade yet.",
 
     "auth.connectedAs": "Signed in: {email}",
     "auth.logout": "Sign out",

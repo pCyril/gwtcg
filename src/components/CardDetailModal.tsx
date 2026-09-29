@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { CardBackVisual } from "@/components/BoosterOverlay";
 import { ArtSubmissionForm } from "@/components/ArtSubmissionForm";
+import { RegisterForm } from "@/components/RegisterForm";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
 
@@ -16,12 +17,15 @@ export function CardDetailModal({
   onClose,
   onDiscarded,
   tradeWithPseudo,
+  viewerIsGuest,
 }: {
   card: CardData;
   onClose: () => void;
   onDiscarded?: () => void;
   /** When set (viewing someone else's shared collection), shows a "Propose a trade" button that starts a new trade with them. */
   tradeWithPseudo?: string;
+  /** Guests can't create trades server-side - shows a "create an account" prompt instead of the trade button. */
+  viewerIsGuest?: boolean;
 }) {
   const { t, tError } = useLocale();
   const router = useRouter();
@@ -34,6 +38,9 @@ export function CardDetailModal({
   const [discardError, setDiscardError] = useState<string | null>(null);
   const [tradePending, setTradePending] = useState(false);
   const [tradeError, setTradeError] = useState<string | null>(null);
+  const [showRegister, setShowRegister] = useState(false);
+  const [justRegistered, setJustRegistered] = useState(false);
+  const stillGuest = viewerIsGuest && !justRegistered;
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -181,7 +188,7 @@ export function CardDetailModal({
               {t("cardDetail.discardButton")}
             </button>
           )}
-          {tradeWithPseudo && (
+          {tradeWithPseudo && !stillGuest && (
             <button
               onClick={proposeTrade}
               disabled={tradePending}
@@ -194,6 +201,30 @@ export function CardDetailModal({
 
         {discardError && <p className="text-xs text-red-400">{discardError}</p>}
         {tradeError && <p className="text-xs text-red-400">{tradeError}</p>}
+
+        {tradeWithPseudo && stillGuest && (
+          <div className="flex w-full max-w-sm flex-col items-center gap-3 rounded-lg border border-emerald-800/60 bg-emerald-950/20 p-4 text-center">
+            <p className="text-sm text-emerald-200">{t("error.GUEST_CANNOT_TRADE")}</p>
+            {!showRegister ? (
+              <button
+                onClick={() => setShowRegister(true)}
+                className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+              >
+                {t("auth.register")}
+              </button>
+            ) : (
+              <div className="w-full max-w-xs text-left">
+                <RegisterForm
+                  onSuccess={() => {
+                    setJustRegistered(true);
+                    setShowRegister(false);
+                  }}
+                  onCancel={() => setShowRegister(false)}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         <ArtSubmissionForm card={card} />
       </div>
