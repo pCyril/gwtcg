@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
@@ -37,6 +37,7 @@ interface Filters {
   rarity: string;
   sort: string;
   professions: string[];
+  page: number;
 }
 
 /** Read-only mirror of CollectionClient for viewing someone else's binder via a share link - same filters, no select/discard. */
@@ -49,11 +50,15 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
   const [filters, setFilters] = useState<Filters>({
     family: searchParams.get("family") ?? "",
     rarity: searchParams.get("rarity") ?? "",
     sort: searchParams.get("sort") ?? "recent",
     professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
+    page: Math.max(1, Number(searchParams.get("page")) || 1),
   });
 
   function updateFilters(next: Filters) {
@@ -63,6 +68,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     if (next.rarity) params.set("rarity", next.rarity);
     if (next.sort && next.sort !== "recent") params.set("sort", next.sort);
     if (next.family === "SKILL" && next.professions.length) params.set("professions", next.professions.join(","));
+    if (next.page > 1) params.set("page", String(next.page));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
@@ -71,7 +77,13 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     const selected = filters.professions.includes(profession)
       ? filters.professions.filter((p) => p !== profession)
       : [...filters.professions, profession];
-    updateFilters({ ...filters, professions: selected });
+    updateFilters({ ...filters, professions: selected, page: 1 });
+  }
+
+  function loadMore() {
+    if (!hasMore || loadingMore) return;
+    setLoadingMore(true);
+    updateFilters({ ...filters, page: filters.page + 1 });
   }
 
   useEffect(() => {
@@ -82,6 +94,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     if (filters.family === "SKILL" && filters.professions.length) {
       params.set("professions", filters.professions.join(","));
     }
+    params.set("page", String(filters.page));
 
     fetch(`/api/collection/shared/${encodeURIComponent(pseudo)}?${params.toString()}`)
       .then(async (res) => {
@@ -92,8 +105,27 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
         const data = await res.json();
         setCards(data.cards);
         setProgress(data.progress);
-      });
+        setHasMore(data.hasMore);
+      })
+      .finally(() => setLoadingMore(false));
   }, [pseudo, filters]);
+
+  // Infinite scroll: bump the page (and the URL) once the sentinel below the
+  // grid comes into view, as long as there's more to load and nothing is
+  // already in flight.
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) loadMore();
+      },
+      { rootMargin: "400px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loadingMore, filters]);
 
   if (notFound) {
     return (
@@ -134,6 +166,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
               ...filters,
               family: e.target.value,
               professions: e.target.value === "SKILL" ? filters.professions : [],
+              page: 1,
             })
           }
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
@@ -147,7 +180,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
         </select>
         <select
           value={filters.rarity}
-          onChange={(e) => updateFilters({ ...filters, rarity: e.target.value })}
+          onChange={(e) => updateFilters({ ...filters, rarity: e.target.value, page: 1 })}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           <option value="">{t("collection.allRarities")}</option>
@@ -159,7 +192,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
         </select>
         <select
           value={filters.sort}
-          onChange={(e) => updateFilters({ ...filters, sort: e.target.value })}
+          onChange={(e) => updateFilters({ ...filters, sort: e.target.value, page: 1 })}
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           {SORT_KEYS.map((key) => (
@@ -220,6 +253,12 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
               <CardTile card={card} />
             </div>
           ))}
+        </div>
+      )}
+
+      {cards && cards.length > 0 && (
+        <div ref={sentinelRef} className="flex justify-center py-2">
+          {loadingMore && <p className="text-sm text-neutral-500">{t("common.loading")}</p>}
         </div>
       )}
 

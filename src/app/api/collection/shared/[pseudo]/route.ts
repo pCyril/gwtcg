@@ -37,5 +37,6 @@ export async function GET(request: Request, { params }: RouteContext<"/api/colle
       copies: card.copies,
     })),
     progress: result.progress,
+    hasMore: result.hasMore,
   });
 }

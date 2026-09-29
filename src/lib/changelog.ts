@@ -17,12 +17,14 @@ export const CHANGELOG: ChangelogEntry[] = [
       "En filtrant le classeur par « Compétence », tu peux maintenant affiner par profession grâce à des chips multi-sélection.",
       "Le compteur du classeur (X / Y cartes uniques) tient maintenant compte des filtres actifs pour le total, pas seulement pour ce que tu possèdes.",
       "Tu peux désormais partager ta collection : un bouton « Partager ma collection » copie un lien public en lecture seule vers ton classeur.",
+      "Le classeur (et sa version partagée) chargent maintenant les cartes par pages de 100 au défilement, avec le numéro de page conservé dans l'URL.",
     ],
     en: [
       "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
       "When filtering the binder by \"Skill\", you can now further narrow it down by profession using multi-select chips.",
       "The binder's counter (X / Y unique cards) now applies active filters to the total too, not just to what you own.",
       "You can now share your collection: a \"Share my collection\" button copies a public, read-only link to your binder.",
+      "The binder (and its shared view) now load cards in pages of 100 as you scroll, with the page number kept in the URL.",
     ],
   },
   {

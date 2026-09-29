@@ -7,21 +7,31 @@ import type { CardFamily, Rarity } from "@prisma/client";
 const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 const RARITY_ORDER: Rarity[] = ["MYTHIC", "LEGENDARY", "EPIC", "RARE", "UNCOMMON", "COMMON"];
 
+// Infinite scroll is cumulative, not offset-based: `page` means "how many
+// pages' worth are visible so far", and each request re-returns everything
+// from the top through that page - simpler and race-free (a scroll-triggered
+// bump just replaces the list with a superset) at the cost of re-sending
+// already-seen cards on every load-more, which is fine at this scale.
+export const COLLECTION_PAGE_SIZE = 100;
+
 export interface CollectionQueryOptions {
   family: CardFamily | null;
   rarity: Rarity | null;
   campaign: string | null;
   professions: string[];
   sort: string | null;
+  page: number;
 }
 
 export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQueryOptions {
+  const page = Number(searchParams.get("page"));
   return {
     family: searchParams.get("family") as CardFamily | null,
     rarity: searchParams.get("rarity") as Rarity | null,
     campaign: searchParams.get("campaign"),
     professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
     sort: searchParams.get("sort"),
+    page: Number.isFinite(page) && page >= 1 ? Math.floor(page) : 1,
   };
 }
 
@@ -31,7 +41,7 @@ export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQ
  * way, just scoped to whichever userId is asked for.
  */
 export async function queryCollection(userId: string, options: CollectionQueryOptions) {
-  const { family, rarity, campaign, professions, sort } = options;
+  const { family, rarity, campaign, professions, sort, page } = options;
 
   const cardWhere = {
     ...(family ? { family } : {}),
@@ -86,8 +96,11 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
     return true;
   });
 
+  const visibleCount = Math.min(uniqueInstances.length, page * COLLECTION_PAGE_SIZE);
+  const visibleInstances = uniqueInstances.slice(0, visibleCount);
+
   return {
-    cards: uniqueInstances.map((instance) => ({
+    cards: visibleInstances.map((instance) => ({
       instanceId: instance.id,
       wikiPageId: instance.card.wikiPageId,
       obtainedAt: instance.obtainedAt,
@@ -108,5 +121,6 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
       corpusSize,
       percent: corpusSize === 0 ? 0 : Math.round((uniqueOwned / corpusSize) * 1000) / 10,
     },
+    hasMore: visibleCount < uniqueInstances.length,
   };
 }
