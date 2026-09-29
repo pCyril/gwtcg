@@ -12,8 +12,14 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-09-29",
-    fr: ["Un compte invité n'est désormais créé qu'à l'ouverture de ton premier booster, plutôt qu'à ta simple arrivée sur le site."],
-    en: ["A guest account is now only created when you open your first booster, rather than the moment you land on the site."],
+    fr: [
+      "Un compte invité n'est désormais créé qu'à l'ouverture de ton premier booster, plutôt qu'à ta simple arrivée sur le site.",
+      "En filtrant le classeur par « Compétence », tu peux maintenant affiner par profession grâce à des chips multi-sélection.",
+    ],
+    en: [
+      "A guest account is now only created when you open your first booster, rather than the moment you land on the site.",
+      "When filtering the binder by \"Skill\", you can now further narrow it down by profession using multi-select chips.",
+    ],
   },
   {
     date: "2026-09-28",

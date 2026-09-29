@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const family = searchParams.get("family") as CardFamily | null;
   const rarity = searchParams.get("rarity") as Rarity | null;
   const campaign = searchParams.get("campaign");
-  const profession = searchParams.get("profession");
+  const professions = searchParams.get("professions")?.split(",").filter(Boolean) ?? [];
   const sort = searchParams.get("sort");
 
   const [instances, corpusSize] = await Promise.all([
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
           ...(family ? { family } : {}),
           ...(rarity ? { rarity } : {}),
           ...(campaign ? { campaign } : {}),
-          ...(profession ? { profession } : {}),
+          ...(professions.length ? { profession: { in: professions } } : {}),
         },
       },
       include: { card: { include: { wikiPage: true } } },

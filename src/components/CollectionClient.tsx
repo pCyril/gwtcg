@@ -12,6 +12,18 @@ import type { TranslationKey } from "@/lib/i18n/translations";
 
 const FAMILY_KEYS = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 const RARITY_KEYS = Object.keys(RARITY_STYLES) as RarityKey[];
+const PROFESSIONS = [
+  "Warrior",
+  "Ranger",
+  "Monk",
+  "Necromancer",
+  "Mesmer",
+  "Elementalist",
+  "Assassin",
+  "Ritualist",
+  "Paragon",
+  "Dervish",
+];
 
 interface Progress {
   uniqueOwned: number;
@@ -23,6 +35,7 @@ interface Filters {
   family: string;
   rarity: string;
   sort: string;
+  professions: string[];
 }
 
 const SORT_KEYS = ["recent", "family", "rarity", "copies"];
@@ -38,6 +51,7 @@ export function CollectionClient() {
     family: searchParams.get("family") ?? "",
     rarity: searchParams.get("rarity") ?? "",
     sort: searchParams.get("sort") ?? "recent",
+    professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
   });
 
   // Keep the URL in sync so filters survive a refresh/back-button and can be
@@ -48,8 +62,16 @@ export function CollectionClient() {
     if (next.family) params.set("family", next.family);
     if (next.rarity) params.set("rarity", next.rarity);
     if (next.sort && next.sort !== "recent") params.set("sort", next.sort);
+    if (next.family === "SKILL" && next.professions.length) params.set("professions", next.professions.join(","));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
+
+  function toggleProfession(profession: string) {
+    const selected = filters.professions.includes(profession)
+      ? filters.professions.filter((p) => p !== profession)
+      : [...filters.professions, profession];
+    updateFilters({ ...filters, professions: selected });
   }
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [selectMode, setSelectMode] = useState(false);
@@ -68,6 +90,9 @@ export function CollectionClient() {
     if (filters.family) params.set("family", filters.family);
     if (filters.rarity) params.set("rarity", filters.rarity);
     if (filters.sort && filters.sort !== "recent") params.set("sort", filters.sort);
+    if (filters.family === "SKILL" && filters.professions.length) {
+      params.set("professions", filters.professions.join(","));
+    }
 
     return fetch(`/api/collection?${params.toString()}`)
       .then((res) => res.json())
@@ -144,7 +169,13 @@ export function CollectionClient() {
       <div className="flex flex-wrap gap-3">
         <select
           value={filters.family}
-          onChange={(e) => updateFilters({ ...filters, family: e.target.value })}
+          onChange={(e) =>
+            updateFilters({
+              ...filters,
+              family: e.target.value,
+              professions: e.target.value === "SKILL" ? filters.professions : [],
+            })
+          }
           className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           <option value="">{t("collection.allFamilies")}</option>
@@ -188,6 +219,30 @@ export function CollectionClient() {
           {selectMode ? t("collection.cancelSelectMode") : t("collection.selectMode")}
         </button>
       </div>
+
+      {filters.family === "SKILL" && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs uppercase tracking-wide text-neutral-500">
+            {t("collection.filterByProfession")}
+          </span>
+          {PROFESSIONS.map((profession) => {
+            const active = filters.professions.includes(profession);
+            return (
+              <button
+                key={profession}
+                onClick={() => toggleProfession(profession)}
+                className={`rounded-full border px-3 py-1 text-sm ${
+                  active
+                    ? "border-emerald-400 bg-emerald-950/40 text-emerald-300"
+                    : "border-neutral-700 text-neutral-300 hover:border-neutral-500"
+                }`}
+              >
+                {profession}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <RarityLegend />
 
