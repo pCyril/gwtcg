@@ -130,7 +130,7 @@ export function BoosterOverlay({
           <div className="flex w-full flex-col items-center gap-6">
             <h2 className="text-xl font-semibold text-neutral-100">{t("booster.cardsObtained")}</h2>
             <RarityLegend className="justify-center" />
-            <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-3">
               {cards.map((card, i) => (
                 <div key={card.instanceId ?? i} className="card-reveal" style={{ animationDelay: `${i * 90}ms` }}>
                   <CardTile card={card} />

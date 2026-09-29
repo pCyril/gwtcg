@@ -323,7 +323,7 @@ export function CollectionClient() {
       ) : cards.length === 0 ? (
         <p className="text-neutral-400">{t("collection.empty")}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {cards.map((card) => (
             <div
               key={card.instanceId}

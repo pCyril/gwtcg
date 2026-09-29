@@ -85,7 +85,7 @@ export function MarketClient() {
       ) : auctions.length === 0 ? (
         <p className="text-neutral-400">{t("market.empty")}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {auctions.map((a) => (
             <Link key={a.id} href={`/market/${a.id}`} className="flex flex-col gap-2">
               <CardTile card={a.card} />
