@@ -13,6 +13,40 @@ export const ALLOWED_MIME_TYPES: Record<string, string> = {
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "card-art");
 
+/**
+ * Identifies the actual image format from its magic bytes - the browser-
+ * supplied `file.type` is just a client-asserted multipart header and is
+ * trivially spoofable (e.g. an HTML/JS payload declared as "image/jpeg"),
+ * so it must never be trusted for validation or for picking the stored
+ * file's extension/content-type.
+ */
+function sniffImageMimeType(bytes: Buffer): string | null {
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return "image/jpeg";
+  }
+  if (
+    bytes.length >= 8 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  ) {
+    return "image/png";
+  }
+  if (
+    bytes.length >= 12 &&
+    bytes.subarray(0, 4).toString("ascii") === "RIFF" &&
+    bytes.subarray(8, 12).toString("ascii") === "WEBP"
+  ) {
+    return "image/webp";
+  }
+  return null;
+}
+
 export async function createArtSubmission(
   submitterId: string,
   wikiPageId: string,
@@ -21,10 +55,12 @@ export async function createArtSubmission(
   autoApprove = false,
 ) {
   if (!certifiedOriginal) throw new Error("CONSENT_REQUIRED");
-
-  const extension = ALLOWED_MIME_TYPES[file.type];
-  if (!extension) throw new Error("UNSUPPORTED_FILE_TYPE");
   if (file.size > MAX_FILE_SIZE_BYTES) throw new Error("FILE_TOO_LARGE");
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const sniffedType = sniffImageMimeType(bytes);
+  const extension = sniffedType ? ALLOWED_MIME_TYPES[sniffedType] : undefined;
+  if (!extension) throw new Error("UNSUPPORTED_FILE_TYPE");
 
   const wikiPage = await prisma.wikiPage.findUnique({ where: { id: wikiPageId } });
   if (!wikiPage) throw new Error("WIKI_PAGE_NOT_FOUND");
@@ -38,7 +74,6 @@ export async function createArtSubmission(
 
   await mkdir(UPLOAD_DIR, { recursive: true });
   const filename = `${randomUUID()}.${extension}`;
-  const bytes = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOAD_DIR, filename), bytes);
   const imageUrl = `/uploads/card-art/${filename}`;
 

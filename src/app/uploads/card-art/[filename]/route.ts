@@ -29,6 +29,11 @@ export async function GET(_request: Request, ctx: RouteContext<"/uploads/card-ar
       headers: {
         "Content-Type": CONTENT_TYPES[path.extname(filename).toLowerCase()] ?? "application/octet-stream",
         "Cache-Control": "public, max-age=31536000, immutable",
+        // Uploaded content is only sniffed for its actual image format at
+        // submission time (see sniffImageMimeType in artSubmission.ts) - this
+        // stops a browser from second-guessing that and rendering a file as
+        // something other than the declared image type.
+        "X-Content-Type-Options": "nosniff",
       },
     });
   } catch {
