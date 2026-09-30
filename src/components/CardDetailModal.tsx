@@ -216,7 +216,7 @@ export function CardDetailModal({
             onLostPointerCapture={endDrag}
             onContextMenu={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}
-            className={`relative aspect-[5/7] w-[min(28rem,78vw)] touch-none select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none ${
+            className={`relative aspect-[5/7] w-[min(26rem,78vw,calc((100dvh_-_14.5rem)*5/7))] touch-none select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none ${
               dragging ? "cursor-grabbing" : "cursor-grab"
             }`}
             style={{
