@@ -25,6 +25,9 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const { t, tError } = useLocale();
   const [trade, setTrade] = useState<TradeDetail | null>(null);
   const [myCollection, setMyCollection] = useState<CardData[] | null>(null);
+  const [search, setSearch] = useState("");
+  const [collectionPage, setCollectionPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -44,11 +47,31 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
 
   useEffect(() => {
     refreshTrade();
-    fetch("/api/collection")
-      .then((res) => res.json())
-      .then((data) => setMyCollection(data.cards));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tradeId]);
+
+  // Server-side name search (the collection endpoint only returns the first
+  // 100 cards per page, so filtering client-side would miss most of it).
+  // Debounced so typing doesn't fire a request per keystroke; the "load more"
+  // button bumps the page, which re-returns everything through that page.
+  useEffect(() => {
+    let ignore = false;
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams({ page: String(collectionPage) });
+      if (search.trim()) params.set("q", search.trim());
+      fetch(`/api/collection?${params.toString()}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (ignore) return;
+          setMyCollection(data.cards);
+          setHasMore(Boolean(data.hasMore));
+        });
+    }, 250);
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
+  }, [search, collectionPage]);
 
   // Seed the editable draft from my current offer, once per trade load. Adjusting
   // state during render (rather than in an effect) is the React-sanctioned way to
@@ -172,7 +195,18 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
               <p className="text-xs text-neutral-500">
                 {t("trade.selectedCount", { count: selected.size, max: MAX_TRADE_ITEMS })}
               </p>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCollectionPage(1);
+                }}
+                placeholder={t("trade.searchPlaceholder")}
+                className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+              />
               <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
+                {myCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {myCollection?.map((card) => (
                     <div
@@ -194,6 +228,14 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                     </div>
                   ))}
                 </div>
+                {hasMore && (
+                  <button
+                    onClick={() => setCollectionPage((p) => p + 1)}
+                    className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
+                  >
+                    {t("trade.loadMore")}
+                  </button>
+                )}
               </div>
               <button
                 onClick={updateOffer}

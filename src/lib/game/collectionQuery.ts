@@ -20,6 +20,8 @@ export interface CollectionQueryOptions {
   campaign: string | null;
   professions: string[];
   sort: string | null;
+  /** Case-insensitive substring match on the card's name. */
+  search: string | null;
   page: number;
 }
 
@@ -31,6 +33,7 @@ export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQ
     campaign: searchParams.get("campaign"),
     professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
     sort: searchParams.get("sort"),
+    search: searchParams.get("q")?.trim().slice(0, 100) || null,
     page: Number.isFinite(page) && page >= 1 ? Math.floor(page) : 1,
   };
 }
@@ -41,13 +44,14 @@ export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQ
  * way, just scoped to whichever userId is asked for.
  */
 export async function queryCollection(userId: string, options: CollectionQueryOptions) {
-  const { family, rarity, campaign, professions, sort, page } = options;
+  const { family, rarity, campaign, professions, sort, search, page } = options;
 
   const cardWhere = {
     ...(family ? { family } : {}),
     ...(rarity ? { rarity } : {}),
     ...(campaign ? { campaign } : {}),
     ...(professions.length ? { profession: { in: professions } } : {}),
+    ...(search ? { wikiPage: { title: { contains: search, mode: "insensitive" as const } } } : {}),
   };
 
   const [instances, corpusSize] = await Promise.all([
