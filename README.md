@@ -93,4 +93,4 @@ Issues and pull requests are welcome. Before opening a PR, run `npm run lint` an
 
 ## License
 
-To be decided.
+The code is released under the [MIT License](LICENSE). Card texts imported from the Guild Wars Wiki remain under the GNU FDL, and Guild Wars content belongs to ArenaNet / NCSoft.
