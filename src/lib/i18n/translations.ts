@@ -177,6 +177,9 @@ export const translations = {
 
     // Card detail modal
     "cardDetail.dropRate": "{copies} exemplaire{plural} tiré{plural} sur {total} cartes au total ({percent}%)",
+    "cardDetail.share": "Partager la carte",
+    "cardDetail.shareCopyManually": "Copie ce lien pour partager la carte :",
+    "sharedCard.cta": "Ouvrir mes boosters",
     "cardDetail.adminRarity": "Rareté (admin)",
     "cardDetail.dragHint": "Glisse la carte pour la faire tourner",
     "cardDetail.sellButton": "Mettre aux enchères",
@@ -499,6 +502,9 @@ export const translations = {
     "collection.sort.copies": "Sort: number of copies",
 
     "cardDetail.dropRate": "Dropped {copies}× out of {total} cards in total ({percent}%)",
+    "cardDetail.share": "Share card",
+    "cardDetail.shareCopyManually": "Copy this link to share the card:",
+    "sharedCard.cta": "Open my boosters",
     "cardDetail.adminRarity": "Rarity (admin)",
     "cardDetail.dragHint": "Drag the card to rotate it",
     "cardDetail.sellButton": "Put up for auction",

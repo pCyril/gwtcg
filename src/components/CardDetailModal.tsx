@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Share2, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CardTile, type CardData } from "@/components/CardTile";
-import { CardBackVisual } from "@/components/BoosterOverlay";
+import { type CardData } from "@/components/CardTile";
+import { TiltableCard } from "@/components/TiltableCard";
 import { ArtSubmissionForm } from "@/components/ArtSubmissionForm";
 import { RegisterForm } from "@/components/RegisterForm";
 import { useLocale } from "@/lib/i18n/LocaleContext";
@@ -13,8 +14,6 @@ import type { RarityKey } from "@/lib/game/rarityStyles";
 import { rarityLabelKey } from "@/lib/game/rarityStyles";
 
 const RARITY_OPTIONS: RarityKey[] = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
-
-const ROTATION_X_LIMIT = 60;
 
 export function CardDetailModal({
   card,
@@ -38,16 +37,12 @@ export function CardDetailModal({
   const numberLocale = locale === "fr" ? "fr-FR" : "en-US";
   const router = useRouter();
   const marketEnabled = useMarketEnabled();
+  const [shareCopied, setShareCopied] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [rarity, setRarity] = useState<RarityKey>(card.rarity);
   const [rarityPending, setRarityPending] = useState(false);
   const [rarityError, setRarityError] = useState<string | null>(null);
   const [dropStats, setDropStats] = useState<{ copies: number; total: number } | null>(null);
-  // Starts at a slight showcase angle so it's obvious the card can be turned.
-  const [rotation, setRotation] = useState({ x: 10, y: -18 });
-  const [dragging, setDragging] = useState(false);
-  const lastPointer = useRef<{ x: number; y: number } | null>(null);
-  const activePointer = useRef<number | null>(null);
   const [discardPending, setDiscardPending] = useState(false);
   const [discardError, setDiscardError] = useState<string | null>(null);
   const [tradePending, setTradePending] = useState(false);
@@ -90,43 +85,6 @@ export function CardDetailModal({
       document.body.style.overflow = previous;
     };
   }, []);
-
-  // The active drag lives in a ref (not state) so every pointermove sees it
-  // immediately, and it remembers which pointer started it so a second finger
-  // or a stray pointer can't hijack the rotation.
-  function onPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
-    if (activePointer.current !== null) return;
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      // Capture can fail for a pointer that already ended - the drag still works without it.
-    }
-    activePointer.current = e.pointerId;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    setDragging(true);
-  }
-
-  function onPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
-    if (activePointer.current !== e.pointerId || !lastPointer.current) return;
-    const dx = e.clientX - lastPointer.current.x;
-    const dy = e.clientY - lastPointer.current.y;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    setRotation((r) => ({
-      x: Math.max(-ROTATION_X_LIMIT, Math.min(ROTATION_X_LIMIT, r.x - dy * 0.4)),
-      y: r.y + dx * 0.5,
-    }));
-  }
-
-  // Also wired to pointercancel and lostpointercapture: on touch devices the
-  // browser can cancel a gesture (long-press, native image drag, system
-  // gesture) without ever sending pointerup, which used to leave the card
-  // stuck to an invisible finger.
-  function endDrag(e: ReactPointerEvent<HTMLDivElement>) {
-    if (activePointer.current !== e.pointerId) return;
-    activePointer.current = null;
-    lastPointer.current = null;
-    setDragging(false);
-  }
 
   async function discard() {
     if (!card.instanceId) return;
@@ -173,6 +131,27 @@ export function CardDetailModal({
     }
   }
 
+  // Native share sheet on phones, clipboard elsewhere (or if the sheet isn't available).
+  async function shareCard() {
+    if (!card.cardId) return;
+    const url = `${window.location.origin}/card/${card.cardId}`;
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: card.title, url });
+        return;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      window.prompt(t("cardDetail.shareCopyManually"), url);
+    }
+  }
+
   async function proposeTrade() {
     if (!tradeWithPseudo) return;
     setTradePending(true);
@@ -194,10 +173,6 @@ export function CardDetailModal({
     }
   }
 
-  // Sheen follows the tilt so the card catches the light as you turn it.
-  const sheenAngle = 115 + rotation.y * 0.6;
-  const sheenStrength = 0.12 + Math.min(Math.abs(rotation.x) + Math.abs(rotation.y), 40) / 250;
-
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden bg-black/80 backdrop-blur-sm"
@@ -207,42 +182,10 @@ export function CardDetailModal({
         className="flex min-h-full flex-col items-center justify-center gap-4 p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ perspective: "1400px" }}>
-          <div
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
-            onLostPointerCapture={endDrag}
-            onContextMenu={(e) => e.preventDefault()}
-            onDragStart={(e) => e.preventDefault()}
-            className={`relative aspect-[5/7] w-[min(26rem,78vw,calc((100dvh_-_14.5rem)*5/7))] touch-none select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none ${
-              dragging ? "cursor-grabbing" : "cursor-grab"
-            }`}
-            style={{
-              transformStyle: "preserve-3d",
-              transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-              transition: dragging ? "none" : "transform 0.5s cubic-bezier(0.22, 0.9, 0.24, 1)",
-            }}
-          >
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-              <CardTile card={{ ...card, rarity }} size="lg" />
-              <div
-                className="pointer-events-none absolute inset-0 rounded-[10px]"
-                style={{
-                  background: `linear-gradient(${sheenAngle}deg, transparent 35%, rgba(255,255,255,${sheenStrength}) 50%, transparent 65%)`,
-                  mixBlendMode: "overlay",
-                }}
-              />
-            </div>
-            <div
-              className="absolute inset-0"
-              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-            >
-              <CardBackVisual />
-            </div>
-          </div>
-        </div>
+        <TiltableCard
+          card={{ ...card, rarity }}
+          className="w-[min(26rem,78vw,calc((100dvh_-_14.5rem)*5/7))]"
+        />
 
         {dropStats && dropStats.total > 0 && (
           <p className="text-sm text-neutral-300">
@@ -282,6 +225,15 @@ export function CardDetailModal({
           >
             {t("common.close")}
           </button>
+          {card.cardId && (
+            <button
+              onClick={shareCard}
+              className="flex items-center gap-1.5 rounded-lg border border-neutral-700 px-4 py-1.5 text-sm text-neutral-200 hover:border-neutral-500"
+            >
+              {shareCopied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+              {shareCopied ? t("collection.shareCopied") : t("cardDetail.share")}
+            </button>
+          )}
           {card.instanceId && marketEnabled && (
             <Link
               href={`/market/sell/${card.instanceId}`}
