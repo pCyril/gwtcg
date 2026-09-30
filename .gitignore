@@ -47,5 +47,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# card art (provenance unclear, not redistributed) - the app expects card-back.jpg and pack-wrapper.webp here
-/public/card-art/
+# card art: only the two images the app needs are tracked (card back, booster
+# pack); the other files here are unused samples of unclear provenance
+/public/card-art/*
+!/public/card-art/card-back.jpg
+!/public/card-art/pack-wrapper.webp

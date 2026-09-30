@@ -45,7 +45,7 @@ npm run sync:wiki
 npm run dev                     # http://localhost:3000
 ```
 
-The booster and card-back artwork is not part of this repo (`public/card-art/` is git-ignored). Drop your own `card-back.jpg` and `pack-wrapper.webp` in that folder, otherwise those two images show up broken.
+`public/card-art/` only tracks the two images the app needs (`card-back.jpg` and `pack-wrapper.webp`). Replace them with your own artwork if you fork the project under different branding.
 
 `sync:wiki` also accepts `-- --only=skills|bosses|heroes|weapons|locations|items|lore` to import a single family.
 
