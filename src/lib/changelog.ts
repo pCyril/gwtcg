@@ -13,6 +13,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-09-30",
     fr: [
+      "À l'ouverture d'un booster, les cartes sont maintenant révélées de la plus commune à la plus rare, pour garder le meilleur tirage pour la fin.",
       "Dans un échange, tu peux maintenant rechercher tes cartes par leur nom pour les ajouter à ton offre, et charger la suite de ta collection au-delà des premières cartes.",
       "Le projet est désormais open source : un lien vers le code source sur GitHub a été ajouté dans le pied de page.",
       "Ta collection (et celles des autres joueurs) peut maintenant être triée par taux de rareté, les cartes les moins tirées en premier.",
@@ -20,6 +21,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Ajout d'un top 10 des collections les plus complètes sur l'accueil (réservé aux comptes inscrits, les invités sont invités à s'inscrire pour y figurer).",
     ],
     en: [
+      "When opening a booster, cards are now revealed from most common to rarest, saving the best pull for last.",
       "In a trade, you can now search your cards by name to add them to your offer, and load more of your collection beyond the first cards.",
       "The project is now open source: a link to the source code on GitHub was added to the footer.",
       "Collections can now be sorted by rarity rate, with the least-dropped cards first.",

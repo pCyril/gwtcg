@@ -2,6 +2,9 @@ import type { TranslationKey } from "@/lib/i18n/translations";
 
 export type RarityKey = "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | "MYTHIC";
 
+/** Rarities from most common to rarest - e.g. to reveal a booster's best pull last. */
+export const RARITY_ASCENDING: RarityKey[] = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
+
 /** Translation key for a rarity's display label - use with useLocale()'s t(). */
 export function rarityLabelKey(rarity: RarityKey): TranslationKey {
   return `rarity.${rarity}` as TranslationKey;

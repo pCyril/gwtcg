@@ -12,6 +12,7 @@ import { CollectionLeaderboard } from "@/components/CollectionLeaderboard";
 import { ArtCompletionGauge } from "@/components/ArtCompletionGauge";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
+import { RARITY_ASCENDING } from "@/lib/game/rarityStyles";
 
 interface Me {
   pseudo: string;
@@ -133,7 +134,12 @@ export function HomeClient() {
         setError(tError(data.error));
         return;
       }
-      setCards(data.cards);
+      // Most common first, so the reveal builds up to the rarest pull (stable: ties keep draw order).
+      setCards(
+        [...data.cards].sort(
+          (a: CardData, b: CardData) => RARITY_ASCENDING.indexOf(a.rarity) - RARITY_ASCENDING.indexOf(b.rarity),
+        ),
+      );
       await refreshMe();
     } finally {
       setOpening(false);
