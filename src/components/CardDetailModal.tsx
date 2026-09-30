@@ -27,9 +27,11 @@ export function CardDetailModal({
   /** Guests can't create trades server-side - shows a "create an account" prompt instead of the trade button. */
   viewerIsGuest?: boolean;
 }) {
-  const { t, tError } = useLocale();
+  const { t, tError, locale } = useLocale();
+  const numberLocale = locale === "fr" ? "fr-FR" : "en-US";
   const router = useRouter();
   const marketEnabled = useMarketEnabled();
+  const [dropStats, setDropStats] = useState<{ copies: number; total: number } | null>(null);
   // Starts at a slight showcase angle so it's obvious the card can be turned.
   const [rotation, setRotation] = useState({ x: 10, y: -18 });
   const [dragging, setDragging] = useState(false);
@@ -41,6 +43,20 @@ export function CardDetailModal({
   const [showRegister, setShowRegister] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
   const stillGuest = viewerIsGuest && !justRegistered;
+
+  useEffect(() => {
+    if (!card.cardId) return;
+    let ignore = false;
+    fetch(`/api/cards/${card.cardId}/drop-stats`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!ignore) setDropStats(data);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, [card.cardId]);
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -163,6 +179,18 @@ export function CardDetailModal({
           </div>
         </div>
 
+        {dropStats && dropStats.total > 0 && (
+          <p className="text-sm text-neutral-300">
+            {t("cardDetail.dropRate", {
+              copies: dropStats.copies.toLocaleString(numberLocale),
+              plural: dropStats.copies > 1 ? "s" : "",
+              total: dropStats.total.toLocaleString(numberLocale),
+              percent: ((dropStats.copies / dropStats.total) * 100).toLocaleString(numberLocale, {
+                maximumFractionDigits: 2,
+              }),
+            })}
+          </p>
+        )}
         <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
         <div className="flex gap-3">
           <button
