@@ -8,6 +8,7 @@ const STATUS_BY_ERROR: Record<string, number> = {
   FILE_TOO_LARGE: 400,
   WIKI_PAGE_NOT_FOUND: 404,
   TOO_MANY_PENDING: 429,
+  DAILY_UPLOAD_LIMIT: 429,
 };
 
 export async function POST(request: Request) {

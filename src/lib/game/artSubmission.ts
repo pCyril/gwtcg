@@ -8,7 +8,9 @@ import type { CardFamily } from "@prisma/client";
 const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 
 export const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
-export const MAX_PENDING_PER_USER = 10;
+export const MAX_PENDING_PER_USER = 25;
+// Rolling 24h cap on uploads per user (any status), to stop one account flooding the disk.
+export const MAX_UPLOADS_PER_DAY = 100;
 export const ALLOWED_MIME_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -60,6 +62,13 @@ export async function createArtSubmission(
 ) {
   if (!certifiedOriginal) throw new Error("CONSENT_REQUIRED");
   if (file.size > MAX_FILE_SIZE_BYTES) throw new Error("FILE_TOO_LARGE");
+
+  if (!autoApprove) {
+    const uploadsLast24h = await prisma.artSubmission.count({
+      where: { submitterId, createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+    });
+    if (uploadsLast24h >= MAX_UPLOADS_PER_DAY) throw new Error("DAILY_UPLOAD_LIMIT");
+  }
 
   const bytes = Buffer.from(await file.arrayBuffer());
   const sniffedType = sniffImageMimeType(bytes);
