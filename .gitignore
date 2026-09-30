@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 # ...except the checked-in template (placeholders only, no real secrets)
 !deploy/.env.production.example
 
@@ -45,3 +46,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# card art (provenance unclear, not redistributed) - the app expects card-back.jpg and pack-wrapper.webp here
+/public/card-art/
