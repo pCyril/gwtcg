@@ -375,7 +375,7 @@ export function CollectionClient() {
       )}
 
       {selectedCard && (
-        <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} onDiscarded={refresh} />
+        <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} onDiscarded={refresh} onRarityChanged={refresh} />
       )}
     </main>
   );

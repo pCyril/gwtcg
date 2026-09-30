@@ -9,6 +9,10 @@ import { ArtSubmissionForm } from "@/components/ArtSubmissionForm";
 import { RegisterForm } from "@/components/RegisterForm";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
+import type { RarityKey } from "@/lib/game/rarityStyles";
+import { rarityLabelKey } from "@/lib/game/rarityStyles";
+
+const RARITY_OPTIONS: RarityKey[] = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
 
 const ROTATION_X_LIMIT = 60;
 
@@ -16,12 +20,15 @@ export function CardDetailModal({
   card,
   onClose,
   onDiscarded,
+  onRarityChanged,
   tradeWithPseudo,
   viewerIsGuest,
 }: {
   card: CardData;
   onClose: () => void;
   onDiscarded?: () => void;
+  /** Called after an admin changes this card's rarity, so the parent can refresh its list. */
+  onRarityChanged?: () => void;
   /** When set (viewing someone else's shared collection), shows a "Propose a trade" button that starts a new trade with them. */
   tradeWithPseudo?: string;
   /** Guests can't create trades server-side - shows a "create an account" prompt instead of the trade button. */
@@ -31,6 +38,10 @@ export function CardDetailModal({
   const numberLocale = locale === "fr" ? "fr-FR" : "en-US";
   const router = useRouter();
   const marketEnabled = useMarketEnabled();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [rarity, setRarity] = useState<RarityKey>(card.rarity);
+  const [rarityPending, setRarityPending] = useState(false);
+  const [rarityError, setRarityError] = useState<string | null>(null);
   const [dropStats, setDropStats] = useState<{ copies: number; total: number } | null>(null);
   // Starts at a slight showcase angle so it's obvious the card can be turned.
   const [rotation, setRotation] = useState({ x: 10, y: -18 });
@@ -44,6 +55,19 @@ export function CardDetailModal({
   const [showRegister, setShowRegister] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
   const stillGuest = viewerIsGuest && !justRegistered;
+
+  useEffect(() => {
+    let ignore = false;
+    fetch("/api/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!ignore) setIsAdmin(Boolean(data.isAdmin));
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!card.cardId) return;
@@ -127,6 +151,28 @@ export function CardDetailModal({
     }
   }
 
+  async function changeRarity(next: RarityKey) {
+    if (!card.cardId || next === rarity) return;
+    setRarityPending(true);
+    setRarityError(null);
+    try {
+      const res = await fetch(`/api/admin/cards/${card.cardId}/rarity`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rarity: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setRarityError(tError(data.error));
+        return;
+      }
+      setRarity(next);
+      onRarityChanged?.();
+    } finally {
+      setRarityPending(false);
+    }
+  }
+
   async function proposeTrade() {
     if (!tradeWithPseudo) return;
     setTradePending(true);
@@ -180,7 +226,7 @@ export function CardDetailModal({
             }}
           >
             <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-              <CardTile card={card} size="lg" />
+              <CardTile card={{ ...card, rarity }} size="lg" />
               <div
                 className="pointer-events-none absolute inset-0 rounded-[10px]"
                 style={{
@@ -210,6 +256,24 @@ export function CardDetailModal({
             })}
           </p>
         )}
+        {isAdmin && card.cardId && (
+          <label className="flex items-center gap-2 text-xs text-amber-300">
+            {t("cardDetail.adminRarity")}
+            <select
+              value={rarity}
+              disabled={rarityPending}
+              onChange={(e) => changeRarity(e.target.value as RarityKey)}
+              className="rounded border border-amber-700 bg-neutral-900 px-2 py-1 text-sm text-neutral-100 disabled:opacity-50"
+            >
+              {RARITY_OPTIONS.map((r) => (
+                <option key={r} value={r}>
+                  {t(rarityLabelKey(r))}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {rarityError && <p className="text-xs text-red-400">{rarityError}</p>}
         <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
         <div className="flex gap-3">
           <button

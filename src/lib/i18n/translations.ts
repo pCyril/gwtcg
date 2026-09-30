@@ -57,6 +57,9 @@ export const translations = {
     "error.INVALID_CHARACTER_NAME": "Nom invalide (lettres, espaces, apostrophes ou tirets, 3 à 32 caractères).",
     "error.CARD_IN_TRADE": "Cette carte est actuellement proposée dans un échange.",
     "error.CARD_IN_AUCTION": "Cette carte est déjà aux enchères.",
+    "error.INVALID_RARITY": "Rareté invalide.",
+    "error.CARD_NOT_FOUND": "Carte introuvable.",
+    "error.NOT_ADMIN": "Réservé aux administrateurs.",
     "error.INVALID_CARD_SELECTION": "Cette carte ne t'appartient plus.",
     "error.TOO_MANY_ITEMS": "Maximum {max} cartes par échange.",
     "error.TRADE_NOT_PENDING": "Cet échange n'est plus modifiable.",
@@ -173,6 +176,7 @@ export const translations = {
 
     // Card detail modal
     "cardDetail.dropRate": "{copies} exemplaire{plural} tiré{plural} sur {total} cartes au total ({percent}%)",
+    "cardDetail.adminRarity": "Rareté (admin)",
     "cardDetail.dragHint": "Glisse la carte pour la faire tourner",
     "cardDetail.sellButton": "Mettre aux enchères",
     "cardDetail.discardButton": "Défausser",
@@ -378,6 +382,9 @@ export const translations = {
     "error.INVALID_CHARACTER_NAME": "Invalid name (letters, spaces, apostrophes or hyphens, 3 to 32 characters).",
     "error.CARD_IN_TRADE": "This card is currently offered in a trade.",
     "error.CARD_IN_AUCTION": "This card is already up for auction.",
+    "error.INVALID_RARITY": "Invalid rarity.",
+    "error.CARD_NOT_FOUND": "Card not found.",
+    "error.NOT_ADMIN": "Admins only.",
     "error.INVALID_CARD_SELECTION": "This card doesn't belong to you anymore.",
     "error.TOO_MANY_ITEMS": "Maximum {max} cards per trade.",
     "error.TRADE_NOT_PENDING": "This trade can no longer be edited.",
@@ -487,6 +494,7 @@ export const translations = {
     "collection.sort.copies": "Sort: number of copies",
 
     "cardDetail.dropRate": "Dropped {copies}× out of {total} cards in total ({percent}%)",
+    "cardDetail.adminRarity": "Rarity (admin)",
     "cardDetail.dragHint": "Drag the card to rotate it",
     "cardDetail.sellButton": "Put up for auction",
     "cardDetail.discardButton": "Discard",

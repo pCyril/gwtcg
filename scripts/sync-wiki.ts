@@ -352,6 +352,10 @@ async function syncWeaponFamily(client: WikiClient) {
     const tiers = parsed.isUnique ? [{ variantKey: "DEFAULT", rarity: "LEGENDARY" as const }] : WEAPON_QUALITY_TIERS;
 
     for (const tier of tiers) {
+      const existing = await prisma.card.findUnique({
+        where: { wikiPageId_variantKey: { wikiPageId: wikiPage.id, variantKey: tier.variantKey } },
+        select: { rarityLocked: true },
+      });
       await prisma.card.upsert({
         where: { wikiPageId_variantKey: { wikiPageId: wikiPage.id, variantKey: tier.variantKey } },
         create: {
@@ -367,7 +371,7 @@ async function syncWeaponFamily(client: WikiClient) {
           campaign: parsed.campaign ?? null,
           profession: parsed.profession ?? null,
           attributes: attributes as Prisma.InputJsonValue,
-          rarity: tier.rarity,
+          ...(existing?.rarityLocked ? {} : { rarity: tier.rarity }),
         },
       });
     }
@@ -424,7 +428,9 @@ async function recomputeRarity() {
   const scored = scoreAndRankCardsByFamily(inputs);
 
   for (const s of scored) {
-    await prisma.card.update({ where: { id: s.id }, data: { score: s.score, rarity: s.rarity } });
+    // Admin-locked cards keep their hand-set rarity (score still refreshes).
+    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: false }, data: { score: s.score, rarity: s.rarity } });
+    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: true }, data: { score: s.score } });
   }
 
   console.log(`Rarity updated for ${scored.length} cards.`);

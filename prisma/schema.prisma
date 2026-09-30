@@ -58,6 +58,8 @@ model Card {
   attributes Json
   score      Float      @default(0)
   rarity     Rarity     @default(COMMON)
+  // Set when an admin overrides the rarity by hand - wiki syncs then leave it alone.
+  rarityLocked Boolean   @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 

@@ -499,7 +499,9 @@ async function recomputeRarity() {
   });
   const scored = scoreAndRankCardsByFamily(inputs);
   for (const s of scored) {
-    await prisma.card.update({ where: { id: s.id }, data: { score: s.score, rarity: s.rarity } });
+    // Admin-locked cards keep their hand-set rarity (score still refreshes).
+    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: false }, data: { score: s.score, rarity: s.rarity } });
+    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: true }, data: { score: s.score } });
   }
   console.log(`Rarity assigned for ${scored.length} cards.`);
 }
