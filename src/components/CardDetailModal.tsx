@@ -36,6 +36,7 @@ export function CardDetailModal({
   const [rotation, setRotation] = useState({ x: 10, y: -18 });
   const [dragging, setDragging] = useState(false);
   const lastPointer = useRef<{ x: number; y: number } | null>(null);
+  const activePointer = useRef<number | null>(null);
   const [discardPending, setDiscardPending] = useState(false);
   const [discardError, setDiscardError] = useState<string | null>(null);
   const [tradePending, setTradePending] = useState(false);
@@ -66,14 +67,23 @@ export function CardDetailModal({
     };
   }, []);
 
+  // The active drag lives in a ref (not state) so every pointermove sees it
+  // immediately, and it remembers which pointer started it so a second finger
+  // or a stray pointer can't hijack the rotation.
   function onPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setDragging(true);
+    if (activePointer.current !== null) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Capture can fail for a pointer that already ended - the drag still works without it.
+    }
+    activePointer.current = e.pointerId;
     lastPointer.current = { x: e.clientX, y: e.clientY };
+    setDragging(true);
   }
 
   function onPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
-    if (!dragging || !lastPointer.current) return;
+    if (activePointer.current !== e.pointerId || !lastPointer.current) return;
     const dx = e.clientX - lastPointer.current.x;
     const dy = e.clientY - lastPointer.current.y;
     lastPointer.current = { x: e.clientX, y: e.clientY };
@@ -83,9 +93,15 @@ export function CardDetailModal({
     }));
   }
 
-  function endDrag() {
-    setDragging(false);
+  // Also wired to pointercancel and lostpointercapture: on touch devices the
+  // browser can cancel a gesture (long-press, native image drag, system
+  // gesture) without ever sending pointerup, which used to leave the card
+  // stuck to an invisible finger.
+  function endDrag(e: ReactPointerEvent<HTMLDivElement>) {
+    if (activePointer.current !== e.pointerId) return;
+    activePointer.current = null;
     lastPointer.current = null;
+    setDragging(false);
   }
 
   async function discard() {
@@ -150,8 +166,11 @@ export function CardDetailModal({
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
-            onPointerLeave={endDrag}
-            className={`relative aspect-[5/7] w-[min(28rem,78vw)] touch-none select-none ${
+            onPointerCancel={endDrag}
+            onLostPointerCapture={endDrag}
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            className={`relative aspect-[5/7] w-[min(28rem,78vw)] touch-none select-none [-webkit-touch-callout:none] [&_img]:pointer-events-none ${
               dragging ? "cursor-grabbing" : "cursor-grab"
             }`}
             style={{
