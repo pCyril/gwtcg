@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-30",
+    fr: [
+      "Ta collection (et celles des autres joueurs) peut maintenant être triée par taux de rareté, les cartes les moins tirées en premier.",
+      "En ouvrant une carte, on voit maintenant son taux de rareté : combien d'exemplaires ont été tirés, sur l'ensemble des cartes tirées par les joueurs.",
+      "Ajout d'un top 10 des collections les plus complètes sur l'accueil (réservé aux comptes inscrits, les invités sont invités à s'inscrire pour y figurer).",
+    ],
+    en: [
+      "Collections can now be sorted by rarity rate, with the least-dropped cards first.",
+      "Opening a card now shows its rarity rate: how many copies have dropped, out of all the cards players have drawn.",
+      "Added a top 10 of the most complete collections to the home page (registered accounts only - guests are prompted to sign up to appear).",
+    ],
+  },
+  {
     date: "2026-09-29",
     fr: [
       "Un compte invité n'est désormais créé qu'à l'ouverture de ton premier booster, plutôt qu'à ta simple arrivée sur le site.",
@@ -23,8 +36,6 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Ajout des familles de cartes Objet (377 cartes : matériaux, miniatures, objets de quête, clés, monnaies, consommables) et Lore (16 cartes), synchronisées depuis le wiki.",
       "En consultant la collection partagée de quelqu'un, un bouton « Proposer un échange » apparaît maintenant sur chaque carte, et pré-remplit directement l'offre de cette personne avec la carte souhaitée.",
       "Les comptes invités ne peuvent plus proposer ni recevoir d'échanges - il faut créer un compte pour échanger des cartes.",
-      "En ouvrant une carte, on voit maintenant son taux de rareté : combien d'exemplaires ont été tirés, sur l'ensemble des cartes tirées par les joueurs.",
-      "Ajout d'un top 10 des collections les plus complètes sur l'accueil (réservé aux comptes inscrits, les invités sont invités à s'inscrire pour y figurer).",
       "La jauge d'illustrations de la communauté se déplie maintenant au clic pour montrer le détail par famille de carte.",
       "Les pseudos des classements (illustrateurs, collections) sont maintenant cliquables et mènent vers la collection du joueur.",
     ],
@@ -39,8 +50,6 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Added the Item (377 cards: materials, miniatures, quest items, keys, currencies, consumables) and Lore (16 cards) card families, synced from the wiki.",
       "When browsing someone else's shared collection, a \"Propose a trade\" button now appears on each card, and pre-fills their offer with the exact card you wanted.",
       "Guest accounts can no longer propose or receive trades - you need an account to trade cards.",
-      "Opening a card now shows its rarity rate: how many copies have dropped, out of all the cards players have drawn.",
-      "Added a top 10 of the most complete collections to the home page (registered accounts only - guests are prompted to sign up to appear).",
       "The community illustrations gauge now expands on click to show a breakdown by card family.",
       "Leaderboard handles (illustrators, collections) are now clickable and link to that player's collection.",
     ],

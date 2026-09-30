@@ -40,7 +40,7 @@ interface Filters {
   page: number;
 }
 
-const SORT_KEYS = ["recent", "family", "rarity", "copies"];
+const SORT_KEYS = ["recent", "family", "rarity", "dropRate", "copies"];
 
 export function CollectionClient() {
   const { t } = useLocale();

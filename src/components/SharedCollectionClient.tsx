@@ -24,7 +24,7 @@ const PROFESSIONS = [
   "Paragon",
   "Dervish",
 ];
-const SORT_KEYS = ["recent", "family", "rarity", "copies"];
+const SORT_KEYS = ["recent", "family", "rarity", "dropRate", "copies"];
 
 interface Progress {
   uniqueOwned: number;

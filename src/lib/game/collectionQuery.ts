@@ -71,6 +71,18 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
     copyCounts.set(instance.cardId, (copyCounts.get(instance.cardId) ?? 0) + 1);
   }
 
+  // Only fetched for the "dropRate" sort: global drop count of each owned card
+  // (discarded copies included - they did drop), fewest first = rarest first.
+  let dropCounts: Map<string, number> | null = null;
+  if (sort === "dropRate") {
+    const groups = await prisma.cardInstance.groupBy({
+      by: ["cardId"],
+      where: { cardId: { in: [...copyCounts.keys()] } },
+      _count: { _all: true },
+    });
+    dropCounts = new Map(groups.map((g) => [g.cardId, g._count._all]));
+  }
+
   // Stable sort (ties keep the obtainedAt-desc order above) - "copies" also
   // breaks ties on cardId so a card's several instances cluster together
   // instead of scattering wherever they were each individually obtained.
@@ -78,6 +90,9 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
     instances.sort((a, b) => FAMILY_ORDER.indexOf(a.card.family) - FAMILY_ORDER.indexOf(b.card.family));
   } else if (sort === "rarity") {
     instances.sort((a, b) => RARITY_ORDER.indexOf(a.card.rarity) - RARITY_ORDER.indexOf(b.card.rarity));
+  } else if (dropCounts) {
+    const counts = dropCounts;
+    instances.sort((a, b) => (counts.get(a.cardId) ?? 0) - (counts.get(b.cardId) ?? 0));
   } else if (sort === "copies") {
     instances.sort((a, b) => {
       const diff = (copyCounts.get(b.cardId) ?? 1) - (copyCounts.get(a.cardId) ?? 1);

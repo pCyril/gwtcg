@@ -167,6 +167,7 @@ export const translations = {
     "collection.sort.recent": "Trier : plus récentes",
     "collection.sort.family": "Trier : famille",
     "collection.sort.rarity": "Trier : rareté",
+    "collection.sort.dropRate": "Trier : taux de rareté (plus rares d'abord)",
     "collection.sort.copies": "Trier : nombre d'exemplaires",
 
     // Card detail modal
@@ -480,6 +481,7 @@ export const translations = {
     "collection.sort.recent": "Sort: most recent",
     "collection.sort.family": "Sort: family",
     "collection.sort.rarity": "Sort: rarity",
+    "collection.sort.dropRate": "Sort: rarity rate (rarest first)",
     "collection.sort.copies": "Sort: number of copies",
 
     "cardDetail.dropRate": "Dropped {copies}× out of {total} cards in total ({percent}%)",
