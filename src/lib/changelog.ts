@@ -13,11 +13,13 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-09-30",
     fr: [
+      "Le projet est désormais open source : un lien vers le code source sur GitHub a été ajouté dans le pied de page.",
       "Ta collection (et celles des autres joueurs) peut maintenant être triée par taux de rareté, les cartes les moins tirées en premier.",
       "En ouvrant une carte, on voit maintenant son taux de rareté : combien d'exemplaires ont été tirés, sur l'ensemble des cartes tirées par les joueurs.",
       "Ajout d'un top 10 des collections les plus complètes sur l'accueil (réservé aux comptes inscrits, les invités sont invités à s'inscrire pour y figurer).",
     ],
     en: [
+      "The project is now open source: a link to the source code on GitHub was added to the footer.",
       "Collections can now be sorted by rarity rate, with the least-dropped cards first.",
       "Opening a card now shows its rarity rate: how many copies have dropped, out of all the cards players have drawn.",
       "Added a top 10 of the most complete collections to the home page (registered accounts only - guests are prompted to sign up to appear).",

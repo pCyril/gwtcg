@@ -27,6 +27,7 @@ export const translations = {
       "GWTCG est un projet de fan non officiel, non affilié à ArenaNet ou NCSoft. Guild Wars est une marque d'ArenaNet / NCSoft.",
     "footer.license": "Textes des cartes adaptés du Guild Wars Wiki sous licence GNU FDL.",
     "footer.changelog": "Nouveautés",
+    "footer.source": "Code source (GitHub)",
 
     // Rarity labels
     "rarity.COMMON": "Commune",
@@ -350,6 +351,7 @@ export const translations = {
       "GWTCG is an unofficial fan project, not affiliated with ArenaNet or NCSoft. Guild Wars is a trademark of ArenaNet / NCSoft.",
     "footer.license": "Card text adapted from the Guild Wars Wiki under the GNU FDL license.",
     "footer.changelog": "What's new",
+    "footer.source": "Source code (GitHub)",
 
     "rarity.COMMON": "Common",
     "rarity.UNCOMMON": "Uncommon",
