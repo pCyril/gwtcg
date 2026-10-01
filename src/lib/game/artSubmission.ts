@@ -10,7 +10,7 @@ const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "IT
 export const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 export const MAX_PENDING_PER_USER = 25;
 // Rolling 24h cap on uploads per user (any status), to stop one account flooding the disk.
-export const MAX_UPLOADS_PER_DAY = 100;
+export const MAX_UPLOADS_PER_DAY = 300;
 export const ALLOWED_MIME_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
