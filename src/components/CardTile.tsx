@@ -19,6 +19,8 @@ export interface CardData {
   url: string;
   imageUrls?: string[];
   imageCredits?: Record<string, string>;
+  /** Raw card attributes (skills: type, attribute, ...) - only some endpoints send them. */
+  attributes?: Record<string, unknown>;
   isNew?: boolean;
   copies?: number;
 }

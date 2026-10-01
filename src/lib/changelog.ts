@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-10-01",
+    fr: [
+      "Le prompt d'illustration est bien plus précis : pour une compétence, il demande un personnage de la bonne profession avec son équipement (arc, bâton, hache/épée et bouclier, marteau, faux, javelot et bouclier...), et pour une arme, il demande de respecter au plus près la forme de l'arme de l'image.",
+    ],
+    en: [
+      "The illustration prompt is much more precise: for a skill it asks for a character of the right profession with their gear (bow, staff, axe/sword and shield, hammer, scythe, javelin and shield...), and for a weapon it asks to follow the weapon's shape in the image as closely as possible.",
+    ],
+  },
+  {
     date: "2026-09-30",
     fr: [
       "Tu peux maintenant partager une carte en particulier : un bouton « Partager la carte » dans la fiche de la carte copie (ou envoie) un lien public vers sa page, avec un aperçu dans les messageries.",

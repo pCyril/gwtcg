@@ -205,6 +205,19 @@ export const translations = {
     "art.promptIntro":
       "Illustration façon fan art de jeu de cartes à collectionner, style digital painting, couleurs riches, univers fantasy médiéval proche de Guild Wars.",
     "art.promptSubject": "Sujet : {subject} — « {title} »{campaign}. {extract}",
+    "art.promptSkillCharacter":
+      "Représente un personnage de la profession {profession} en pleine action, exécutant cette compétence. Équipement : {gear}. Mets l'effet de la compétence en scène autour du personnage.",
+    "art.gear.bow": "il manie un arc",
+    "art.gear.staff": "il tient un bâton",
+    "art.gear.axeShield": "une hache dans une main et un bouclier dans l'autre",
+    "art.gear.swordShield": "une épée dans une main et un bouclier dans l'autre",
+    "art.gear.meleeShield": "une hache ou une épée dans une main et un bouclier dans l'autre",
+    "art.gear.hammer": "un marteau tenu à deux mains",
+    "art.gear.scythe": "une faux tenue à deux mains",
+    "art.gear.spearShield": "un javelot dans une main et un bouclier dans l'autre",
+    "art.gear.daggers": "une dague dans chaque main",
+    "art.promptReferenceWeapon":
+      "Si une image de l'arme est jointe (capture de la fiche du wiki officiel), respecte-la au plus près : conserve exactement la forme de l'arme, sa silhouette, ses proportions, ses détails, ses motifs et ses couleurs — ne la redessine pas librement et n'invente aucun élément. Seuls la mise en scène, l'éclairage, l'arrière-plan et le cadrage sont libres : présente l'arme en objet de collection, sans la déformer.",
     "art.promptReference":
       "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
     "art.promptFormat":
@@ -529,6 +542,19 @@ export const translations = {
     "art.promptIntro":
       "Fan art illustration for a trading card game, digital painting style, rich colors, medieval fantasy universe close to Guild Wars.",
     "art.promptSubject": "Subject: {subject} — « {title} »{campaign}. {extract}",
+    "art.promptSkillCharacter":
+      "Depict a {profession} character in the middle of the action, performing this skill. Equipment: {gear}. Show the skill's effect in the scene around the character.",
+    "art.gear.bow": "wielding a bow",
+    "art.gear.staff": "holding a staff",
+    "art.gear.axeShield": "an axe in one hand and a shield in the other",
+    "art.gear.swordShield": "a sword in one hand and a shield in the other",
+    "art.gear.meleeShield": "an axe or a sword in one hand and a shield in the other",
+    "art.gear.hammer": "a hammer held in both hands",
+    "art.gear.scythe": "a scythe held in both hands",
+    "art.gear.spearShield": "a javelin in one hand and a shield in the other",
+    "art.gear.daggers": "a dagger in each hand",
+    "art.promptReferenceWeapon":
+      "If an image of the weapon is attached (a capture of the official wiki page), follow it as closely as possible: keep the weapon's exact shape, silhouette, proportions, details, patterns and colors — don't redesign it freely or invent any element. Only the staging, lighting, background and framing are free: present the weapon as a collectible item, without distorting it.",
     "art.promptReference":
       "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",
     "art.promptFormat":
