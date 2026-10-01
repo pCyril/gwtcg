@@ -221,7 +221,7 @@ export const translations = {
     "art.promptReference":
       "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
     "art.promptFormat":
-      "Format paysage, ratio environ {ratio} (par exemple {resolution}). Sujet principal centré. Pas de texte, pas de logo, pas de watermark, pas d'interface de jeu visible.",
+      "Format paysage, ratio environ {ratio} (par exemple {resolution}). Sujet principal centré. Pas de texte, pas de logo, pas de watermark, pas d'interface de jeu visible, et aucune bordure ni cadre décoratif : l'image doit aller jusqu'aux bords.",
     "art.subject.SKILL": "un effet de compétence ou de sort",
     "art.subject.BOSS": "un personnage (boss / monstre)",
     "art.subject.HERO_NPC": "un personnage (héros / PNJ)",
@@ -558,7 +558,7 @@ export const translations = {
     "art.promptReference":
       "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",
     "art.promptFormat":
-      "Landscape format, ratio around {ratio} (e.g. {resolution}). Main subject centered. No text, no logo, no watermark, no game UI visible.",
+      "Landscape format, ratio around {ratio} (e.g. {resolution}). Main subject centered. No text, no logo, no watermark, no game UI visible, and no border or decorative frame: the image must run all the way to the edges.",
     "art.subject.SKILL": "a skill or spell effect",
     "art.subject.BOSS": "a character (boss / monster)",
     "art.subject.HERO_NPC": "a character (hero / NPC)",
