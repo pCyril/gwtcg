@@ -217,7 +217,7 @@ export const translations = {
     "art.gear.spearShield": "un javelot dans une main et un bouclier dans l'autre",
     "art.gear.daggers": "une dague dans chaque main",
     "art.promptReferenceWeapon":
-      "Si une image de l'arme est jointe (capture de la fiche du wiki officiel), respecte-la au plus près : conserve exactement la forme de l'arme, sa silhouette, ses proportions, ses détails, ses motifs et ses couleurs — ne la redessine pas librement et n'invente aucun élément. Seuls la mise en scène, l'éclairage, l'arrière-plan et le cadrage sont libres : présente l'arme en objet de collection, sans la déformer.",
+      "Si une image de l'arme est jointe (capture de la fiche du wiki officiel), respecte-la au plus près : conserve exactement la forme de l'arme, sa silhouette, ses proportions, ses détails, ses motifs et ses couleurs — ne la redessine pas librement et n'invente aucun élément. L'image jointe est de petite taille et pixelisée : ne reproduis pas ces pixels ni le flou de compression, restitue l'arme avec des contours nets, des surfaces lissées et une haute définition. Seuls la mise en scène, l'éclairage, l'arrière-plan et le cadrage sont libres : présente l'arme en objet de collection, sans la déformer.",
     "art.promptReference":
       "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
     "art.promptFormat":
@@ -554,7 +554,7 @@ export const translations = {
     "art.gear.spearShield": "a javelin in one hand and a shield in the other",
     "art.gear.daggers": "a dagger in each hand",
     "art.promptReferenceWeapon":
-      "If an image of the weapon is attached (a capture of the official wiki page), follow it as closely as possible: keep the weapon's exact shape, silhouette, proportions, details, patterns and colors — don't redesign it freely or invent any element. Only the staging, lighting, background and framing are free: present the weapon as a collectible item, without distorting it.",
+      "If an image of the weapon is attached (a capture of the official wiki page), follow it as closely as possible: keep the weapon's exact shape, silhouette, proportions, details, patterns and colors — don't redesign it freely or invent any element. The attached image is small and pixelated: don't reproduce its pixels or compression blur, render the weapon with clean edges, smooth surfaces and high definition. Only the staging, lighting, background and framing are free: present the weapon as a collectible item, without distorting it.",
     "art.promptReference":
       "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",
     "art.promptFormat":
