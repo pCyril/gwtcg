@@ -13,9 +13,11 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-01",
     fr: [
+      "Un champ de recherche par nom a été ajouté dans ton classeur et dans les collections partagées, sous la légende des raretés.",
       "Le prompt d'illustration est bien plus précis : pour une compétence, il demande un personnage de la bonne profession avec son équipement (arc, bâton, hache/épée et bouclier, marteau, faux, javelot et bouclier...), et pour une arme, il demande de respecter au plus près la forme de l'arme de l'image.",
     ],
     en: [
+      "A name search box was added to your binder and to shared collections, below the rarity legend.",
       "The illustration prompt is much more precise: for a skill it asks for a character of the right profession with their gear (bow, staff, axe/sword and shield, hammer, scythe, javelin and shield...), and for a weapon it asks to follow the weapon's shape in the image as closely as possible.",
     ],
   },

@@ -15,7 +15,8 @@ export function familyLabelKey(family: string): TranslationKey {
   return `family.${family}` as TranslationKey;
 }
 
-// Mirrors GW1 item-rarity colors: white / blue / purple / gold / green / black.
+// Mirrors GW1 item-rarity colors: white / blue / purple / gold / green, plus red for Mythic (the one hue left
+// that stays clearly apart from Rare's purple).
 // `radial` is a raw CSS color (not a Tailwind class) used for the JS-built radial-gradient burst.
 export const RARITY_STYLES: Record<
   RarityKey,
@@ -62,12 +63,12 @@ export const RARITY_STYLES: Record<
     radial: "rgba(52,211,153,0.55)",
   },
   MYTHIC: {
-    border: "border-fuchsia-400",
-    text: "text-fuchsia-200",
-    glow: "shadow-[0_0_22px_rgba(217,70,239,0.6)]",
+    border: "border-red-500",
+    text: "text-red-300",
+    glow: "shadow-[0_0_22px_rgba(239,68,68,0.6)]",
     bg: "bg-black",
-    accentBg: "bg-fuchsia-400",
-    radial: "rgba(217,70,239,0.6)",
+    accentBg: "bg-red-500",
+    radial: "rgba(239,68,68,0.6)",
   },
 };
 

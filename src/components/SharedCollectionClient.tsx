@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { CardDetailModal } from "@/components/CardDetailModal";
 import { RarityLegend } from "@/components/RarityLegend";
+import { CollectionSearchInput } from "@/components/CollectionSearchInput";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { TranslationKey } from "@/lib/i18n/translations";
@@ -37,6 +38,7 @@ interface Filters {
   rarity: string;
   sort: string;
   professions: string[];
+  q: string;
   page: number;
 }
 
@@ -61,6 +63,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     rarity: searchParams.get("rarity") ?? "",
     sort: searchParams.get("sort") ?? "recent",
     professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
+    q: searchParams.get("q") ?? "",
     page: Math.max(1, Number(searchParams.get("page")) || 1),
   });
 
@@ -71,6 +74,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     if (next.rarity) params.set("rarity", next.rarity);
     if (next.sort && next.sort !== "recent") params.set("sort", next.sort);
     if (next.family === "SKILL" && next.professions.length) params.set("professions", next.professions.join(","));
+    if (next.q) params.set("q", next.q);
     if (next.page > 1) params.set("page", String(next.page));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
@@ -103,6 +107,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     if (filters.family === "SKILL" && filters.professions.length) {
       params.set("professions", filters.professions.join(","));
     }
+    if (filters.q) params.set("q", filters.q);
     params.set("page", String(filters.page));
 
     fetch(`/api/collection/shared/${encodeURIComponent(pseudo)}?${params.toString()}`)
@@ -237,6 +242,8 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
       )}
 
       <RarityLegend />
+
+      <CollectionSearchInput value={filters.q} onChange={(q) => updateFilters({ ...filters, q, page: 1 })} />
 
       {!cards ? (
         <p className="text-neutral-400">{t("common.loading")}</p>
