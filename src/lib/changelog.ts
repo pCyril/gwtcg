@@ -14,9 +14,11 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-10-02",
     fr: [
       "Le prompt d'illustration des armes demande maintenant de refaire l'arme en version moderne et détaillée (gravures, textures, reflets) en respectant strictement sa forme d'origine, et de la représenter seule, sans main ni personnage.",
+      "Pour une compétence qui vise des ennemis, le prompt d'illustration demande de montrer à la fois le lanceur et l'ennemi qui subit l'effet.",
     ],
     en: [
       "The weapon illustration prompt now asks for a modern, detailed remaster of the weapon (engravings, textures, reflections) that strictly keeps its original shape, shown alone with no hands or character.",
+      "For a skill that targets enemies, the illustration prompt now asks to show both the caster and the enemy suffering the effect.",
     ],
   },
   {

@@ -208,6 +208,8 @@ export const translations = {
     "art.promptSubject": "Sujet : {subject} — « {title} »{campaign}. {extract}",
     "art.promptSkillCharacter":
       "Représente un personnage de la profession {profession} en pleine action, exécutant cette compétence. Équipement : {gear}. Mets l'effet de la compétence en scène autour du personnage.",
+    "art.promptSkillFoe":
+      "Cette compétence vise des ennemis : montre dans la même image à la fois le lanceur (ou l'attaquant) et l'ennemi qui en subit l'effet — touché, frappé, maudit, brûlé ou affaibli selon la compétence — pour que l'on comprenne l'action et sa victime d'un coup d'œil.",
     "art.gear.bow": "il manie un arc",
     "art.gear.staff": "il tient un bâton",
     "art.gear.axeShield": "une hache dans une main et un bouclier dans l'autre",
@@ -546,6 +548,8 @@ export const translations = {
     "art.promptSubject": "Subject: {subject} — « {title} »{campaign}. {extract}",
     "art.promptSkillCharacter":
       "Depict a {profession} character in the middle of the action, performing this skill. Equipment: {gear}. Show the skill's effect in the scene around the character.",
+    "art.promptSkillFoe":
+      "This skill targets enemies: show in the same image both the caster (or attacker) and the enemy suffering its effect — hit, struck, cursed, burned or weakened depending on the skill — so the action and its victim read at a glance.",
     "art.gear.bow": "wielding a bow",
     "art.gear.staff": "holding a staff",
     "art.gear.axeShield": "an axe in one hand and a shield in the other",

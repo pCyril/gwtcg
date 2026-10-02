@@ -40,6 +40,28 @@ function skillGear(profession: string | null | undefined, attributes: CardData["
   }
 }
 
+/**
+ * Whether a skill is used against enemies - the illustration should then show
+ * the caster and the foe suffering it. The `target` field is empty on most
+ * skills, so this also reads the skill type (attacks and hexes always hit
+ * foes) and its description ("target foe", "deals ... damage").
+ */
+function skillTargetsFoes(attributes: CardData["attributes"]): boolean {
+  if (!attributes) return false;
+  const target = String(attributes.target ?? "").toLowerCase();
+  if (target.includes("foe")) return true;
+  const type = String(attributes.type ?? "").toLowerCase();
+  if (type.includes("attack") || type === "hex spell") return true;
+  const description = `${attributes.description ?? ""} ${attributes.conciseDescription ?? ""}`;
+  if (/\bfoes?\b/i.test(description)) return true;
+  // Damage can never hit an ally, so a skill that "deals 10...55 holy damage" is aimed at foes
+  // whatever its declared target (a self-cast ward that burns adjacent foes, ...). Buffs and
+  // penalties ("deals 30% less / 25 more / +50 damage") don't count. "..." ranges contain dots, hence
+  // the (?:[^.]|\.\.\.).
+  const body = "(?:(?!\\b(?:less|more|reduced)\\b)(?:[^.]|\\.\\.\\.))*?";
+  return new RegExp(`\\bdeals?\\b(?!\\s*\\+)${body}\\d${body}\\bdamage\\b`, "i").test(description);
+}
+
 export function buildArtPrompt(
   locale: Locale,
   card: Pick<CardData, "title" | "family" | "campaign" | "extract" | "profession" | "attributes">,
@@ -49,7 +71,9 @@ export function buildArtPrompt(
   const subject = t(locale, (hasFamilyKey ? familyKey : "art.subject.default") as TranslationKey);
   const campaign = card.campaign ? ` (${card.campaign})` : "";
 
-  const gear = card.family === "SKILL" ? skillGear(card.profession, card.attributes) : null;
+  const isSkill = card.family === "SKILL";
+  const gear = isSkill ? skillGear(card.profession, card.attributes) : null;
+  const targetsFoes = isSkill && skillTargetsFoes(card.attributes);
 
   return [
     t(locale, "art.promptIntro"),
@@ -62,6 +86,7 @@ export function buildArtPrompt(
           }),
         ]
       : []),
+    ...(targetsFoes ? [t(locale, "art.promptSkillFoe")] : []),
     // Weapons must keep the exact shape of the real item, so they get a fidelity
     // instruction instead of the generic "reinterpret it freely" one.
     t(locale, card.family === "WEAPON" ? "art.promptReferenceWeapon" : "art.promptReference"),
