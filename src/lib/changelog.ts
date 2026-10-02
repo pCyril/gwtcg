@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-10-02",
+    fr: [
+      "Le prompt d'illustration des armes demande maintenant d'imaginer des détails fins (gravures, textures, reflets) en respectant la forme de l'arme, et de la représenter seule, sans main ni personnage.",
+    ],
+    en: [
+      "The weapon illustration prompt now asks to imagine fine details (engravings, textures, reflections) while keeping the weapon's shape, and to show it alone, with no hands or character.",
+    ],
+  },
+  {
     date: "2026-10-01",
     fr: [
       "Un champ de recherche par nom a été ajouté dans ton classeur et dans les collections partagées, sous la légende des raretés.",
