@@ -23,10 +23,20 @@ export async function GET() {
       startingProfession: null,
       gameCharacterName: null,
       nextBoosterInMs: null,
+      pendingTrades: 0,
+      pendingArtSubmissions: 0,
     });
   }
 
-  const { available, nextAvailableAt } = await getBoosterAvailability(user.id);
+  const [{ available, nextAvailableAt }, pendingTrades, pendingArtSubmissions] = await Promise.all([
+    getBoosterAvailability(user.id),
+    // Trades still open (not confirmed, declined or cancelled) that involve this player on either side.
+    prisma.trade.count({
+      where: { status: "PENDING", OR: [{ initiatorId: user.id }, { recipientId: user.id }] },
+    }),
+    // Illustrations waiting for moderation - only meaningful (and only counted) for admins.
+    user.isAdmin ? prisma.artSubmission.count({ where: { status: "PENDING" } }) : 0,
+  ]);
 
   return NextResponse.json({
     pseudo: user.pseudo,
@@ -38,6 +48,8 @@ export async function GET() {
     startingProfession: user.startingProfession,
     gameCharacterName: user.gameCharacterName,
     nextBoosterInMs: nextAvailableAt ? nextAvailableAt.getTime() - Date.now() : null,
+    pendingTrades,
+    pendingArtSubmissions,
   });
 }
 

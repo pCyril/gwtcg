@@ -13,6 +13,9 @@ interface NavLink {
   href: string;
   label: TranslationKey;
   external?: boolean;
+  /** Small count pill next to the label (hidden when 0/undefined). */
+  badge?: number;
+  badgeLabel?: TranslationKey;
 }
 
 const INFO_LINKS: NavLink[] = [
@@ -21,13 +24,25 @@ const INFO_LINKS: NavLink[] = [
   { href: "https://github.com/pCyril/gwtcg", label: "nav.source", external: true },
 ];
 
-const ADMIN_LINKS: NavLink[] = [
-  { href: "/admin/art", label: "nav.moderation" },
+const adminLinks = (pendingArt: number): NavLink[] => [
+  { href: "/admin/art", label: "nav.moderation", badge: pendingArt, badgeLabel: "nav.pendingArt" },
   { href: "/admin/stats", label: "nav.stats" },
 ];
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function Badge({ count, label }: { count: number; label: string }) {
+  return (
+    <span
+      className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-xs font-semibold leading-5 text-white"
+      aria-label={label}
+      title={label}
+    >
+      {count > 9 ? "9+" : count}
+    </span>
+  );
 }
 
 function NavItem({ link, pathname, onNavigate }: { link: NavLink; pathname: string; onNavigate?: () => void }) {
@@ -45,12 +60,25 @@ function NavItem({ link, pathname, onNavigate }: { link: NavLink; pathname: stri
   return (
     <Link href={link.href} onClick={onNavigate} className={className}>
       {t(link.label)}
+      {link.badge ? <Badge count={link.badge} label={t(link.badgeLabel ?? "nav.pendingTrades", { count: link.badge })} /> : null}
     </Link>
   );
 }
 
 /** A labelled group of links that opens as a small popover; closes on outside click, Escape or navigation. */
-function NavDropdown({ label, links, pathname }: { label: TranslationKey; links: NavLink[]; pathname: string }) {
+function NavDropdown({
+  label,
+  links,
+  pathname,
+  badge,
+  badgeLabel,
+}: {
+  label: TranslationKey;
+  links: NavLink[];
+  pathname: string;
+  badge?: number;
+  badgeLabel?: TranslationKey;
+}) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -83,6 +111,7 @@ function NavDropdown({ label, links, pathname }: { label: TranslationKey; links:
         }`}
       >
         {t(label)}
+        {badge ? <Badge count={badge} label={t(badgeLabel ?? "nav.pendingTrades", { count: badge })} /> : null}
         <ChevronDown size={14} className={open ? "rotate-180" : ""} />
       </button>
       {open && (
@@ -101,6 +130,8 @@ export function SiteNav() {
   const pathname = usePathname();
   const marketEnabled = useMarketEnabled();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingTrades, setPendingTrades] = useState(0);
+  const [pendingArt, setPendingArt] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
 
@@ -110,22 +141,35 @@ export function SiteNav() {
     setMenuOpen(false);
   }
 
+  // Refreshed on every page change, and every minute while the tab is visible so
+  // a trade proposed to you shows up without having to navigate.
   useEffect(() => {
     let ignore = false;
-    fetch("/api/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!ignore) setIsAdmin(Boolean(data.isAdmin));
-      })
-      .catch(() => {});
+    const load = () =>
+      fetch("/api/me")
+        .then((res) => res.json())
+        .then((data) => {
+          if (ignore) return;
+          setIsAdmin(Boolean(data.isAdmin));
+          setPendingTrades(Number(data.pendingTrades) || 0);
+          setPendingArt(Number(data.pendingArtSubmissions) || 0);
+        })
+        .catch(() => {});
+    load();
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 60_000);
     return () => {
       ignore = true;
+      clearInterval(timer);
     };
   }, [pathname]);
 
+  const totalPending = pendingTrades + (isAdmin ? pendingArt : 0);
+
   const mainLinks: NavLink[] = [
     { href: "/collection", label: "nav.collection" },
-    { href: "/trade", label: "nav.trade" },
+    { href: "/trade", label: "nav.trade", badge: pendingTrades },
     ...(marketEnabled ? [{ href: "/market", label: "nav.market" } as NavLink] : []),
   ];
 
@@ -141,7 +185,15 @@ export function SiteNav() {
             <NavItem key={link.href} link={link} pathname={pathname} />
           ))}
           <NavDropdown label="nav.info" links={INFO_LINKS} pathname={pathname} />
-          {isAdmin && <NavDropdown label="nav.admin" links={ADMIN_LINKS} pathname={pathname} />}
+          {isAdmin && (
+            <NavDropdown
+              label="nav.admin"
+              links={adminLinks(pendingArt)}
+              pathname={pathname}
+              badge={pendingArt}
+              badgeLabel="nav.pendingArt"
+            />
+          )}
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -150,9 +202,12 @@ export function SiteNav() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label={t("nav.menu")}
-            className="rounded p-1.5 text-neutral-300 hover:text-neutral-100 md:hidden"
+            className="relative rounded p-1.5 text-neutral-300 hover:text-neutral-100 md:hidden"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            {!menuOpen && totalPending > 0 && (
+              <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-neutral-950" />
+            )}
           </button>
         </div>
       </nav>
@@ -172,7 +227,7 @@ export function SiteNav() {
                 <p className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
                   {t("nav.admin")}
                 </p>
-                {ADMIN_LINKS.map((link) => (
+                {adminLinks(pendingArt).map((link) => (
                   <NavItem key={link.href} link={link} pathname={pathname} />
                 ))}
               </>
