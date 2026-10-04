@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLocale } from "@/lib/i18n/LocaleContext";
@@ -128,10 +128,13 @@ function NavDropdown({
 export function SiteNav() {
   const { t } = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
   const marketEnabled = useMarketEnabled();
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingTrades, setPendingTrades] = useState(0);
   const [pendingArt, setPendingArt] = useState(0);
+  // Only real accounts can sign out - a guest has nothing to sign out of.
+  const [hasAccount, setHasAccount] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
 
@@ -151,6 +154,7 @@ export function SiteNav() {
         .then((data) => {
           if (ignore) return;
           setIsAdmin(Boolean(data.isAdmin));
+          setHasAccount(data.isGuest === false);
           setPendingTrades(Number(data.pendingTrades) || 0);
           setPendingArt(Number(data.pendingArtSubmissions) || 0);
         })
@@ -159,11 +163,21 @@ export function SiteNav() {
     const timer = setInterval(() => {
       if (document.visibilityState === "visible") load();
     }, 60_000);
+    window.addEventListener("gm:auth-changed", load);
     return () => {
       ignore = true;
       clearInterval(timer);
+      window.removeEventListener("gm:auth-changed", load);
     };
   }, [pathname]);
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    // Tell the open page (home keeps its own copy of /api/me) and the nav to resync, then go home.
+    window.dispatchEvent(new Event("gm:auth-changed"));
+    router.push("/");
+    router.refresh();
+  }
 
   const totalPending = pendingTrades + (isAdmin ? pendingArt : 0);
 
@@ -197,6 +211,14 @@ export function SiteNav() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          {hasAccount && (
+            <button
+              onClick={logout}
+              className="hidden whitespace-nowrap rounded px-2 py-1.5 text-sm text-neutral-400 transition-colors hover:text-neutral-100 md:block"
+            >
+              {t("auth.logout")}
+            </button>
+          )}
           <LanguageSwitcher />
           <button
             onClick={() => setMenuOpen((v) => !v)}
@@ -231,6 +253,14 @@ export function SiteNav() {
                   <NavItem key={link.href} link={link} pathname={pathname} />
                 ))}
               </>
+            )}
+            {hasAccount && (
+              <button
+                onClick={logout}
+                className="mt-2 border-t border-neutral-800 px-2 py-2 text-left text-sm text-neutral-400 hover:text-neutral-100"
+              >
+                {t("auth.logout")}
+              </button>
             )}
           </div>
         </div>

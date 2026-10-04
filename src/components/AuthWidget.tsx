@@ -21,17 +21,8 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
 
   if (!isGuest) {
     return (
-      <div className="flex items-center gap-3 text-sm text-neutral-400">
+      <div className="text-sm text-neutral-400">
         <span>{t("auth.connectedAs", { email: email ?? "" })}</span>
-        <button
-          onClick={async () => {
-            await fetch("/api/auth/logout", { method: "POST" });
-            onAuthChange();
-          }}
-          className="underline hover:text-neutral-200"
-        >
-          {t("auth.logout")}
-        </button>
       </div>
     );
   }

@@ -110,8 +110,13 @@ export function HomeClient() {
     function onVisible() {
       if (document.visibilityState === "visible") refreshMe();
     }
+    // Also resync when the session changes elsewhere (e.g. signing out from the nav menu).
     document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
+    window.addEventListener("gm:auth-changed", refreshMe);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("gm:auth-changed", refreshMe);
+    };
   }, []);
 
   async function openBooster(type: "STANDARD" | "PROFESSION") {
