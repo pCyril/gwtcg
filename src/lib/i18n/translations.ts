@@ -13,7 +13,6 @@ export const translations = {
     "common.save": "Enregistrer",
     "common.edit": "modifier",
     "common.set": "renseigner",
-    "common.back": "← Accueil",
     "common.loading": "Chargement...",
     "common.unknownError": "Erreur inconnue.",
     "common.wikiLink": "wiki (GFDL)",
@@ -302,7 +301,6 @@ export const translations = {
 
     // Auction detail
     "auction.title": "Enchère",
-    "auction.backToMarket": "← Le Kamadan",
     "auction.soldBy": "Vendue par {pseudo}",
     "auction.startingPriceLabel": "Mise à prix : {amount} ecto",
     "auction.buyoutPriceLabel": "Achat immédiat : {amount} ecto",
@@ -351,7 +349,6 @@ export const translations = {
 
     // Trade
     "trade.title": "Échange avec {pseudo}",
-    "trade.backToList": "← Mes échanges",
     "trade.accepted": "Échange conclu ! Les cartes ont changé de mains.",
     "trade.declined": "Cet échange a été refusé.",
     "trade.cancelled": "Cet échange a été annulé.",
@@ -413,7 +410,6 @@ export const translations = {
     "common.save": "Save",
     "common.edit": "edit",
     "common.set": "set",
-    "common.back": "← Home",
     "common.loading": "Loading...",
     "common.unknownError": "Unknown error.",
     "common.wikiLink": "wiki (GFDL)",
@@ -686,7 +682,6 @@ export const translations = {
     "market.timeLeftMinutes": "{minutes}min",
 
     "auction.title": "Auction",
-    "auction.backToMarket": "← The Kamadan",
     "auction.soldBy": "Sold by {pseudo}",
     "auction.startingPriceLabel": "Starting price: {amount} ecto",
     "auction.buyoutPriceLabel": "Buyout price: {amount} ecto",
@@ -732,7 +727,6 @@ export const translations = {
     "sell.submit": "List for auction",
 
     "trade.title": "Trade with {pseudo}",
-    "trade.backToList": "← My trades",
     "trade.accepted": "Trade completed! The cards have changed hands.",
     "trade.declined": "This trade was declined.",
     "trade.cancelled": "This trade was cancelled.",

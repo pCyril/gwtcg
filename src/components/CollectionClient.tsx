@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Share2, Check } from "lucide-react";
 import { CardTile, type CardData } from "@/components/CardTile";
@@ -222,9 +221,6 @@ export function CollectionClient() {
             {shareCopied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
             {shareCopied ? t("collection.shareCopied") : t("collection.share")}
           </button>
-          <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-            {t("common.back")}
-          </Link>
         </div>
       </div>
 

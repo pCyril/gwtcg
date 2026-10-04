@@ -45,9 +45,6 @@ export function MyAuctionsClient() {
       <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-10">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">{t("myAuctions.title")}</h1>
-          <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-            {t("common.back")}
-          </Link>
         </div>
         <p className="text-neutral-400">{marketEnabled === null ? t("common.loading") : tError("MARKET_DISABLED")}</p>
       </main>
@@ -58,9 +55,6 @@ export function MyAuctionsClient() {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("myAuctions.title")}</h1>
-        <Link href="/market" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("auction.backToMarket")}
-        </Link>
       </div>
 
       {!data ? (

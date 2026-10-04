@@ -66,9 +66,6 @@ export function TradeListClient() {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">{t("tradeList.title")}</h1>
-        <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("common.back")}
-        </Link>
       </div>
 
       <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6">

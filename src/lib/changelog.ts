@@ -13,12 +13,16 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-04",
     fr: [
+      "Les liens « ← Accueil », « ← Mes échanges » et « ← Le Kamadan » en haut des pages sont supprimés : le menu du haut permet de naviguer partout.",
+      "Le lien « Se déconnecter » est maintenant dans le menu du haut (et n'est plus sur la page d'accueil).",
       "Un badge sur « Échanges » dans le menu indique combien d'échanges sont en cours.",
       "Nouveau menu de navigation en haut de chaque page (Ma collection, Échanges, Kamadan, Infos), avec un bouton menu sur téléphone. Les liens du bas de l'accueil y sont regroupés.",
       "Nouvelle page « Comment ça drop ? » : elle explique le contenu d'un booster, les chances par rareté et par famille de cartes (calculées en direct), et comment la rareté de chaque carte est décidée.",
       "Échanges : ton offre s'enregistre maintenant automatiquement à chaque carte ajoutée ou retirée, sans bouton « Mettre à jour mon offre ». Tu peux aussi retirer une carte de ton offre avec la croix rouge, ou en recliquant dessus dans ta liste.",
     ],
     en: [
+      "The \"← Home\", \"← My trades\" and \"← The Kamadan\" links at the top of pages are gone: the top menu lets you navigate everywhere.",
+      "The \"Sign out\" link is now in the top menu (and no longer on the home page).",
       "A badge on \"Trades\" in the menu shows how many trades are in progress.",
       "New navigation menu at the top of every page (My collection, Trades, Kamadan, Info), with a menu button on phones. The links at the bottom of the home page are now grouped there.",
       "New \"How do drops work?\" page: it explains what's in a booster, the odds by rarity and by card family (computed live), and how each card's rarity is decided.",

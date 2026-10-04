@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import type { DropRates } from "@/lib/game/dropRates";
@@ -28,9 +27,6 @@ export function DropsClient({ rates }: { rates: DropRates }) {
           <h1 className="text-3xl font-bold tracking-tight">{t("drops.title")}</h1>
           <p className="text-sm text-neutral-400">{t("drops.subtitle")}</p>
         </div>
-        <Link href="/" className="shrink-0 text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("common.back")}
-        </Link>
       </div>
 
       <Section title={t("drops.how.title")}>

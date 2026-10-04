@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
@@ -113,9 +112,6 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
     <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("auction.title")}</h1>
-        <Link href="/market" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("auction.backToMarket")}
-        </Link>
       </div>
 
       <p className="text-sm text-neutral-400">

@@ -70,9 +70,6 @@ export function AdminStatsClient() {
     <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("admin.statsTitle")}</h1>
-        <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("common.back")}
-        </Link>
       </div>
 
       {!stats ? (

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { CardDetailModal } from "@/components/CardDetailModal";
@@ -145,9 +144,6 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     return (
       <main className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-10">
         <p className="text-neutral-400">{t("collection.shared.notFound")}</p>
-        <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("common.back")}
-        </Link>
       </main>
     );
   }
@@ -167,9 +163,6 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
             </p>
           )}
         </div>
-        <Link href="/" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("common.back")}
-        </Link>
       </div>
 
       <div className="flex flex-wrap gap-3">
