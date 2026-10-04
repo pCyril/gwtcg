@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import type { CardData } from "@/components/CardTile";
 import { BoosterOverlay, PackVisual } from "@/components/BoosterOverlay";
 import { AuthWidget } from "@/components/AuthWidget";
@@ -11,7 +10,6 @@ import { ArtLeaderboard } from "@/components/ArtLeaderboard";
 import { CollectionLeaderboard } from "@/components/CollectionLeaderboard";
 import { ArtCompletionGauge } from "@/components/ArtCompletionGauge";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { useMarketEnabled } from "@/lib/useMarketEnabled";
 import { RARITY_ASCENDING } from "@/lib/game/rarityStyles";
 
 interface Me {
@@ -48,7 +46,6 @@ function formatCountdown(ms: number): string {
 
 export function HomeClient() {
   const { t, tError } = useLocale();
-  const marketEnabled = useMarketEnabled();
   const [me, setMe] = useState<Me | null>(null);
   const [cards, setCards] = useState<CardData[] | null>(null);
   const [opening, setOpening] = useState(false);
@@ -217,36 +214,6 @@ export function HomeClient() {
           </div>
         </section>
       )}
-
-      <div className="flex flex-wrap gap-4">
-        <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("home.viewCollection")}
-        </Link>
-        <Link href="/trade" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("home.trade")}
-        </Link>
-        {marketEnabled && (
-          <Link href="/market" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-            {t("home.market")}
-          </Link>
-        )}
-        {me.isAdmin && (
-          <>
-            <Link href="/admin/art" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-              {t("home.moderation")}
-            </Link>
-            <Link href="/admin/stats" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-              {t("home.stats")}
-            </Link>
-          </>
-        )}
-        <Link href="/drops" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("home.drops")}
-        </Link>
-        <Link href="/changelog" className="text-sm text-neutral-400 underline hover:text-neutral-200">
-          {t("footer.changelog")}
-        </Link>
-      </div>
 
       <ArtCompletionGauge />
       <CollectionLeaderboard isGuest={me.isGuest} />

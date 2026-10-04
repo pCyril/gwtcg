@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SiteNav } from "@/components/SiteNav";
 import { Footer } from "@/components/Footer";
 import { LOCALES, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/translations";
 import "./globals.css";
@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-neutral-950 text-neutral-100">
         <LocaleProvider initialLocale={locale}>
-          <LanguageSwitcher />
+          <SiteNav />
           <div className="flex-1">{children}</div>
           <Footer />
         </LocaleProvider>
