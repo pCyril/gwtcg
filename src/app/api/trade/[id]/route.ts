@@ -10,6 +10,7 @@ function serializeTrade(
 ) {
   const cardOf = (item: (typeof trade.items)[number]) => ({
     instanceId: item.cardInstance.id,
+    cardId: item.cardInstance.cardId,
     wikiPageId: item.cardInstance.card.wikiPageId,
     rarity: item.cardInstance.card.rarity,
     family: item.cardInstance.card.family,

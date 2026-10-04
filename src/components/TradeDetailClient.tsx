@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
@@ -28,20 +28,26 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const [search, setSearch] = useState("");
   const [collectionPage, setCollectionPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Editable draft of my offer (full card data so it can be shown and removed from right here).
+  const [offer, setOffer] = useState<CardData[]>([]);
+  const offerRef = useRef<CardData[]>([]);
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const dirtyRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [seededFor, setSeededFor] = useState<string | null>(null);
 
-  function refreshTrade() {
+  function refreshTrade(): Promise<TradeDetail | null> {
     return fetch(`/api/trade/${tradeId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
           setError(data.error);
-          return;
+          return null;
         }
         setTrade(data);
+        return data as TradeDetail;
       });
   }
 
@@ -73,12 +79,17 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
     };
   }, [search, collectionPage]);
 
+  // Mirror the draft into a ref so the save loop always sends the latest one.
+  useEffect(() => {
+    offerRef.current = offer;
+  }, [offer]);
+
   // Seed the editable draft from my current offer, once per trade load. Adjusting
   // state during render (rather than in an effect) is the React-sanctioned way to
   // respond to a prop/data change without an extra commit-then-effect round trip.
   if (trade && seededFor !== trade.id) {
     const mine = trade.isInitiator ? trade.initiator : trade.recipient;
-    setSelected(new Set(mine.cards.map((c) => c.instanceId!)));
+    setOffer(mine.cards);
     setSeededFor(trade.id);
   }
 
@@ -94,36 +105,67 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const theirs = trade.isInitiator ? trade.recipient : trade.initiator;
   const isPending = trade.status === "PENDING";
 
-  function toggleCard(instanceId: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(instanceId)) {
-        next.delete(instanceId);
-      } else if (next.size < MAX_TRADE_ITEMS) {
-        next.add(instanceId);
-      }
-      return next;
-    });
-  }
-
-  async function updateOffer() {
-    setPending(true);
-    setError(null);
+  // Every change to the offer is saved right away - no "update" button. Saves
+  // are serialized: while one is in flight, further edits just mark the draft
+  // dirty and are sent as a single follow-up with the latest draft.
+  async function flushOffer() {
+    if (savingRef.current) {
+      dirtyRef.current = true;
+      return;
+    }
+    savingRef.current = true;
+    setSaving(true);
     try {
-      const res = await fetch(`/api/trade/${tradeId}/offer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardInstanceIds: Array.from(selected) }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error);
-        return;
-      }
+      do {
+        dirtyRef.current = false;
+        const res = await fetch(`/api/trade/${tradeId}/offer`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cardInstanceIds: offerRef.current.map((c) => c.instanceId!) }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          setError(data.error ?? "UNKNOWN_ERROR");
+          // Roll the draft back to what the server actually has.
+          const fresh = await refreshTrade();
+          if (fresh) {
+            const serverMine = (fresh.isInitiator ? fresh.initiator : fresh.recipient).cards;
+            offerRef.current = serverMine;
+            setOffer(serverMine);
+          }
+          dirtyRef.current = false;
+          return;
+        }
+      } while (dirtyRef.current);
+      setError(null);
       await refreshTrade();
     } finally {
-      setPending(false);
+      savingRef.current = false;
+      setSaving(false);
     }
+  }
+
+  function changeOffer(next: CardData[]) {
+    offerRef.current = next;
+    setOffer(next);
+    void flushOffer();
+  }
+
+  // Cards are matched by card id, not instance id: the picker shows one
+  // representative copy per card, which may differ from the copy already in
+  // the offer - matching instances left such a card impossible to take back.
+  // Both read the ref (always the latest draft) so rapid clicks before a re-render don't overwrite each other.
+  function toggleCard(card: CardData) {
+    const current = offerRef.current;
+    if (current.some((c) => c.cardId === card.cardId)) {
+      changeOffer(current.filter((c) => c.cardId !== card.cardId));
+    } else if (current.length < MAX_TRADE_ITEMS) {
+      changeOffer([...current, card]);
+    }
+  }
+
+  function removeFromOffer(instanceId: string) {
+    changeOffer(offerRef.current.filter((c) => c.instanceId !== instanceId));
   }
 
   async function confirm() {
@@ -184,16 +226,31 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {mine.cards.map((card) => (
-              <CardTile key={card.instanceId} card={card} />
+            {(isPending ? offer : mine.cards).map((card) => (
+              <div key={card.instanceId} className="relative">
+                <CardTile card={card} />
+                {isPending && (
+                  <button
+                    onClick={() => removeFromOffer(card.instanceId!)}
+                    aria-label={t("trade.removeCard", { title: card.title })}
+                    title={t("trade.removeCard", { title: card.title })}
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white shadow hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             ))}
-            {mine.cards.length === 0 && <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>}
+            {(isPending ? offer : mine.cards).length === 0 && (
+              <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
+            )}
           </div>
 
           {isPending && (
             <>
               <p className="text-xs text-neutral-500">
-                {t("trade.selectedCount", { count: selected.size, max: MAX_TRADE_ITEMS })}
+                {t("trade.selectedCount", { count: offer.length, max: MAX_TRADE_ITEMS })}
+                {saving && <span className="ml-2 text-emerald-400">{t("trade.saving")}</span>}
               </p>
               <input
                 type="search"
@@ -213,15 +270,15 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                       key={card.instanceId}
                       role="button"
                       tabIndex={0}
-                      onClick={() => toggleCard(card.instanceId!)}
+                      onClick={() => toggleCard(card)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          toggleCard(card.instanceId!);
+                          toggleCard(card);
                         }
                       }}
                       className={`cursor-pointer rounded-lg transition ${
-                        selected.has(card.instanceId!) ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
+                        offer.some((c) => c.cardId === card.cardId) ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
                       }`}
                     >
                       <CardTile card={card} />
@@ -237,13 +294,6 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                   </button>
                 )}
               </div>
-              <button
-                onClick={updateOffer}
-                disabled={pending}
-                className="rounded border border-neutral-700 px-3 py-1.5 text-sm hover:border-emerald-400 disabled:opacity-50"
-              >
-                {t("trade.updateOffer")}
-              </button>
             </>
           )}
         </section>
@@ -269,7 +319,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
         <div className="flex gap-3">
           <button
             onClick={confirm}
-            disabled={pending}
+            disabled={pending || saving}
             className="rounded bg-emerald-600 px-5 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             {t("trade.confirm")}

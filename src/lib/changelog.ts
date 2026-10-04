@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-10-04",
+    fr: [
+      "Échanges : ton offre s'enregistre maintenant automatiquement à chaque carte ajoutée ou retirée, sans bouton « Mettre à jour mon offre ». Tu peux aussi retirer une carte de ton offre avec la croix rouge, ou en recliquant dessus dans ta liste.",
+    ],
+    en: [
+      "Trades: your offer now saves automatically each time you add or remove a card, with no \"Update my offer\" button. You can also take a card back with the red cross, or by clicking it again in your list.",
+    ],
+  },
+  {
     date: "2026-10-02",
     fr: [
       "Le prompt d'illustration des armes demande maintenant de refaire l'arme en version moderne et détaillée (gravures, textures, reflets) en respectant strictement sa forme d'origine, et de la représenter seule, sans main ni personnage.",
