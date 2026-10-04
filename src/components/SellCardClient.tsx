@@ -43,7 +43,7 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
 
   if (!marketEnabled) {
     return (
-      <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
+      <main className="flex max-w-md flex-col gap-6 py-10">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">{t("sell.title")}</h1>
           <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">
@@ -56,7 +56,7 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
+    <main className="flex max-w-md flex-col gap-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("sell.title")}</h1>
         <Link href="/collection" className="text-sm text-neutral-400 underline hover:text-neutral-200">

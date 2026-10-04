@@ -94,7 +94,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
 
   if (!trade) {
     return (
-      <main className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">
+      <main className="py-10 text-neutral-400">
         {error ? tError(error) : t("common.loading")}
       </main>
     );
@@ -193,7 +193,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   }
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-10">
+    <main className="flex flex-col gap-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("trade.title", { pseudo: theirs.pseudo })}</h1>
       </div>

@@ -48,7 +48,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
   }, [auctionId]);
 
   if (!auction) {
-    return <main className="mx-auto max-w-2xl px-4 py-10 text-neutral-400">{error ? tError(error) : t("common.loading")}</main>;
+    return <main className="py-10 text-neutral-400">{error ? tError(error) : t("common.loading")}</main>;
   }
 
   const topBid = auction.bids[0]?.amount ?? null;
@@ -109,7 +109,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
     : interpolateJsx(t("auction.winnerHandoffWhoUnknown"), "pseudo", <strong>{auction.sellerPseudo}</strong>);
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10">
+    <main className="flex max-w-md flex-col gap-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">{t("auction.title")}</h1>
       </div>

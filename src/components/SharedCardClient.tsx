@@ -25,7 +25,7 @@ export function SharedCardClient({ card }: { card: CardData & { cardId: string }
   }, [card.cardId]);
 
   return (
-    <main className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-10">
+    <main className="flex flex-col items-center gap-5 py-10">
       <TiltableCard card={card} className="w-[min(26rem,78vw,calc((100dvh_-_12rem)*5/7))]" />
       <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
       {dropStats && dropStats.total > 0 && (

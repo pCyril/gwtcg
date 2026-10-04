@@ -168,7 +168,7 @@ export function HomeClient() {
   const showOverlay = opening || cards !== null;
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-10">
+    <main className="flex flex-col gap-8 py-10">
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-3xl font-bold tracking-tight">{t("home.title")}</h1>

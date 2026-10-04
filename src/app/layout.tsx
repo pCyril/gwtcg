@@ -41,7 +41,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-neutral-950 text-neutral-100">
         <LocaleProvider initialLocale={locale}>
           <SiteNav />
-          <div className="flex-1">{children}</div>
+          {/* One content width for the whole site, shared with the nav bar (SiteNav) - pages must not set their own. */}
+          <div className="mx-auto w-full max-w-5xl flex-1 px-4">{children}</div>
           <Footer />
         </LocaleProvider>
       </body>
