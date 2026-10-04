@@ -240,6 +240,9 @@ export function HomeClient() {
             </Link>
           </>
         )}
+        <Link href="/drops" className="text-sm text-neutral-400 underline hover:text-neutral-200">
+          {t("home.drops")}
+        </Link>
         <Link href="/changelog" className="text-sm text-neutral-400 underline hover:text-neutral-200">
           {t("footer.changelog")}
         </Link>

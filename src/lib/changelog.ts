@@ -13,9 +13,11 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-04",
     fr: [
+      "Nouvelle page « Comment ça drop ? » : elle explique le contenu d'un booster, les chances par rareté et par famille de cartes (calculées en direct), et comment la rareté de chaque carte est décidée.",
       "Échanges : ton offre s'enregistre maintenant automatiquement à chaque carte ajoutée ou retirée, sans bouton « Mettre à jour mon offre ». Tu peux aussi retirer une carte de ton offre avec la croix rouge, ou en recliquant dessus dans ta liste.",
     ],
     en: [
+      "New \"How do drops work?\" page: it explains what's in a booster, the odds by rarity and by card family (computed live), and how each card's rarity is decided.",
       "Trades: your offer now saves automatically each time you add or remove a card, with no \"Update my offer\" button. You can also take a card back with the red cross, or by clicking it again in your list.",
     ],
   },

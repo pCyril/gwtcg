@@ -5,7 +5,7 @@ import type { BoosterType, CardFamily, Rarity } from "@prisma/client";
 
 export const DAILY_BOOSTER_LIMIT = 5;
 export const BOOSTER_WINDOW_MS = 60 * 60 * 1000;
-const STANDARD_BOOSTER_SIZE = 5;
+export const STANDARD_BOOSTER_SIZE = 5;
 const NON_COMMON_RARITIES: Rarity[] = ["UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
 
 export interface BoosterAvailability {

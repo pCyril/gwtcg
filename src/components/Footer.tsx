@@ -13,6 +13,9 @@ export function Footer() {
         <Link href="/changelog" className="underline hover:text-neutral-300">
           {t("footer.changelog")}
         </Link>
+        <Link href="/drops" className="underline hover:text-neutral-300">
+          {t("footer.drops")}
+        </Link>
         <a
           href="https://github.com/pCyril/gwtcg"
           target="_blank"
