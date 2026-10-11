@@ -23,13 +23,7 @@ import { parseWeapon } from "@/lib/wiki/parseWeapon";
 import { parseLocation } from "@/lib/wiki/parseLocation";
 import { parseItem } from "@/lib/wiki/parseItem";
 import { parseLore } from "@/lib/wiki/parseLore";
-import {
-  dataBonus,
-  forcedRarityFor,
-  forcedSkillRarity,
-  scoreAndRankCardsByFamily,
-  WEAPON_QUALITY_TIERS,
-} from "@/lib/game/rarity";
+import { recomputeRarity } from "@/lib/game/recomputeRarity";
 import type { CardFamily, Prisma } from "@prisma/client";
 
 const SKILL_CATEGORIES = [
@@ -291,10 +285,9 @@ async function syncFamily<T extends { campaign?: string | null; profession?: str
 }
 
 /**
- * Weapons don't fit the generic one-card-per-page shape: a green/unique
- * weapon is one fixed-stat card (forced Legendary, as before), but a generic
- * skin can actually drop in white/blue/purple/gold in-game, so it gets one
- * card per real quality tier instead of a single percentile-derived rarity.
+ * Weapons: one card per wiki page like every other family, but their rarity is
+ * ranked among weapons only (recomputeRarity), Common..Legendary - Mythic
+ * weapons are picked by hand by an admin.
  */
 async function syncWeaponFamily(client: WikiClient) {
   const seen = new Set<string>();
@@ -349,32 +342,23 @@ async function syncWeaponFamily(client: WikiClient) {
       },
     });
 
-    const tiers = parsed.isUnique ? [{ variantKey: "DEFAULT", rarity: "LEGENDARY" as const }] : WEAPON_QUALITY_TIERS;
-
-    for (const tier of tiers) {
-      const existing = await prisma.card.findUnique({
-        where: { wikiPageId_variantKey: { wikiPageId: wikiPage.id, variantKey: tier.variantKey } },
-        select: { rarityLocked: true },
-      });
-      await prisma.card.upsert({
-        where: { wikiPageId_variantKey: { wikiPageId: wikiPage.id, variantKey: tier.variantKey } },
-        create: {
-          wikiPageId: wikiPage.id,
-          variantKey: tier.variantKey,
-          family: "WEAPON",
-          campaign: parsed.campaign ?? null,
-          profession: parsed.profession ?? null,
-          attributes: attributes as Prisma.InputJsonValue,
-          rarity: tier.rarity,
-        },
-        update: {
-          campaign: parsed.campaign ?? null,
-          profession: parsed.profession ?? null,
-          attributes: attributes as Prisma.InputJsonValue,
-          ...(existing?.rarityLocked ? {} : { rarity: tier.rarity }),
-        },
-      });
-    }
+    await prisma.card.upsert({
+      where: { wikiPageId_variantKey: { wikiPageId: wikiPage.id, variantKey: "DEFAULT" } },
+      create: {
+        wikiPageId: wikiPage.id,
+        variantKey: "DEFAULT",
+        family: "WEAPON",
+        campaign: parsed.campaign ?? null,
+        profession: parsed.profession ?? null,
+        attributes: attributes as Prisma.InputJsonValue,
+      },
+      // Rarity is never touched here - recomputeRarity() ranks weapons afterwards.
+      update: {
+        campaign: parsed.campaign ?? null,
+        profession: parsed.profession ?? null,
+        attributes: attributes as Prisma.InputJsonValue,
+      },
+    });
 
     imported += 1;
     if (imported % 25 === 0) {
@@ -383,57 +367,6 @@ async function syncWeaponFamily(client: WikiClient) {
   }
 
   console.log(`Done with WEAPON: ${imported} pages imported/updated out of ${titles.length} candidate pages`);
-}
-
-async function recomputeRarity() {
-  console.log("Recomputing rarity within each family...");
-  // Weapons set their own rarity directly at creation time (syncWeaponFamily) -
-  // fixed per quality tier, never revised by percentile scoring.
-  const cards = await prisma.card.findMany({ where: { family: { not: "WEAPON" } }, include: { wikiPage: true } });
-
-  const inputs = cards.map((card) => {
-    const attrs = card.attributes as Record<string, unknown>;
-
-    if (card.family === "SKILL") {
-      return {
-        id: card.id,
-        family: card.family,
-        backlinks: 0,
-        wikitextLength: 0,
-        bonus: 0,
-        forcedRarity: forcedSkillRarity({
-          isElite: Boolean(attrs.isElite),
-          isPveOnly: Boolean(attrs.isPveOnly),
-          campaign: card.campaign,
-        }),
-      };
-    }
-
-    const traits = {
-      isElite: Boolean(attrs.isElite),
-      isBoss: Boolean(attrs.isBoss),
-      isUniqueGreenItem: Boolean(attrs.isUnique),
-      isMajorLoreCharacter: Boolean(attrs.isMajorLoreCharacter),
-    };
-    return {
-      id: card.id,
-      family: card.family,
-      backlinks: card.wikiPage.backlinks,
-      wikitextLength: card.wikiPage.contentLength,
-      bonus: dataBonus(traits),
-      forcedRarity: forcedRarityFor(traits),
-    };
-  });
-
-  const scored = scoreAndRankCardsByFamily(inputs);
-
-  for (const s of scored) {
-    // Admin-locked cards keep their hand-set rarity (score still refreshes).
-    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: false }, data: { score: s.score, rarity: s.rarity } });
-    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: true }, data: { score: s.score } });
-  }
-
-  console.log(`Rarity updated for ${scored.length} cards.`);
 }
 
 async function main() {

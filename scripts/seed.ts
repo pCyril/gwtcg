@@ -12,8 +12,8 @@ import { prisma } from "@/lib/prisma";
 import { parseSkill } from "@/lib/wiki/parseSkill";
 import { parseNpc } from "@/lib/wiki/parseNpc";
 import { parseWeapon } from "@/lib/wiki/parseWeapon";
-import { dataBonus, forcedRarityFor, scoreAndRankCardsByFamily } from "@/lib/game/rarity";
 import { pageUrl } from "@/lib/wiki/client";
+import { recomputeRarity } from "@/lib/game/recomputeRarity";
 import type { CardFamily, Prisma } from "@prisma/client";
 
 const SKILL_FIXTURES: { title: string; backlinks: number; wikitext: string; imageUrls?: string[] }[] = [
@@ -481,29 +481,6 @@ async function seedFamily<T extends { campaign?: string | null; profession?: str
       },
     });
   }
-}
-
-async function recomputeRarity() {
-  const cards = await prisma.card.findMany({ include: { wikiPage: true } });
-  const inputs = cards.map((card) => {
-    const attrs = card.attributes as Record<string, unknown>;
-    const traits = { isElite: Boolean(attrs.isElite), isBoss: Boolean(attrs.isBoss), isUniqueGreenItem: Boolean(attrs.isUnique) };
-    return {
-      id: card.id,
-      family: card.family,
-      backlinks: card.wikiPage.backlinks,
-      wikitextLength: card.wikiPage.contentLength,
-      bonus: dataBonus(traits),
-      forcedRarity: forcedRarityFor(traits),
-    };
-  });
-  const scored = scoreAndRankCardsByFamily(inputs);
-  for (const s of scored) {
-    // Admin-locked cards keep their hand-set rarity (score still refreshes).
-    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: false }, data: { score: s.score, rarity: s.rarity } });
-    await prisma.card.updateMany({ where: { id: s.id, rarityLocked: true }, data: { score: s.score } });
-  }
-  console.log(`Rarity assigned for ${scored.length} cards.`);
 }
 
 async function main() {

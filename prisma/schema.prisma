@@ -44,9 +44,10 @@ enum Rarity {
   MYTHIC
 }
 
-// The reference card definition. Usually one per wiki page, but a non-unique
-// weapon skin gets up to 4 (one per real in-game quality color) - variantKey
-// disambiguates those, and is "DEFAULT" for every other 1-card-per-page family.
+// The reference card definition: one per wiki page. variantKey is "DEFAULT" for
+// every card today; it stays part of the unique key so a page can get several
+// cards again if a future family needs it (weapons used to have 4 quality
+// variants - merged by the 20261011120000_merge_weapon_variants migration).
 model Card {
   id         String     @id @default(cuid())
   wikiPageId String

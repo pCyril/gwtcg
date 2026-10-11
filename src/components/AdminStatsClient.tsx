@@ -32,6 +32,22 @@ function StatCard({ label, value, sub }: { label: string; value: number; sub?: s
 
 export function AdminStatsClient() {
   const { t } = useLocale();
+  const [recomputeState, setRecomputeState] = useState<"idle" | "running" | "done" | "error">("idle");
+  const [recomputed, setRecomputed] = useState(0);
+
+  async function recomputeRarities() {
+    if (!window.confirm(t("admin.rarity.confirm"))) return;
+    setRecomputeState("running");
+    try {
+      const res = await fetch("/api/admin/rarity/recompute", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setRecomputed(data.updated);
+      setRecomputeState("done");
+    } catch {
+      setRecomputeState("error");
+    }
+  }
   const [stats, setStats] = useState<Stats | null>(null);
   const [forbidden, setForbidden] = useState(false);
 
@@ -107,6 +123,24 @@ export function AdminStatsClient() {
           />
         </div>
       )}
+
+      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
+        <h2 className="font-semibold">{t("admin.rarity.title")}</h2>
+        <p className="text-sm text-neutral-400">{t("admin.rarity.description")}</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={recomputeRarities}
+            disabled={recomputeState === "running"}
+            className="rounded border border-neutral-700 px-3 py-1.5 text-sm hover:border-emerald-400 disabled:opacity-50"
+          >
+            {recomputeState === "running" ? t("common.loading") : t("admin.rarity.button")}
+          </button>
+          {recomputeState === "done" && (
+            <span className="text-sm text-emerald-400">{t("admin.rarity.done", { count: recomputed })}</span>
+          )}
+          {recomputeState === "error" && <span className="text-sm text-red-400">{t("common.unknownError")}</span>}
+        </div>
+      </section>
     </main>
   );
 }

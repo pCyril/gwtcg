@@ -39,6 +39,17 @@ const totalShare = rawShares.reduce((sum, s) => sum + s.share, 0);
 export const RARITY_TARGET_SHARES: { rarity: Rarity; share: number }[] =
   totalShare > 0 ? rawShares.map((s) => ({ rarity: s.rarity, share: s.share / totalShare })) : rawShares;
 
+/**
+ * RARITY_TARGET_SHARES without Mythic, renormalized - for pools that should
+ * span Common..Legendary only (weapons: Mythic weapons are picked by hand by
+ * an admin, never assigned automatically).
+ */
+export const RARITY_SHARES_WITHOUT_MYTHIC: { rarity: Rarity; share: number }[] = (() => {
+  const kept = RARITY_TARGET_SHARES.filter((s) => s.rarity !== "MYTHIC");
+  const total = kept.reduce((sum, s) => sum + s.share, 0);
+  return total > 0 ? kept.map((s) => ({ rarity: s.rarity, share: s.share / total })) : kept;
+})();
+
 export interface DataBonusInput {
   isElite?: boolean;
   isBoss?: boolean;
@@ -84,16 +95,6 @@ export function forcedSkillRarity(input: SkillRarityInput): Rarity {
   return "COMMON";
 }
 
-// Real GW1 item-quality colors for non-unique weapon skins, from most to
-// least common - every such skin gets one card per tier (see sync-wiki.ts),
-// rather than a single card at a percentile-derived rarity.
-export const WEAPON_QUALITY_TIERS: { variantKey: string; rarity: Rarity }[] = [
-  { variantKey: "WHITE", rarity: "COMMON" },
-  { variantKey: "BLUE", rarity: "UNCOMMON" },
-  { variantKey: "PURPLE", rarity: "RARE" },
-  { variantKey: "GOLD", rarity: "EPIC" },
-];
-
 /** Min-max normalize a list of raw values to [0, 1]. Uses log1p for skewed counts (backlinks). */
 function normalize(values: number[], useLog = false): number[] {
   const transformed = useLog ? values.map((v) => Math.log1p(Math.max(v, 0))) : values;
@@ -118,7 +119,10 @@ export interface ScoredCard {
 }
 
 /** Score and assign rarity tiers to an entire corpus (or family) in one pass. */
-export function scoreAndRankCards(cards: ScoreInput[]): ScoredCard[] {
+export function scoreAndRankCards(
+  cards: ScoreInput[],
+  shares: { rarity: Rarity; share: number }[] = RARITY_TARGET_SHARES,
+): ScoredCard[] {
   if (cards.length === 0) return [];
 
   const backlinksNorm = normalize(
@@ -146,7 +150,7 @@ export function scoreAndRankCards(cards: ScoreInput[]): ScoredCard[] {
 
   let cumulativeShare = 0;
   let rank = 0;
-  for (const { rarity, share } of RARITY_TARGET_SHARES) {
+  for (const { rarity, share } of shares) {
     cumulativeShare += share;
     const cutoffIndex = Math.round(cumulativeShare * n);
     for (; rank < cutoffIndex && rank < n; rank++) {
