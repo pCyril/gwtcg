@@ -296,7 +296,8 @@ async function syncWeaponFamily(client: WikiClient) {
     console.log(`Fetching category members: ${category}`);
     const members = await client.getCategoryMembers(category);
     for (const title of members) {
-      if (!seen.has(title) && !shouldSkipTitle(title)) {
+      // PvP weapons ("PvP Longbow", ...) are not part of the game.
+      if (!seen.has(title) && !shouldSkipTitle(title) && !title.startsWith("PvP")) {
         seen.add(title);
         titles.push(title);
       }

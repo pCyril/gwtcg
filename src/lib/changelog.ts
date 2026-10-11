@@ -13,9 +13,11 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-11",
     fr: [
+      "Les armes PvP (celles dont le nom commence par « PvP ») sont retirées du jeu : elles ne sortent plus en booster et celles que tu possédais ont été supprimées de ta collection.",
       "Les armes n'existent plus en 4 versions de couleur : chaque arme est maintenant une seule carte, avec une seule rareté (de Commune à Légendaire, selon la popularité de l'arme sur le wiki). Tu ne perds aucune carte : tes exemplaires des anciennes versions deviennent des exemplaires de la carte unique.",
     ],
     en: [
+      "PvP weapons (those whose name starts with \"PvP\") are removed from the game: they no longer drop from boosters, and the ones you owned were removed from your collection.",
       "Weapons no longer come in 4 color versions: each weapon is now a single card with a single rarity (Common to Legendary, based on how popular the weapon is on the wiki). You don't lose any card: your copies of the old versions become copies of the single card.",
     ],
   },
