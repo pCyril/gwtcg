@@ -11,6 +11,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-10-12",
+    fr: ["Les administrateurs peuvent retirer une illustration d'une carte (par exemple une image inappropriée)."],
+    en: ["Administrators can remove an illustration from a card (for example an inappropriate image)."],
+  },
+  {
     date: "2026-10-11",
     fr: [
       "Les armes PvP (celles dont le nom commence par « PvP ») sont retirées du jeu : elles ne sortent plus en booster et celles que tu possédais ont été supprimées de ta collection.",

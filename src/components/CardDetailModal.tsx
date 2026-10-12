@@ -42,6 +42,7 @@ export function CardDetailModal({
   const [rarity, setRarity] = useState<RarityKey>(card.rarity);
   const [rarityPending, setRarityPending] = useState(false);
   const [rarityError, setRarityError] = useState<string | null>(null);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
   const [dropStats, setDropStats] = useState<{ copies: number; total: number } | null>(null);
   const [discardPending, setDiscardPending] = useState(false);
   const [discardError, setDiscardError] = useState<string | null>(null);
@@ -131,6 +132,23 @@ export function CardDetailModal({
     }
   }
 
+  async function removeImage(imageUrl: string) {
+    if (!card.cardId || !window.confirm(t("cardDetail.adminRemoveImageConfirm"))) return;
+    setRarityError(null);
+    const res = await fetch(`/api/admin/cards/${card.cardId}/image`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageUrl }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setRarityError(tError(data.error));
+      return;
+    }
+    setRemovedImages((prev) => [...prev, imageUrl]);
+    onRarityChanged?.();
+  }
+
   // Native share sheet on phones, clipboard elsewhere (or if the sheet isn't available).
   async function shareCard() {
     if (!card.cardId) return;
@@ -173,6 +191,8 @@ export function CardDetailModal({
     }
   }
 
+  const images = (card.imageUrls ?? []).filter((u) => !removedImages.includes(u));
+
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden bg-black/80 backdrop-blur-sm"
@@ -183,7 +203,7 @@ export function CardDetailModal({
         onClick={(e) => e.stopPropagation()}
       >
         <TiltableCard
-          card={{ ...card, rarity }}
+          card={{ ...card, rarity, imageUrls: images }}
           className="w-[min(26rem,78vw,calc((100dvh_-_14.5rem)*5/7))]"
         />
 
@@ -215,6 +235,26 @@ export function CardDetailModal({
               ))}
             </select>
           </label>
+        )}
+        {isAdmin && card.cardId && images.length > 0 && (
+          <div className="flex flex-col items-center gap-1 text-xs text-amber-300">
+            {t("cardDetail.adminRemoveImage")}
+            <div className="flex gap-2">
+              {images.map((url) => (
+                <button
+                  key={url}
+                  onClick={() => removeImage(url)}
+                  className="group relative h-12 w-12 overflow-hidden rounded border border-amber-700"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary card art */}
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/60 text-lg text-red-300 opacity-0 group-hover:opacity-100">
+                    ✕
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
         {rarityError && <p className="text-xs text-red-400">{rarityError}</p>}
         <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
