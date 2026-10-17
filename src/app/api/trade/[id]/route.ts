@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/session";
 import { getTradeDetail } from "@/lib/game/trade";
 import { getImageCreditsByWikiPage } from "@/lib/game/artSubmission";
@@ -7,6 +8,7 @@ function serializeTrade(
   trade: Awaited<ReturnType<typeof getTradeDetail>>,
   meId: string,
   credits: Map<string, Record<string, string>>,
+  myCopies: Map<string, number>,
 ) {
   const cardOf = (item: (typeof trade.items)[number]) => ({
     instanceId: item.cardInstance.id,
@@ -21,6 +23,8 @@ function serializeTrade(
     url: item.cardInstance.card.wikiPage.url,
     imageUrls: item.cardInstance.card.wikiPage.imageUrls,
     imageCredits: credits.get(item.cardInstance.card.wikiPageId) ?? {},
+    // Copies of this card the viewer owns (for their own side, the offered ones included).
+    copies: myCopies.get(item.cardInstance.cardId) ?? 0,
   });
 
   return {
@@ -47,7 +51,13 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/trade/[id]"
   try {
     const trade = await getTradeDetail(id, me.id);
     const credits = await getImageCreditsByWikiPage(trade.items.map((i) => i.cardInstance.card.wikiPageId));
-    return NextResponse.json(serializeTrade(trade, me.id, credits));
+    const mine = await prisma.cardInstance.groupBy({
+      by: ["cardId"],
+      where: { ownerId: me.id, discardedAt: null, cardId: { in: trade.items.map((i) => i.cardInstance.cardId) } },
+      _count: { _all: true },
+    });
+    const myCopies = new Map(mine.map((row) => [row.cardId, row._count._all]));
+    return NextResponse.json(serializeTrade(trade, me.id, credits, myCopies));
   } catch (err) {
     const message = err instanceof Error ? err.message : "UNKNOWN_ERROR";
     const status = message === "TRADE_NOT_FOUND" ? 404 : message === "NOT_A_PARTICIPANT" ? 403 : 500;

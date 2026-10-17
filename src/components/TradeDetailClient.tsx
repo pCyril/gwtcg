@@ -268,13 +268,13 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {(isPending ? offer : mine.cards).map((card) => (
               <div key={card.instanceId} className="relative">
-                <CardTile card={card} />
+                <CardTile card={card} showCopies />
                 {isPending && (
                   <button
                     onClick={() => removeFromOffer(card.instanceId!)}
                     aria-label={t("trade.removeCard", { title: card.title })}
                     title={t("trade.removeCard", { title: card.title })}
-                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white shadow hover:bg-red-600"
+                    className="absolute left-2 top-9 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white shadow hover:bg-red-600"
                   >
                     ×
                   </button>
