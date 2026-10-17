@@ -12,8 +12,8 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-17",
-    fr: ["Sur la collection d'un autre joueur, chaque carte indique si tu la possèdes (et en combien d'exemplaires) ou non."],
-    en: ["On another player's collection, each card shows whether you own it (and how many copies) or not."],
+    fr: ["Sur la collection d'un autre joueur, chaque carte indique si tu la possèdes (et en combien d'exemplaires) ou non, et tu peux n'afficher que celles que tu n'as pas."],
+    en: ["On another player's collection, each card shows whether you own it (and how many copies) or not, and you can filter to only the cards you don't own."],
   },
   {
     date: "2026-10-12",

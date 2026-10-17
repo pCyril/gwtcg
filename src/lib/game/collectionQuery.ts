@@ -23,6 +23,8 @@ export interface CollectionQueryOptions {
   /** Case-insensitive substring match on the card's name. */
   search: string | null;
   page: number;
+  /** Cards to leave out of the result (progress is unaffected) - e.g. what the viewer already owns. */
+  excludeCardIds?: Set<string>;
 }
 
 export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQueryOptions {
@@ -44,7 +46,7 @@ export function parseCollectionQuery(searchParams: URLSearchParams): CollectionQ
  * way, just scoped to whichever userId is asked for.
  */
 export async function queryCollection(userId: string, options: CollectionQueryOptions) {
-  const { family, rarity, campaign, professions, sort, search, page } = options;
+  const { family, rarity, campaign, professions, sort, search, page, excludeCardIds } = options;
 
   const cardWhere = {
     ...(family ? { family } : {}),
@@ -110,7 +112,7 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
   // or "sell one" act on); the "copies" badge still reflects the full count.
   const seenCardIds = new Set<string>();
   const uniqueInstances = instances.filter((instance) => {
-    if (seenCardIds.has(instance.cardId)) return false;
+    if (seenCardIds.has(instance.cardId) || excludeCardIds?.has(instance.cardId)) return false;
     seenCardIds.add(instance.cardId);
     return true;
   });

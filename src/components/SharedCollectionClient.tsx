@@ -38,6 +38,7 @@ interface Filters {
   sort: string;
   professions: string[];
   q: string;
+  missing: boolean;
   page: number;
 }
 
@@ -63,6 +64,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     sort: searchParams.get("sort") ?? "recent",
     professions: searchParams.get("professions")?.split(",").filter(Boolean) ?? [],
     q: searchParams.get("q") ?? "",
+    missing: searchParams.get("missing") === "1",
     page: Math.max(1, Number(searchParams.get("page")) || 1),
   });
 
@@ -74,6 +76,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
     if (next.sort && next.sort !== "recent") params.set("sort", next.sort);
     if (next.family === "SKILL" && next.professions.length) params.set("professions", next.professions.join(","));
     if (next.q) params.set("q", next.q);
+    if (next.missing) params.set("missing", "1");
     if (next.page > 1) params.set("page", String(next.page));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
@@ -107,6 +110,7 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
       params.set("professions", filters.professions.join(","));
     }
     if (filters.q) params.set("q", filters.q);
+    if (filters.missing) params.set("missing", "1");
     params.set("page", String(filters.page));
 
     fetch(`/api/collection/shared/${encodeURIComponent(pseudo)}?${params.toString()}`)
@@ -208,6 +212,17 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
             </option>
           ))}
         </select>
+        {/* Only meaningful when the API could compare against the viewer's own binder (they have a session). */}
+        {(filters.missing || cards?.some((card) => card.viewerCopies !== undefined)) && (
+          <label className="flex items-center gap-2 text-sm text-neutral-300">
+            <input
+              type="checkbox"
+              checked={filters.missing}
+              onChange={(e) => updateFilters({ ...filters, missing: e.target.checked, page: 1 })}
+            />
+            {t("collection.shared.onlyMissing")}
+          </label>
+        )}
       </div>
 
       {filters.family === "SKILL" && (

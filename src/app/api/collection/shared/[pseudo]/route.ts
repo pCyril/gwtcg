@@ -16,21 +16,25 @@ export async function GET(request: Request, { params }: RouteContext<"/api/colle
   }
 
   const { searchParams } = new URL(request.url);
-  const result = await queryCollection(owner.id, parseCollectionQuery(searchParams));
+  const query = parseCollectionQuery(searchParams);
 
-  // Tell a logged-in viewer which of these cards they own themselves (and how
-  // many copies). Left undefined for anonymous visitors and for the owner
-  // looking at their own public page, where the comparison is meaningless.
+  // Tell a logged-in viewer which cards they own themselves (and how many
+  // copies), and optionally hide those (?missing=1). Left undefined for
+  // anonymous visitors and for the owner looking at their own public page,
+  // where the comparison is meaningless.
   const viewer = await getSessionUser();
   let viewerCopies: Map<string, number> | null = null;
   if (viewer && viewer.id !== owner.id) {
     const owned = await prisma.cardInstance.groupBy({
       by: ["cardId"],
-      where: { ownerId: viewer.id, discardedAt: null, cardId: { in: result.cards.map((card) => card.cardId) } },
+      where: { ownerId: viewer.id, discardedAt: null },
       _count: { _all: true },
     });
     viewerCopies = new Map(owned.map((row) => [row.cardId, row._count._all]));
+    if (searchParams.get("missing") === "1") query.excludeCardIds = new Set(viewerCopies.keys());
   }
+
+  const result = await queryCollection(owner.id, query);
 
   // Omit instanceId - it only matters for the owner's own instance-scoped
   // actions (discard, sell), which a public viewer never has access to.
