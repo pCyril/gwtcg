@@ -67,9 +67,10 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   // Debounced so typing doesn't fire a request per keystroke; the "load more"
   // button bumps the page, which re-returns everything through that page.
   useEffect(() => {
+    if (!theirPseudo) return;
     let ignore = false;
     const timer = setTimeout(() => {
-      const params = new URLSearchParams({ page: String(collectionPage) });
+      const params = new URLSearchParams({ page: String(collectionPage), notOwnedBy: theirPseudo });
       if (search.trim()) params.set("q", search.trim());
       fetch(`/api/collection?${params.toString()}`)
         .then((res) => res.json())
@@ -83,7 +84,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
       ignore = true;
       clearTimeout(timer);
     };
-  }, [search, collectionPage]);
+  }, [theirPseudo, search, collectionPage]);
 
   useEffect(() => {
     if (!theirPseudo || !tradeIsPending) return;
