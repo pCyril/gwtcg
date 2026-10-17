@@ -23,6 +23,8 @@ export interface CardData {
   attributes?: Record<string, unknown>;
   isNew?: boolean;
   copies?: number;
+  /** How many copies the viewer owns of this card - only set when browsing someone else's collection. */
+  viewerCopies?: number;
 }
 
 // Standard trading-card proportions (2.5in x 3.5in), so every card - grid
@@ -56,6 +58,17 @@ export function CardTile({ card, size = "sm" }: { card: CardData; size?: "sm" | 
 
       {/* Art window */}
       <div className="relative mx-[6%] mt-[3%] overflow-hidden rounded-[4px] border border-black/60" style={{ flex: "0 0 42%" }}>
+        {card.viewerCopies !== undefined && (
+          <span
+            className={`absolute left-1 top-1 z-10 rounded-full px-1.5 py-0.5 text-[8px] font-bold shadow ${
+              card.viewerCopies > 0 ? "bg-emerald-500 text-white" : "bg-black/70 text-neutral-300"
+            }`}
+          >
+            {card.viewerCopies > 0
+              ? t("card.viewerOwned", { count: card.viewerCopies })
+              : t("card.viewerMissing")}
+          </span>
+        )}
         {card.isNew && (
           <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
             {t("card.new")}
