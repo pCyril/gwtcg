@@ -36,6 +36,13 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [seededFor, setSeededFor] = useState<string | null>(null);
+  // The other player's cards I don't own yet - what I can ask them for.
+  const [theirCollection, setTheirCollection] = useState<CardData[] | null>(null);
+  const [theirSearch, setTheirSearch] = useState("");
+  const [theirPage, setTheirPage] = useState(1);
+  const [theirHasMore, setTheirHasMore] = useState(false);
+  const theirPseudo = trade ? (trade.isInitiator ? trade.recipient.pseudo : trade.initiator.pseudo) : null;
+  const tradeIsPending = trade?.status === "PENDING";
 
   function refreshTrade(): Promise<TradeDetail | null> {
     return fetch(`/api/trade/${tradeId}`)
@@ -77,6 +84,26 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
       clearTimeout(timer);
     };
   }, [search, collectionPage]);
+
+  useEffect(() => {
+    if (!theirPseudo || !tradeIsPending) return;
+    let ignore = false;
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams({ page: String(theirPage), missing: "1" });
+      if (theirSearch.trim()) params.set("q", theirSearch.trim());
+      fetch(`/api/collection/shared/${encodeURIComponent(theirPseudo)}?${params.toString()}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (ignore || !data.cards) return;
+          setTheirCollection(data.cards);
+          setTheirHasMore(Boolean(data.hasMore));
+        });
+    }, 250);
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
+  }, [theirPseudo, tradeIsPending, theirSearch, theirPage]);
 
   // Mirror the draft into a ref so the save loop always sends the latest one.
   useEffect(() => {
@@ -163,6 +190,21 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
     }
   }
 
+  // Ask for (or drop) one of their cards; the server toggles it on their side.
+  async function toggleRequested(card: CardData) {
+    setError(null);
+    const res = await fetch(`/api/trade/${tradeId}/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: card.cardId }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "UNKNOWN_ERROR");
+    }
+    await refreshTrade();
+  }
+
   function removeFromOffer(instanceId: string) {
     changeOffer(offerRef.current.filter((c) => c.instanceId !== instanceId));
   }
@@ -183,6 +225,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   }
 
   async function cancel() {
+    if (!window.confirm(t("trade.cancelConfirm"))) return;
     setPending(true);
     try {
       await fetch(`/api/trade/${tradeId}/cancel`, { method: "POST" });
@@ -260,7 +303,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
               />
               <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
                 {myCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {myCollection?.map((card) => (
                     <div
                       key={card.instanceId}
@@ -277,7 +320,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                         offer.some((c) => c.cardId === card.cardId) ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
                       }`}
                     >
-                      <CardTile card={card} />
+                      <CardTile card={card} showCopies />
                     </div>
                   ))}
                 </div>
@@ -308,8 +351,72 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
             ))}
             {theirs.cards.length === 0 && <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>}
           </div>
+
+          {isPending && (
+            <>
+              <p className="text-xs text-neutral-500">{t("trade.theirMissing", { pseudo: theirs.pseudo })}</p>
+              <input
+                type="search"
+                value={theirSearch}
+                onChange={(e) => {
+                  setTheirSearch(e.target.value);
+                  setTheirPage(1);
+                }}
+                placeholder={t("trade.searchPlaceholder")}
+                className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+              />
+              <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
+                {theirCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {theirCollection?.map((card) => (
+                    <div
+                      key={card.cardId}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => toggleRequested(card)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleRequested(card);
+                        }
+                      }}
+                      className={`cursor-pointer rounded-lg transition ${
+                        theirs.cards.some((c) => c.cardId === card.cardId)
+                          ? "opacity-100 ring-2 ring-emerald-400"
+                          : "opacity-60 hover:opacity-90"
+                      }`}
+                    >
+                      <CardTile card={{ ...card, viewerCopies: undefined }} />
+                    </div>
+                  ))}
+                </div>
+                {theirHasMore && (
+                  <button
+                    onClick={() => setTheirPage((p) => p + 1)}
+                    className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
+                  >
+                    {t("trade.loadMore")}
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </section>
       </div>
+
+      {isPending && (
+        <p
+          className={`rounded-lg border px-4 py-2 text-sm ${
+            mine.confirmed && !theirs.confirmed
+              ? "border-emerald-700 bg-emerald-950/30 text-emerald-300"
+              : "border-neutral-800 bg-neutral-900/50 text-neutral-400"
+          }`}
+        >
+          {mine.confirmed && !theirs.confirmed
+            ? t("trade.waitingForThem", { pseudo: theirs.pseudo })
+            : t("trade.confirmHint")}
+        </p>
+      )}
 
       {isPending && (
         <div className="flex gap-3">

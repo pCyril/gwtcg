@@ -30,7 +30,7 @@ export interface CardData {
 // Standard trading-card proportions (2.5in x 3.5in), so every card - grid
 // thumbnail or spotlighted reveal - reads as the same physical object, just
 // at a different size.
-export function CardTile({ card, size = "sm" }: { card: CardData; size?: "sm" | "lg" }) {
+export function CardTile({ card, size = "sm", showCopies = false }: { card: CardData; size?: "sm" | "lg"; showCopies?: boolean }) {
   const { t } = useLocale();
   const style = RARITY_STYLES[card.rarity];
   const large = size === "lg";
@@ -46,7 +46,7 @@ export function CardTile({ card, size = "sm" }: { card: CardData; size?: "sm" | 
       {/* Title bar */}
       <div className="flex shrink-0 items-center justify-between gap-1 border-b border-black/50 bg-neutral-900/80 px-2 py-1">
         <h3 className={`truncate font-bold text-neutral-50 ${large ? "text-base" : "text-[11px]"}`}>{card.title}</h3>
-        {card.copies !== undefined && card.copies > 1 && (
+        {card.copies !== undefined && (showCopies || card.copies > 1) && (
           <span
             className="shrink-0 rounded-full bg-black/60 px-1.5 py-0.5 text-[8px] font-bold text-neutral-100"
             title={t("collection.copiesTooltip", { count: card.copies })}

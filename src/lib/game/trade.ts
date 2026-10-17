@@ -83,6 +83,43 @@ export async function setOffer(tradeId: string, userId: string, cardInstanceIds:
   });
 }
 
+/**
+ * Lets a participant ask for (or drop) one of the other player's cards by card
+ * id, adding/removing it on the other side of a pending trade. Like the
+ * createTrade() pre-fill it is only a hint - the other player's own setOffer()
+ * replaces that side - but it does reset both confirmations.
+ */
+export async function toggleRequestedCard(tradeId: string, userId: string, cardId: string) {
+  return prisma.$transaction(async (tx) => {
+    const trade = await tx.trade.findUniqueOrThrow({ where: { id: tradeId } });
+    if (trade.status !== "PENDING") throw new Error("TRADE_NOT_PENDING");
+    const otherSide: TradeSide = sideOf(trade, userId) === "INITIATOR" ? "RECIPIENT" : "INITIATOR";
+    const otherUserId = otherSide === "INITIATOR" ? trade.initiatorId : trade.recipientId;
+
+    const existing = await tx.tradeItem.findFirst({
+      where: { tradeId, side: otherSide, cardInstance: { cardId } },
+    });
+    if (existing) {
+      await tx.tradeItem.delete({ where: { id: existing.id } });
+    } else {
+      const current = await tx.tradeItem.count({ where: { tradeId, side: otherSide } });
+      if (current >= MAX_TRADE_ITEMS) throw new Error("TOO_MANY_ITEMS");
+      const candidates = await tx.cardInstance.findMany({
+        where: { cardId, ownerId: otherUserId, discardedAt: null },
+        include: { auctions: true },
+      });
+      const instance = candidates.find((c) => !c.auctions.some((a) => a.status === "ACTIVE" || a.status === "AWAITING_HANDOFF"));
+      if (!instance) throw new Error("CARD_NOT_AVAILABLE");
+      await tx.tradeItem.create({ data: { tradeId, cardInstanceId: instance.id, side: otherSide } });
+    }
+
+    await tx.trade.update({
+      where: { id: tradeId },
+      data: { initiatorConfirmed: false, recipientConfirmed: false },
+    });
+  });
+}
+
 export async function cancelTrade(tradeId: string, userId: string) {
   return prisma.$transaction(async (tx) => {
     const trade = await tx.trade.findUniqueOrThrow({ where: { id: tradeId } });

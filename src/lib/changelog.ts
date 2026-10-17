@@ -12,8 +12,11 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-10-17",
-    fr: ["Sur la collection d'un autre joueur, chaque carte indique si tu la possèdes (et en combien d'exemplaires) ou non, et tu peux n'afficher que celles que tu n'as pas."],
-    en: ["On another player's collection, each card shows whether you own it (and how many copies) or not, and you can filter to only the cards you don't own."],
+    fr: [
+      "Dans un échange, tu peux maintenant demander des cartes à l'autre joueur depuis la liste de celles que tu n'as pas, et tes cartes à proposer affichent leur nombre d'exemplaires, sur deux colonnes sur mobile.","Sur la collection d'un autre joueur, chaque carte indique si tu la possèdes (et en combien d'exemplaires) ou non, et tu peux n'afficher que celles que tu n'as pas."],
+    en: [
+      "In a trade, you can now request cards from the other player from the list of those you don't own, and your cards to offer show how many copies you own, in two columns on mobile.",
+      "On another player's collection, each card shows whether you own it (and how many copies) or not, and you can filter to only the cards you don't own."],
   },
   {
     date: "2026-10-12",
