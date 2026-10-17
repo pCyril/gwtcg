@@ -57,7 +57,7 @@ All settings live in `.env` (see `.env.example`):
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string. |
 | `SHADOW_DATABASE_URL` | Scratch database, only needed for `prisma migrate dev`. |
-| `ADMIN_EMAIL` | The account registered with this email becomes admin (art moderation queue, stats). |
+| `ADMIN_EMAIL` | The account registered with this email becomes admin (several admins: separate the emails with commas) (art moderation queue, stats). |
 | `MARKET_ENABLED` | Set to `false` to disable new auctions and bids. |
 | `WIKI_API_URL`, `WIKI_REQUEST_DELAY_MS`, `WIKI_USER_AGENT` | Wiki sync. Set a real user agent with a contact address before syncing. |
 | `RARITY_SHARE_*` | Target share of each rarity tier, used for classification and booster draws. They are renormalized, so they don't need to sum to 1. |

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyPassword } from "@/lib/auth";
+import { isAdminEmail, verifyPassword } from "@/lib/auth";
 import { setSessionCookie } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
@@ -16,8 +16,8 @@ export async function POST(request: Request) {
 
   await setSessionCookie(user.sessionToken);
 
-  // Keeps isAdmin in sync with ADMIN_EMAIL even for accounts registered before it was set (or changed).
-  const shouldBeAdmin = !!process.env.ADMIN_EMAIL && email === process.env.ADMIN_EMAIL.trim().toLowerCase();
+  // Keeps isAdmin in sync with ADMIN_EMAIL (comma-separated list) even for accounts registered before it was set (or changed).
+  const shouldBeAdmin = isAdminEmail(email);
   if (shouldBeAdmin !== user.isAdmin) {
     await prisma.user.update({ where: { id: user.id }, data: { isAdmin: shouldBeAdmin } });
   }

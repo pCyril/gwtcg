@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOrCreateUser } from "@/lib/session";
-import { hashPassword, isValidEmail } from "@/lib/auth";
+import { hashPassword, isAdminEmail, isValidEmail } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const isAdmin = !!process.env.ADMIN_EMAIL && email === process.env.ADMIN_EMAIL.trim().toLowerCase();
+  const isAdmin = isAdminEmail(email);
 
   const updated = await prisma.user.update({
     where: { id: user.id },

@@ -20,3 +20,12 @@ export function verifyPassword(password: string, stored: string): boolean {
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+/** Whether the email is listed in ADMIN_EMAIL (one address, or several separated by commas). */
+export function isAdminEmail(email: string): boolean {
+  const admins = (process.env.ADMIN_EMAIL ?? "")
+    .split(",")
+    .map((address) => address.trim().toLowerCase())
+    .filter(Boolean);
+  return admins.includes(email.trim().toLowerCase());
+}
