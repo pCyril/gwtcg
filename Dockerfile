@@ -1,14 +1,18 @@
-FROM node:22-slim AS deps
+# Pinned to an exact patch so a security fix in Node always means a new
+# image (and a cache miss) instead of relying on the floating 22-slim tag.
+ARG NODE_VERSION=22.23.4
+
+FROM node:${NODE_VERSION}-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:22-slim AS prod-deps
+FROM node:${NODE_VERSION}-slim AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-FROM node:22-slim AS builder
+FROM node:${NODE_VERSION}-slim AS builder
 WORKDIR /app
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
@@ -20,7 +24,7 @@ ENV SHADOW_DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/pla
 RUN npx prisma generate
 RUN npm run build
 
-FROM node:22-slim AS runner
+FROM node:${NODE_VERSION}-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
