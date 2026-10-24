@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
+import { useWikiUrl } from "@/lib/useWikiUrl";
 
 interface Submission {
   id: string;
@@ -16,6 +17,7 @@ interface Submission {
 
 export function AdminArtReviewClient() {
   const { t } = useLocale();
+  const wikiUrl = useWikiUrl();
   const [submissions, setSubmissions] = useState<Submission[] | null>(null);
   const [forbidden, setForbidden] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export function AdminArtReviewClient() {
                 {interpolateJsx(
                   t("admin.by", { pseudo: s.submitterPseudo }),
                   "wikiLink",
-                  <a href={s.wikiPageUrl} target="_blank" rel="noreferrer noopener" className="underline">
+                  <a href={wikiUrl(s.wikiPageUrl)} target="_blank" rel="noreferrer noopener" className="underline">
                     {t("common.wikiLink")}
                   </a>,
                 )}

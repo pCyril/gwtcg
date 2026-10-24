@@ -5,9 +5,11 @@ import { Copy, Check } from "lucide-react";
 import type { CardData } from "@/components/CardTile";
 import { buildArtPrompt, RECOMMENDED_ART_RATIO, RECOMMENDED_ART_RESOLUTION } from "@/lib/game/artPrompt";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useWikiUrl } from "@/lib/useWikiUrl";
 
 export function ArtSubmissionForm({ card }: { card: CardData }) {
   const { t, tError, locale } = useLocale();
+  const wikiUrl = useWikiUrl();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [certified, setCertified] = useState(false);
@@ -77,7 +79,7 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
       <ol className="flex flex-col gap-2 text-xs text-neutral-400">
         <li>
           {t("art.step1")}{" "}
-          <button onClick={() => copy(card.url, "url")} className="inline-flex items-center gap-1 underline hover:text-neutral-200">
+          <button onClick={() => copy(wikiUrl(card.url), "url")} className="inline-flex items-center gap-1 underline hover:text-neutral-200">
             {copied === "url" ? <Check size={12} /> : <Copy size={12} />}
             {copied === "url" ? t("art.copied") : t("art.copyUrl")}
           </button>

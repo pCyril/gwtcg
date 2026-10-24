@@ -5,6 +5,7 @@ import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@
 import { FamilyIcon } from "@/components/FamilyIcon";
 import { cardGradient } from "@/lib/game/cardArt";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useWikiUrl } from "@/lib/useWikiUrl";
 
 export interface CardData {
   instanceId?: string;
@@ -32,6 +33,7 @@ export interface CardData {
 // at a different size.
 export function CardTile({ card, size = "sm", showCopies = false }: { card: CardData; size?: "sm" | "lg"; showCopies?: boolean }) {
   const { t } = useLocale();
+  const wikiUrl = useWikiUrl();
   const style = RARITY_STYLES[card.rarity];
   const large = size === "lg";
   const images = card.imageUrls ?? [];
@@ -147,7 +149,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
         <div className={`flex items-center justify-between text-neutral-500 ${large ? "text-xs" : "text-[8px]"}`}>
           <span className="truncate">{card.campaign}</span>
           <a
-            href={card.url}
+            href={wikiUrl(card.url)}
             target="_blank"
             rel="noreferrer noopener"
             onPointerDown={(e) => e.stopPropagation()}

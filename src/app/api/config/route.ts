@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { isMarketEnabled } from "@/lib/config";
+import { isMarketEnabled, isWikiArchiveEnabled } from "@/lib/config";
 
 export async function GET() {
-  return NextResponse.json({ marketEnabled: isMarketEnabled() });
+  return NextResponse.json({ marketEnabled: isMarketEnabled(), wikiArchive: await isWikiArchiveEnabled() });
 }

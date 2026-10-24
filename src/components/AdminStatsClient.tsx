@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { setWikiArchiveCache } from "@/lib/useWikiUrl";
 
 interface Stats {
   totalUsers: number;
@@ -46,6 +47,33 @@ export function AdminStatsClient() {
       setRecomputeState("done");
     } catch {
       setRecomputeState("error");
+    }
+  }
+  const [wikiArchive, setWikiArchive] = useState<boolean | null>(null);
+  const [wikiArchiveError, setWikiArchiveError] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => setWikiArchive(data.wikiArchive === true))
+      .catch(() => setWikiArchiveError(true));
+  }, []);
+
+  async function toggleWikiArchive() {
+    if (wikiArchive === null) return;
+    const enabled = !wikiArchive;
+    setWikiArchiveError(false);
+    try {
+      const res = await fetch("/api/admin/wiki-archive", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!res.ok) throw new Error();
+      setWikiArchive(enabled);
+      setWikiArchiveCache(enabled);
+    } catch {
+      setWikiArchiveError(true);
     }
   }
   const [stats, setStats] = useState<Stats | null>(null);
@@ -139,6 +167,26 @@ export function AdminStatsClient() {
             <span className="text-sm text-emerald-400">{t("admin.rarity.done", { count: recomputed })}</span>
           )}
           {recomputeState === "error" && <span className="text-sm text-red-400">{t("common.unknownError")}</span>}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
+        <h2 className="font-semibold">{t("admin.wikiArchive.title")}</h2>
+        <p className="text-sm text-neutral-400">{t("admin.wikiArchive.description")}</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleWikiArchive}
+            disabled={wikiArchive === null}
+            className="rounded border border-neutral-700 px-3 py-1.5 text-sm hover:border-emerald-400 disabled:opacity-50"
+          >
+            {wikiArchive ? t("admin.wikiArchive.disable") : t("admin.wikiArchive.enable")}
+          </button>
+          {wikiArchive !== null && (
+            <span className={`text-sm ${wikiArchive ? "text-amber-400" : "text-neutral-500"}`}>
+              {wikiArchive ? t("admin.wikiArchive.onArchive") : t("admin.wikiArchive.onLive")}
+            </span>
+          )}
+          {wikiArchiveError && <span className="text-sm text-red-400">{t("common.unknownError")}</span>}
         </div>
       </section>
     </main>

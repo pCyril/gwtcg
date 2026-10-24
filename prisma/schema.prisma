@@ -262,3 +262,11 @@ model Bid {
   @@index([auctionId])
   @@index([bidderId])
 }
+
+// Runtime settings an admin can flip from the admin page, without a redeploy
+// (unlike the env kill-switches in src/lib/config.ts). One row per key.
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

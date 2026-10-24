@@ -11,6 +11,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-10-24",
+    fr: ["Quand le wiki Guild Wars est en maintenance, les liens « wiki » des cartes peuvent renvoyer vers sa dernière copie archivée sur archive.org."],
+    en: ["When the Guild Wars wiki is down for maintenance, card \"wiki\" links can point to its latest archived copy on archive.org."],
+  },
+  {
     date: "2026-10-17",
     fr: [
       "Dans un échange, tu peux maintenant demander des cartes à l'autre joueur depuis la liste de celles que tu n'as pas, et les cartes que tu peux proposer sont uniquement celles que l'autre joueur n'a pas, avec ton nombre d'exemplaires, sur deux colonnes sur mobile.","Sur la collection d'un autre joueur, chaque carte indique si tu la possèdes (et en combien d'exemplaires) ou non, et tu peux n'afficher que celles que tu n'as pas."],
