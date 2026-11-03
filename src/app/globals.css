@@ -5,6 +5,13 @@
   --foreground: #ededed;
 }
 
+/* RGAA 3.2: Tailwind's default placeholder (50% of the text colour) falls below 4.5:1 on dark fields. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-neutral-400);
+  opacity: 1;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -176,4 +183,29 @@ body {
 
 .glow-pulse {
   animation: glow-pulse 1.6s ease-in-out infinite;
+}
+
+/*
+ * Users who ask their system for less motion: no looping or decorative animation.
+ * (BoosterOverlay also skips the card-by-card reveal for them; "Reveal all" stops it for everyone.)
+ */
+@media (prefers-reduced-motion: reduce) {
+  .pack-idle,
+  .pack-shake,
+  .pack-burst,
+  .card-reveal,
+  .glow-pulse {
+    animation: none;
+  }
+
+  /* One-shot flashes that end transparent: without their animation they'd stay on screen. */
+  .burst-flash,
+  .rarity-burst {
+    animation: none;
+    opacity: 0;
+  }
+
+  .flip-card {
+    transition: none;
+  }
 }

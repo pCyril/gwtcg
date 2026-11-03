@@ -2,28 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CardTile, type CardData } from "@/components/CardTile";
+import { CardTile, CARD_TILE_OVERLAY_CLASS, type CardData } from "@/components/CardTile";
 import { CardDetailModal } from "@/components/CardDetailModal";
 import { RarityLegend } from "@/components/RarityLegend";
 import { CollectionSearchInput } from "@/components/CollectionSearchInput";
+import { FilterSelect, ProfessionFilter } from "@/components/CollectionFilters";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { TranslationKey } from "@/lib/i18n/translations";
 
 const FAMILY_KEYS = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 const RARITY_KEYS = Object.keys(RARITY_STYLES) as RarityKey[];
-const PROFESSIONS = [
-  "Warrior",
-  "Ranger",
-  "Monk",
-  "Necromancer",
-  "Mesmer",
-  "Elementalist",
-  "Assassin",
-  "Ritualist",
-  "Paragon",
-  "Dervish",
-];
 const SORT_KEYS = ["recent", "family", "rarity", "dropRate", "copies"];
 
 interface Progress {
@@ -170,17 +159,17 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <select
+        <FilterSelect
+          label={t("collection.filter.familyLabel")}
           value={filters.family}
-          onChange={(e) =>
+          onChange={(family) =>
             updateFilters({
               ...filters,
-              family: e.target.value,
-              professions: e.target.value === "SKILL" ? filters.professions : [],
+              family,
+              professions: family === "SKILL" ? filters.professions : [],
               page: 1,
             })
           }
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
         >
           <option value="">{t("collection.allFamilies")}</option>
           {FAMILY_KEYS.map((key) => (
@@ -188,11 +177,11 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
               {t(familyLabelKey(key))}
             </option>
           ))}
-        </select>
-        <select
+        </FilterSelect>
+        <FilterSelect
+          label={t("collection.filter.rarityLabel")}
           value={filters.rarity}
-          onChange={(e) => updateFilters({ ...filters, rarity: e.target.value, page: 1 })}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+          onChange={(rarity) => updateFilters({ ...filters, rarity, page: 1 })}
         >
           <option value="">{t("collection.allRarities")}</option>
           {RARITY_KEYS.map((key) => (
@@ -200,18 +189,18 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
               {t(rarityLabelKey(key))}
             </option>
           ))}
-        </select>
-        <select
+        </FilterSelect>
+        <FilterSelect
+          label={t("collection.filter.sortLabel")}
           value={filters.sort}
-          onChange={(e) => updateFilters({ ...filters, sort: e.target.value, page: 1 })}
-          className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+          onChange={(sort) => updateFilters({ ...filters, sort, page: 1 })}
         >
           {SORT_KEYS.map((key) => (
             <option key={key} value={key}>
               {t(`collection.sort.${key}` as TranslationKey)}
             </option>
           ))}
-        </select>
+        </FilterSelect>
         {/* Only meaningful when the API could compare against the viewer's own binder (they have a session). */}
         {(filters.missing || cards?.some((card) => card.viewerCopies !== undefined)) && (
           <label className="flex items-center gap-2 text-sm text-neutral-300">
@@ -225,64 +214,43 @@ export function SharedCollectionClient({ pseudo }: { pseudo: string }) {
         )}
       </div>
 
-      {filters.family === "SKILL" && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs uppercase tracking-wide text-neutral-500">
-            {t("collection.filterByProfession")}
-          </span>
-          {PROFESSIONS.map((profession) => {
-            const active = filters.professions.includes(profession);
-            return (
-              <button
-                key={profession}
-                onClick={() => toggleProfession(profession)}
-                className={`rounded-full border px-3 py-1 text-sm ${
-                  active
-                    ? "border-emerald-400 bg-emerald-950/40 text-emerald-300"
-                    : "border-neutral-700 text-neutral-300 hover:border-neutral-500"
-                }`}
-              >
-                {profession}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {filters.family === "SKILL" && <ProfessionFilter selected={filters.professions} onToggle={toggleProfession} />}
 
       <RarityLegend />
 
       <CollectionSearchInput value={filters.q} onChange={(q) => updateFilters({ ...filters, q, page: 1 })} />
 
-      {!cards ? (
-        <p className="text-neutral-400">{t("common.loading")}</p>
-      ) : cards.length === 0 ? (
-        <p className="text-neutral-400">{t("collection.empty")}</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {cards.map((card, i) => (
-            <div
-              key={i}
-              role="button"
-              tabIndex={0}
-              onClick={() => setSelectedCard(card)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setSelectedCard(card);
-                }
-              }}
-              className="cursor-pointer"
-              aria-label={t("collection.viewIn3d", { title: card.title })}
-            >
-              <CardTile card={card} />
-            </div>
-          ))}
+      {/* One flex slot for the status region and the grid, so the (usually empty) region adds no gap. */}
+      <div>
+        <div role="status">
+          {!cards ? (
+            <p className="text-neutral-400">{t("common.loading")}</p>
+          ) : cards.length === 0 ? (
+            <p className="text-neutral-400">{t("collection.empty")}</p>
+          ) : null}
         </div>
-      )}
+        {cards && cards.length > 0 && (
+          // role="list": Tailwind's list-style reset drops the list semantics in Safari/VoiceOver.
+          <ul role="list" className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {cards.map((card, i) => (
+              <li key={i} className="relative">
+                {/* The tile's action is a real button laid over the card, beside (not around) CardTile's own links. */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedCard(card)}
+                  aria-label={t("collection.viewIn3d", { title: card.title })}
+                  className={CARD_TILE_OVERLAY_CLASS}
+                />
+                <CardTile card={card} underOverlay />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {cards && cards.length > 0 && (
-        <div ref={sentinelRef} className="flex justify-center py-2">
-          {loadingMore && <p className="text-sm text-neutral-500">{t("common.loading")}</p>}
+        <div ref={sentinelRef} role="status" className="flex justify-center py-2">
+          {loadingMore && <p className="text-sm text-neutral-400">{t("common.loading")}</p>}
         </div>
       )}
 

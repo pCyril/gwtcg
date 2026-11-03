@@ -38,7 +38,7 @@ export function CollectionLeaderboard({ isGuest = false }: { isGuest?: boolean }
               className="flex items-center justify-between rounded px-2 py-1 text-sm hover:bg-neutral-800/60"
             >
               <span className="text-neutral-300">
-                <span className="mr-2 text-neutral-500">#{i + 1}</span>
+                <span className="mr-2 text-neutral-400">#{i + 1}</span>
                 {e.pseudo}
               </span>
               <span className="font-semibold text-emerald-300">

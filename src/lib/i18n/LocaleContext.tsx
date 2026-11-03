@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DEFAULT_LOCALE, t, tError, type Locale, type TranslationKey } from "@/lib/i18n/translations";
 
 const COOKIE_NAME = "gm_locale";
@@ -29,6 +29,12 @@ export function LocaleProvider({
     setLocaleState(next);
     document.cookie = `${COOKIE_NAME}=${next}; path=/; max-age=${COOKIE_MAX_AGE}`;
   }, []);
+
+  // Keep <html lang> in step with the displayed language: the server only sets it on a full page load.
+  // The locale codes ("fr", "en") are valid BCP 47 tags as they are.
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const value = useMemo<LocaleContextValue>(
     () => ({

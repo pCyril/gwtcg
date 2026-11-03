@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
 import type { TranslationKey } from "@/lib/i18n/translations";
 
@@ -26,19 +27,31 @@ interface AuctionDetail {
 export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
   const { t, tError, locale } = useLocale();
   const [auction, setAuction] = useState<AuctionDetail | null>(null);
+  // RGAA 8.6: the static metadata title is generic; name the card once it is known.
+  useDocumentTitle(auction ? t("market.auctionLink", { title: auction.card.title }) : null);
   const [bidAmount, setBidAmount] = useState<number | "">("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  // Screen-reader-only confirmation of a successful action (RGAA 7.5).
+  const [notice, setNotice] = useState("");
+  // Bumped after each action: if the focused control disappeared, focus goes back to the heading (RGAA 7.3).
+  const [focusCheck, setFocusCheck] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const bidInputId = useId();
+  const bidHintId = useId();
+  const errorId = useId();
+  const historyHeadingId = useId();
 
-  function refresh() {
+  function refresh(): Promise<AuctionDetail | null> {
     return fetch(`/api/auctions/${auctionId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
           setError(data.error);
-          return;
+          return null;
         }
         setAuction(data);
+        return data as AuctionDetail;
       });
   }
 
@@ -47,18 +60,70 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
 
+  useEffect(() => {
+    if (focusCheck === 0) return;
+    const active = document.activeElement;
+    if (!active || active === document.body || !active.isConnected) headingRef.current?.focus();
+  }, [focusCheck]);
+
   if (!auction) {
-    return <main className="py-10 text-neutral-400">{error ? tError(error) : t("common.loading")}</main>;
+    return (
+      <main className="py-10 text-neutral-400">
+        {error ? <p role="alert">{tError(error)}</p> : <p role="status">{t("common.loading")}</p>}
+      </main>
+    );
   }
 
   const topBid = auction.bids[0]?.amount ?? null;
   const isActive = auction.status === "ACTIVE";
   const isAwaitingHandoff = auction.status === "AWAITING_HANDOFF";
   const statusKey = `auction.status.${auction.status}` as TranslationKey;
+  const minBid = topBid !== null ? topBid + 1 : auction.startingPrice;
+  const bidError = error === "BID_TOO_LOW" || error === "INVALID_AMOUNT";
+  const cardTitle = auction.card.title;
+
+  function announceOutcome(updated: AuctionDetail | null, fallback: string) {
+    setNotice("");
+    const message =
+      updated && updated.status !== "ACTIVE"
+        ? t("auction.actionDone", { status: t(`auction.status.${updated.status}` as TranslationKey) })
+        : fallback;
+    window.setTimeout(() => setNotice(message), 100);
+  }
+
+  function onBidClick() {
+    // aria-disabled instead of disabled keeps the focus on the button (RGAA 7.3): guard here.
+    if (pending || bidAmount === "") return;
+    const isBuyout = auction!.buyoutPrice !== null && bidAmount >= auction!.buyoutPrice;
+    const message = isBuyout
+      ? t("auction.buyoutConfirm", { amount: bidAmount, title: cardTitle })
+      : t("auction.bidConfirm", { amount: bidAmount, title: cardTitle });
+    if (!window.confirm(message)) return;
+    bid(bidAmount);
+  }
+
+  function onBuyoutClick() {
+    if (pending || auction!.buyoutPrice === null) return;
+    if (!window.confirm(t("auction.buyoutConfirm", { amount: auction!.buyoutPrice, title: cardTitle }))) return;
+    bid(auction!.buyoutPrice);
+  }
+
+  function onCancelClick(confirmKey: "auction.cancelAuctionConfirm" | "auction.cancelHandoffConfirm") {
+    if (pending) return;
+    if (!window.confirm(t(confirmKey))) return;
+    cancel();
+  }
+
+  function onConfirmHandoffClick() {
+    if (pending) return;
+    if (!window.confirm(t("auction.confirmHandoffConfirm", { amount: topBid ?? 0 }))) return;
+    confirmHandoff();
+  }
 
   async function bid(amount: number) {
     setPending(true);
     setError(null);
+    setNotice("");
     try {
       const res = await fetch(`/api/auctions/${auctionId}/bid`, {
         method: "POST",
@@ -68,35 +133,50 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error);
+        // Someone may have outbid us: reload so the suggested minimum is accurate (RGAA 11.11).
+        if (data.error === "BID_TOO_LOW") await refresh();
         return;
       }
       setBidAmount("");
-      await refresh();
+      const updated = await refresh();
+      announceOutcome(updated, t("auction.bidPlaced", { amount }));
     } finally {
       setPending(false);
+      setFocusCheck((n) => n + 1);
     }
   }
 
   async function cancel() {
     setPending(true);
+    setError(null);
+    setNotice("");
     try {
-      await fetch(`/api/auctions/${auctionId}/cancel`, { method: "POST" });
-      await refresh();
+      const res = await fetch(`/api/auctions/${auctionId}/cancel`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "UNKNOWN");
+      }
+      const updated = await refresh();
+      if (res.ok) announceOutcome(updated, "");
     } finally {
       setPending(false);
+      setFocusCheck((n) => n + 1);
     }
   }
 
   async function confirmHandoff() {
     setPending(true);
     setError(null);
+    setNotice("");
     try {
       const res = await fetch(`/api/auctions/${auctionId}/confirm`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) setError(data.error);
-      await refresh();
+      const updated = await refresh();
+      if (res.ok) announceOutcome(updated, "");
     } finally {
       setPending(false);
+      setFocusCheck((n) => n + 1);
     }
   }
 
@@ -111,7 +191,9 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
   return (
     <main className="flex max-w-md flex-col gap-6 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">{t("auction.title")}</h1>
+        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-bold tracking-tight">
+          {t("auction.title")}
+        </h1>
       </div>
 
       <p className="text-sm text-neutral-400">
@@ -148,7 +230,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
         {auction.buyoutPrice && <p>{t("auction.buyoutPriceLabel", { amount: auction.buyoutPrice })}</p>}
         <p>{t("auction.currentBidLabel", { amount: topBid !== null ? `${topBid} ecto` : t("auction.currentBidNone") })}</p>
         {isActive && (
-          <p className="text-neutral-500">
+          <p className="text-neutral-400">
             {t("auction.endsAtLabel", { date: new Date(auction.endsAt).toLocaleString(locale === "fr" ? "fr-FR" : "en-US") })}
           </p>
         )}
@@ -172,41 +254,64 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
 
       {auction.bids.length > 0 && (
         <div className="flex flex-col gap-1 text-xs text-neutral-400">
-          <p className="font-semibold text-neutral-300">{t("auction.history")}</p>
-          {auction.bids.map((b, i) => (
-            <p key={i}>
-              {b.pseudo} — {b.amount} ecto
-            </p>
-          ))}
+          <h2 id={historyHeadingId} className="font-semibold text-neutral-300">
+            {t("auction.history")}
+          </h2>
+          {/* role="list": Safari drops list semantics when list-style is none (Tailwind preflight). */}
+          <ol role="list" aria-labelledby={historyHeadingId} className="flex flex-col gap-1">
+            {auction.bids.map((b, i) => (
+              <li key={i}>
+                {b.pseudo} — {b.amount} ecto
+              </li>
+            ))}
+          </ol>
         </div>
       )}
 
-      {error && <p className="text-sm text-red-400">{tError(error)}</p>}
+      {/* Persistent live regions (RGAA 7.5): mounted empty, only their text changes. Out of the flex flow while empty. */}
+      <p id={errorId} role="alert" className={error ? "text-sm text-red-400" : "sr-only"}>
+        {error ? tError(error) : null}
+        {bidError ? ` ${t("auction.bidErrorHint", { amount: minBid })}` : null}
+      </p>
+      <p role="status" className="sr-only">
+        {notice}
+      </p>
 
       {isActive && !auction.isSeller && (
         <div className="flex flex-col gap-2">
+          <label htmlFor={bidInputId} className="text-sm">
+            {t("auction.bidLabel")}
+          </label>
           <div className="flex gap-2">
             <input
+              id={bidInputId}
               type="number"
-              min={(topBid ?? auction.startingPrice - 1) + 1}
+              min={minBid}
+              step={1}
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value === "" ? "" : Number(e.target.value))}
-              placeholder={`${(topBid ?? auction.startingPrice - 1) + 1}+`}
-              className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
+              aria-describedby={bidError ? `${bidHintId} ${errorId}` : bidHintId}
+              aria-invalid={bidError || undefined}
+              className="flex-1 rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5 text-sm"
             />
             <button
-              onClick={() => bidAmount !== "" && bid(bidAmount)}
-              disabled={pending || bidAmount === ""}
-              className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+              type="button"
+              onClick={onBidClick}
+              aria-disabled={pending || bidAmount === "" || undefined}
+              className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
             >
               {t("auction.bid")}
             </button>
           </div>
+          <p id={bidHintId} className="text-xs text-neutral-400">
+            {t("auction.bidMinHint", { amount: minBid })}
+          </p>
           {auction.buyoutPrice && (
             <button
-              onClick={() => bid(auction.buyoutPrice!)}
-              disabled={pending}
-              className="rounded border border-amber-600 px-4 py-1.5 text-sm font-medium text-amber-300 hover:border-amber-400 disabled:opacity-50"
+              type="button"
+              onClick={onBuyoutClick}
+              aria-disabled={pending || undefined}
+              className="rounded border border-amber-600 px-4 py-1.5 text-sm font-medium text-amber-300 hover:border-amber-400 aria-disabled:opacity-50"
             >
               {t("auction.buyoutButton", { amount: auction.buyoutPrice })}
             </button>
@@ -216,9 +321,10 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
 
       {isActive && auction.isSeller && auction.bids.length === 0 && (
         <button
-          onClick={cancel}
-          disabled={pending}
-          className="rounded border border-neutral-700 px-4 py-2 text-sm text-neutral-300 hover:border-red-400 hover:text-red-400 disabled:opacity-50"
+          type="button"
+          onClick={() => onCancelClick("auction.cancelAuctionConfirm")}
+          aria-disabled={pending || undefined}
+          className="rounded border border-neutral-700 px-4 py-2 text-sm text-neutral-300 hover:border-red-400 hover:text-red-400 aria-disabled:opacity-50"
         >
           {t("auction.cancelAuction")}
         </button>
@@ -227,16 +333,18 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
       {isAwaitingHandoff && auction.isSeller && (
         <div className="flex gap-3">
           <button
-            onClick={confirmHandoff}
-            disabled={pending}
-            className="rounded bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            type="button"
+            onClick={onConfirmHandoffClick}
+            aria-disabled={pending || undefined}
+            className="rounded bg-emerald-700 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
           >
             {t("auction.confirmHandoff")}
           </button>
           <button
-            onClick={cancel}
-            disabled={pending}
-            className="rounded border border-neutral-700 px-5 py-2 text-sm text-neutral-300 hover:border-red-400 hover:text-red-400 disabled:opacity-50"
+            type="button"
+            onClick={() => onCancelClick("auction.cancelHandoffConfirm")}
+            aria-disabled={pending || undefined}
+            className="rounded border border-neutral-700 px-5 py-2 text-sm text-neutral-300 hover:border-red-400 hover:text-red-400 aria-disabled:opacity-50"
           >
             {t("auction.cancelHandoff")}
           </button>

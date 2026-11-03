@@ -11,20 +11,34 @@ interface AuctionRow {
   status: string;
   startingPrice: number;
   endsAt: string;
+  cardTitle?: string | null;
 }
 
 function AuctionList({ rows }: { rows: AuctionRow[] }) {
   const { t } = useLocale();
-  if (rows.length === 0) return <p className="text-sm text-neutral-500">{t("myAuctions.empty")}</p>;
+  if (rows.length === 0) return <p className="text-sm text-neutral-400">{t("myAuctions.empty")}</p>;
   return (
-    <div className="flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+    // role="list": Safari drops list semantics when list-style is none (Tailwind preflight).
+    <ul role="list" className="flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800">
       {rows.map((a) => (
-        <Link key={a.id} href={`/market/${a.id}`} className="flex items-center justify-between px-4 py-3 text-sm hover:bg-neutral-900/60">
-          <span>{t("myAuctions.startingPrice", { amount: a.startingPrice })}</span>
-          <span className="text-neutral-400">{t(`auction.status.${a.status}` as TranslationKey)}</span>
-        </Link>
+        <li key={a.id}>
+          {/* The link names the card it opens (RGAA 6.1); sr-only commas keep the spoken parts apart. */}
+          <Link href={`/market/${a.id}`} className="flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-neutral-900/60">
+            <span className="flex flex-col">
+              {a.cardTitle && (
+                <>
+                  <span className="font-medium">{a.cardTitle}</span>
+                  <span className="sr-only">, </span>
+                </>
+              )}
+              <span>{t("myAuctions.startingPrice", { amount: a.startingPrice })}</span>
+            </span>
+            <span className="sr-only">, </span>
+            <span className="text-neutral-400">{t(`auction.status.${a.status}` as TranslationKey)}</span>
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -46,7 +60,13 @@ export function MyAuctionsClient() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">{t("myAuctions.title")}</h1>
         </div>
-        <p className="text-neutral-400">{marketEnabled === null ? t("common.loading") : tError("MARKET_DISABLED")}</p>
+        {marketEnabled === null ? (
+          <p role="status" className="text-neutral-400">
+            {t("common.loading")}
+          </p>
+        ) : (
+          <p className="text-neutral-400">{tError("MARKET_DISABLED")}</p>
+        )}
       </main>
     );
   }
@@ -58,7 +78,9 @@ export function MyAuctionsClient() {
       </div>
 
       {!data ? (
-        <p className="text-neutral-400">{t("common.loading")}</p>
+        <p role="status" className="text-neutral-400">
+          {t("common.loading")}
+        </p>
       ) : (
         <>
           <section className="flex flex-col gap-2">

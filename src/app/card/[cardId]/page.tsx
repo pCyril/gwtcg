@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSharedCard } from "@/lib/game/cardShare";
 import { SharedCardClient } from "@/components/SharedCardClient";
+import { pageTitle } from "@/lib/i18n/serverLocale";
 
 // Reads the database per request - never prerender this at build time.
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/card/[cardId]">): Promise<Metadata> {
   const { cardId } = await params;
   const card = await getSharedCard(cardId);
-  if (!card) return { title: "GWTCG" };
+  if (!card) return { title: await pageTitle("notFound.title") };
 
   // Uploaded illustrations are stored as site-relative paths; link previews need absolute URLs.
   const h = await headers();
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }: PageProps<"/card/[cardId]">):
 
   const description = card.extract.slice(0, 200);
   return {
-    title: `${card.title} - GWTCG`,
+    // " - GWTCG" comes from the root layout's title template.
+    title: card.title,
     description,
     openGraph: { title: card.title, description, type: "website", ...(imageUrl ? { images: [imageUrl] } : {}) },
     twitter: { card: imageUrl ? "summary_large_image" : "summary", title: card.title, description },

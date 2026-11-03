@@ -31,7 +31,26 @@ export interface CardData {
 // Standard trading-card proportions (2.5in x 3.5in), so every card - grid
 // thumbnail or spotlighted reveal - reads as the same physical object, just
 // at a different size.
-export function CardTile({ card, size = "sm", showCopies = false }: { card: CardData; size?: "sm" | "lg"; showCopies?: boolean }) {
+//
+// Grids that make a whole tile clickable must not wrap CardTile in a button or
+// link (it holds its own wiki link and illustration buttons): they lay an
+// absolutely positioned control with CARD_TILE_OVERLAY_CLASS over it instead,
+// and pass `underOverlay` so CardTile's own controls are raised above that layer
+// (z-30; its badges stay below at z-10).
+export const CARD_TILE_OVERLAY_CLASS = "absolute inset-0 z-20 cursor-pointer rounded-[10px]";
+
+export function CardTile({
+  card,
+  size = "sm",
+  showCopies = false,
+  underOverlay = false,
+}: {
+  card: CardData;
+  size?: "sm" | "lg";
+  showCopies?: boolean;
+  /** Set when a sibling control is laid over the tile (CARD_TILE_OVERLAY_CLASS): keeps the wiki link and illustration buttons clickable. */
+  underOverlay?: boolean;
+}) {
   const { t } = useLocale();
   const wikiUrl = useWikiUrl();
   const style = RARITY_STYLES[card.rarity];
@@ -40,6 +59,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
   const [variant, setVariant] = useState(0);
   const activeImage = images[Math.min(variant, images.length - 1)];
   const activeImageCredit = activeImage ? card.imageCredits?.[activeImage] : undefined;
+  const raised = underOverlay ? "relative z-30 " : "";
 
   return (
     <div
@@ -63,7 +83,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
         {card.viewerCopies !== undefined && (
           <span
             className={`absolute left-1 top-1 z-10 rounded-full px-1.5 py-0.5 text-[8px] font-bold shadow ${
-              card.viewerCopies > 0 ? "bg-emerald-500 text-white" : "bg-black/70 text-neutral-300"
+              card.viewerCopies > 0 ? "bg-emerald-700 text-white" : "bg-black/70 text-neutral-300"
             }`}
           >
             {card.viewerCopies > 0
@@ -72,7 +92,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
           </span>
         )}
         {card.isNew && (
-          <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
+          <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-700 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
             {t("card.new")}
           </span>
         )}
@@ -114,7 +134,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
                   setVariant(i);
                 }}
                 aria-label={t("card.illustration", { n: i + 1 })}
-                className={`h-1.5 w-1.5 rounded-full border border-black/40 transition-colors ${
+                className={`${raised}h-1.5 w-1.5 rounded-full border border-black/40 transition-colors ${
                   i === variant ? "bg-white" : "bg-white/40 hover:bg-white/70"
                 }`}
               />
@@ -134,9 +154,12 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
           {card.profession ? ` — ${card.profession}` : ""}
         </span>
         <span
+          aria-hidden="true"
           className={`shrink-0 rotate-45 border ${style.border} ${style.accentBg} ${large ? "h-3 w-3" : "h-2 w-2"}`}
           title={t(rarityLabelKey(card.rarity))}
         />
+        {/* The gem is drawn by CSS only: keep the rarity as text for assistive tech and CSS-off reading (RGAA 10.2). */}
+        <span className="sr-only">{t("card.rarityA11y", { rarity: t(rarityLabelKey(card.rarity)) })}</span>
       </div>
 
       {/* Text box */}
@@ -145,8 +168,11 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
           large ? "text-sm" : "text-[10px]"
         }`}
       >
-        <p className={`flex-1 text-neutral-300 ${large ? "line-clamp-5" : "line-clamp-3"}`}>{card.extract}</p>
-        <div className={`flex items-center justify-between text-neutral-500 ${large ? "text-xs" : "text-[8px]"}`}>
+        {/* Extracts come verbatim from the English-language Guild Wars wiki. */}
+        <p lang="en" className={`flex-1 text-neutral-300 ${large ? "line-clamp-5" : "line-clamp-3"}`}>
+          {card.extract}
+        </p>
+        <div className={`flex items-center justify-between text-neutral-400 ${large ? "text-xs" : "text-[8px]"}`}>
           <span className="truncate">{card.campaign}</span>
           <a
             href={wikiUrl(card.url)}
@@ -154,7 +180,7 @@ export function CardTile({ card, size = "sm", showCopies = false }: { card: Card
             rel="noreferrer noopener"
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
-            className="shrink-0 underline hover:text-neutral-300"
+            className={`${raised}shrink-0 underline hover:text-neutral-300`}
           >
             {t("common.wikiLink")}
           </a>

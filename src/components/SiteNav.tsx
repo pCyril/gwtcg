@@ -36,19 +36,23 @@ function isActive(pathname: string, href: string) {
 function Badge({ count, label }: { count: number; label: string }) {
   return (
     <span
-      className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-xs font-semibold leading-5 text-white"
-      aria-label={label}
+      className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-700 px-1.5 text-xs font-semibold leading-5 text-white"
       title={label}
     >
-      {count > 9 ? "9+" : count}
+      <span aria-hidden="true">{count > 9 ? "9+" : count}</span>
+      <span className="sr-only">{`, ${label}`}</span>
     </span>
   );
 }
 
+/** Visual cue for the current page that doesn't rely on colour alone (RGAA 3.1). */
+const CURRENT_CUE = "underline decoration-2 underline-offset-4";
+
 function NavItem({ link, pathname, onNavigate }: { link: NavLink; pathname: string; onNavigate?: () => void }) {
   const { t } = useLocale();
+  const current = !link.external && isActive(pathname, link.href);
   const className = `block whitespace-nowrap rounded px-2 py-1.5 text-sm transition-colors hover:text-neutral-100 ${
-    !link.external && isActive(pathname, link.href) ? "text-emerald-300" : "text-neutral-300"
+    current ? `text-emerald-300 ${CURRENT_CUE}` : "text-neutral-300"
   }`;
   if (link.external) {
     return (
@@ -58,14 +62,17 @@ function NavItem({ link, pathname, onNavigate }: { link: NavLink; pathname: stri
     );
   }
   return (
-    <Link href={link.href} onClick={onNavigate} className={className}>
+    <Link href={link.href} onClick={onNavigate} className={className} aria-current={current ? "page" : undefined}>
       {t(link.label)}
       {link.badge ? <Badge count={link.badge} label={t(link.badgeLabel ?? "nav.pendingTrades", { count: link.badge })} /> : null}
     </Link>
   );
 }
 
-/** A labelled group of links that opens as a small popover; closes on outside click, Escape or navigation. */
+/**
+ * A labelled group of links that opens as a small popover; closes on outside click, Escape, navigation
+ * or when keyboard focus leaves it. Escape from inside the popover puts focus back on the toggle button.
+ */
 function NavDropdown({
   label,
   links,
@@ -82,6 +89,7 @@ function NavDropdown({
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -89,7 +97,11 @@ function NavDropdown({
       if (!ref.current?.contains(e.target as Node)) setOpen(false);
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Escape") return;
+      // Focus would otherwise fall back to <body> once the focused link unmounts.
+      const focusInside = ref.current?.contains(document.activeElement) ?? false;
+      setOpen(false);
+      if (focusInside) buttonRef.current?.focus();
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -101,13 +113,22 @@ function NavDropdown({
 
   const groupActive = links.some((l) => !l.external && isActive(pathname, l.href));
 
+  // Close when focus moves to an element outside the group (Tab out). A null relatedTarget (click on a
+  // non-focusable spot, Safari not focusing clicked links, window blur) is left to the pointerdown handler.
+  const onBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    const next = e.relatedTarget as Node | null;
+    if (next && !e.currentTarget.contains(next)) setOpen(false);
+  };
+
   return (
-    <div ref={ref} className="relative">
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- focusout listener that closes the popover when keyboard focus leaves it (RGAA 10.13/12.8), not an interaction
+    <div ref={ref} className="relative" onBlur={onBlur}>
       <button
+        ref={buttonRef}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className={`flex items-center gap-1 rounded px-2 py-1.5 text-sm transition-colors hover:text-neutral-100 ${
-          groupActive ? "text-emerald-300" : "text-neutral-300"
+          groupActive ? `text-emerald-300 ${CURRENT_CUE}` : "text-neutral-300"
         }`}
       >
         {t(label)}
@@ -115,11 +136,16 @@ function NavDropdown({
         <ChevronDown size={14} className={open ? "rotate-180" : ""} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-44 rounded-lg border border-neutral-800 bg-neutral-900 p-1 shadow-lg">
+        <ul
+          role="list"
+          className="absolute left-0 top-full z-50 mt-1 min-w-44 rounded-lg border border-neutral-800 bg-neutral-900 p-1 shadow-lg"
+        >
           {links.map((link) => (
-            <NavItem key={link.href} link={link} pathname={pathname} onNavigate={() => setOpen(false)} />
+            <li key={link.href}>
+              <NavItem link={link} pathname={pathname} onNavigate={() => setOpen(false)} />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
@@ -187,84 +213,125 @@ export function SiteNav() {
     ...(marketEnabled ? [{ href: "/market", label: "nav.market" } as NavLink] : []),
   ];
 
+  // Spoken/visible equivalent of the pending-items dot on the Menu button (RGAA 10.9).
+  const pendingParts = [
+    ...(pendingTrades > 0 ? [t("nav.pendingTrades", { count: pendingTrades })] : []),
+    ...(isAdmin && pendingArt > 0 ? [t("nav.pendingArt", { count: pendingArt })] : []),
+  ];
+  const showPending = !menuOpen && totalPending > 0;
+
   return (
     <header className="border-b border-neutral-800 bg-neutral-950">
-      <nav className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-2" aria-label={t("nav.label")}>
-        <Link href="/" className="mr-2 text-lg font-bold tracking-tight text-neutral-100">
-          GWTCG
-        </Link>
+      <nav aria-label={t("nav.label")}>
+        <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-2">
+          <Link href="/" className="mr-2 text-lg font-bold tracking-tight text-neutral-100">
+            GWTCG
+          </Link>
 
-        <div className="hidden items-center gap-1 md:flex">
-          {mainLinks.map((link) => (
-            <NavItem key={link.href} link={link} pathname={pathname} />
-          ))}
-          <NavDropdown label="nav.info" links={INFO_LINKS} pathname={pathname} />
-          {isAdmin && (
-            <NavDropdown
-              label="nav.admin"
-              links={adminLinks(pendingArt)}
-              pathname={pathname}
-              badge={pendingArt}
-              badgeLabel="nav.pendingArt"
-            />
-          )}
-        </div>
-
-        <div className="ml-auto flex items-center gap-2">
-          {hasAccount && (
-            <button
-              onClick={logout}
-              className="hidden whitespace-nowrap rounded px-2 py-1.5 text-sm text-neutral-400 transition-colors hover:text-neutral-100 md:block"
-            >
-              {t("auth.logout")}
-            </button>
-          )}
-          <LanguageSwitcher />
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-expanded={menuOpen}
-            aria-label={t("nav.menu")}
-            className="relative rounded p-1.5 text-neutral-300 hover:text-neutral-100 md:hidden"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-            {!menuOpen && totalPending > 0 && (
-              <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-neutral-950" />
-            )}
-          </button>
-        </div>
-      </nav>
-
-      {menuOpen && (
-        <div className="border-t border-neutral-800 px-4 py-2 md:hidden">
-          <div className="mx-auto flex max-w-5xl flex-col">
+          <ul role="list" className="hidden items-center gap-1 md:flex">
             {mainLinks.map((link) => (
-              <NavItem key={link.href} link={link} pathname={pathname} />
+              <li key={link.href}>
+                <NavItem link={link} pathname={pathname} />
+              </li>
             ))}
-            <p className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">{t("nav.info")}</p>
-            {INFO_LINKS.map((link) => (
-              <NavItem key={link.href} link={link} pathname={pathname} />
-            ))}
+            <li>
+              <NavDropdown label="nav.info" links={INFO_LINKS} pathname={pathname} />
+            </li>
             {isAdmin && (
-              <>
-                <p className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                  {t("nav.admin")}
-                </p>
-                {adminLinks(pendingArt).map((link) => (
-                  <NavItem key={link.href} link={link} pathname={pathname} />
-                ))}
-              </>
+              <li>
+                <NavDropdown
+                  label="nav.admin"
+                  links={adminLinks(pendingArt)}
+                  pathname={pathname}
+                  badge={pendingArt}
+                  badgeLabel="nav.pendingArt"
+                />
+              </li>
             )}
+          </ul>
+
+          <div className="ml-auto flex items-center gap-2">
             {hasAccount && (
               <button
                 onClick={logout}
-                className="mt-2 border-t border-neutral-800 px-2 py-2 text-left text-sm text-neutral-400 hover:text-neutral-100"
+                className="hidden whitespace-nowrap rounded px-2 py-1.5 text-sm text-neutral-400 transition-colors hover:text-neutral-100 md:block"
               >
                 {t("auth.logout")}
               </button>
             )}
+            <LanguageSwitcher />
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-expanded={menuOpen}
+              aria-controls={menuOpen ? "site-nav-mobile" : undefined}
+              className="relative rounded p-1.5 text-neutral-300 hover:text-neutral-100 md:hidden"
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              <span className="sr-only">
+                {showPending ? `${t("nav.menu")}, ${pendingParts.join(", ")}` : t("nav.menu")}
+              </span>
+              {showPending && (
+                // Visible count rather than a bare dot; the full wording is in the sr-only name above.
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1.5 -top-1.5 inline-flex min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[11px] font-semibold leading-4 text-neutral-950 ring-2 ring-neutral-950"
+                >
+                  {totalPending > 9 ? "9+" : totalPending}
+                </span>
+              )}
+            </button>
           </div>
         </div>
-      )}
+
+        {menuOpen && (
+          <div id="site-nav-mobile" className="border-t border-neutral-800 px-4 py-2 md:hidden">
+            <div className="mx-auto flex max-w-5xl flex-col">
+              <ul role="list" className="flex flex-col">
+                {mainLinks.map((link) => (
+                  <li key={link.href}>
+                    <NavItem link={link} pathname={pathname} />
+                  </li>
+                ))}
+              </ul>
+              <p id="site-nav-mobile-info" className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                {t("nav.info")}
+              </p>
+              <ul role="list" aria-labelledby="site-nav-mobile-info" className="flex flex-col">
+                {INFO_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <NavItem link={link} pathname={pathname} />
+                  </li>
+                ))}
+              </ul>
+              {isAdmin && (
+                <>
+                  <p
+                    id="site-nav-mobile-admin"
+                    className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-400"
+                  >
+                    {t("nav.admin")}
+                  </p>
+                  <ul role="list" aria-labelledby="site-nav-mobile-admin" className="flex flex-col">
+                    {adminLinks(pendingArt).map((link) => (
+                      <li key={link.href}>
+                        <NavItem link={link} pathname={pathname} />
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {hasAccount && (
+                <button
+                  onClick={logout}
+                  className="mt-2 border-t border-neutral-800 px-2 py-2 text-left text-sm text-neutral-400 hover:text-neutral-100"
+                >
+                  {t("auth.logout")}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </nav>
     </header>
   );
 }

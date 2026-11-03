@@ -1,13 +1,16 @@
 "use client";
 
+import { useId } from "react";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import type { DropRates } from "@/lib/game/dropRates";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, headingId, children }: { title: string; headingId?: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-5">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 id={headingId} className="text-lg font-semibold">
+        {title}
+      </h2>
       {children}
     </section>
   );
@@ -19,6 +22,9 @@ export function DropsClient({ rates }: { rates: DropRates }) {
   const pct = (value: number, digits = 2) =>
     `${value.toLocaleString(numberLocale, { maximumFractionDigits: digits })}%`;
   const int = (value: number) => value.toLocaleString(numberLocale);
+  // Each data table is named by its section heading (RGAA 5.4).
+  const rarityHeadingId = useId();
+  const familyHeadingId = useId();
 
   return (
     <main className="flex flex-col gap-6 py-10">
@@ -39,11 +45,11 @@ export function DropsClient({ rates }: { rates: DropRates }) {
         </ol>
       </Section>
 
-      <Section title={t("drops.rarity.title")}>
+      <Section title={t("drops.rarity.title")} headingId={rarityHeadingId}>
         <p className="text-sm text-neutral-400">{t("drops.rarity.intro")}</p>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-wide text-neutral-500">
+          <table className="w-full text-left text-sm" aria-labelledby={rarityHeadingId}>
+            <thead className="text-xs uppercase tracking-wide text-neutral-400">
               <tr>
                 <th className="py-1 pr-3 font-semibold">{t("drops.rarity.col.rarity")}</th>
                 <th className="py-1 pr-3 text-right font-semibold">{t("drops.rarity.col.share")}</th>
@@ -69,14 +75,14 @@ export function DropsClient({ rates }: { rates: DropRates }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-neutral-500">{t("drops.rarity.note")}</p>
+        <p className="text-xs text-neutral-400">{t("drops.rarity.note")}</p>
       </Section>
 
-      <Section title={t("drops.family.title")}>
+      <Section title={t("drops.family.title")} headingId={familyHeadingId}>
         <p className="text-sm text-neutral-400">{t("drops.family.intro")}</p>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-wide text-neutral-500">
+          <table className="w-full text-left text-sm" aria-labelledby={familyHeadingId}>
+            <thead className="text-xs uppercase tracking-wide text-neutral-400">
               <tr>
                 <th className="py-1 pr-3 font-semibold">{t("drops.family.col.family")}</th>
                 <th className="py-1 pr-3 text-right font-semibold">{t("drops.family.col.cards")}</th>
@@ -94,7 +100,7 @@ export function DropsClient({ rates }: { rates: DropRates }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-neutral-500">{t("drops.family.note")}</p>
+        <p className="text-xs text-neutral-400">{t("drops.family.note")}</p>
       </Section>
 
       <Section title={t("drops.assign.title")}>
