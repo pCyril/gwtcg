@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CardData } from "@/components/CardTile";
 import { BoosterOverlay, PackVisual } from "@/components/BoosterOverlay";
 import { AuthWidget } from "@/components/AuthWidget";
@@ -52,6 +52,9 @@ export function HomeClient() {
   const [openId, setOpenId] = useState(0);
   const [packLabel, setPackLabel] = useState(t("home.packLabelStandard"));
   const [error, setError] = useState<string | null>(null);
+  const packButtonRef = useRef<HTMLButtonElement>(null);
+  const packHeadingRef = useRef<HTMLHeadingElement>(null);
+  const overlayWasOpen = useRef(false);
 
   async function refreshMe() {
     const res = await fetch("/api/me");
@@ -160,12 +163,30 @@ export function HomeClient() {
     }
   }
 
+  const showOverlay = opening || cards !== null;
+
+  // When the booster overlay goes away (closed, or the opening failed), put focus back on the
+  // pack - or on its heading when the pack is disabled (no booster left) - instead of <body>.
+  useEffect(() => {
+    if (showOverlay) {
+      overlayWasOpen.current = true;
+      return;
+    }
+    if (!overlayWasOpen.current) return;
+    overlayWasOpen.current = false;
+    const pack = packButtonRef.current;
+    (pack && !pack.disabled ? pack : packHeadingRef.current)?.focus();
+  }, [showOverlay]);
+
   if (!me) {
-    return <div className="p-8 text-neutral-400">{t("common.loading")}</div>;
+    return (
+      <div role="status" className="p-8 text-neutral-400">
+        {t("common.loading")}
+      </div>
+    );
   }
 
   const canOpenStandard = me.boostersAvailable > 0 && !opening;
-  const showOverlay = opening || cards !== null;
 
   return (
     <main className="flex flex-col gap-8 py-10">
@@ -183,21 +204,29 @@ export function HomeClient() {
 
       <section className="flex flex-col items-center gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1 text-center sm:text-left">
-          <h2 className="text-xl font-semibold">{t("home.standardBoosterTitle")}</h2>
+          <h2 ref={packHeadingRef} tabIndex={-1} className="text-xl font-semibold">
+            {t("home.standardBoosterTitle")}
+          </h2>
           <p className="text-sm text-neutral-400">{t("home.standardBoosterDesc")}</p>
           {me.boostersAvailable === 0 && me.nextBoosterInMs !== null && (
             <p className="text-xs text-neutral-500">
               {t("home.nextBoosterIn", { time: formatCountdown(me.nextBoosterInMs) })}
             </p>
           )}
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {/* Persistent alert region (empty until an error): -mt-1/mt-1 keep the column's gap-1 unchanged. */}
+          <div role="alert" className="-mt-1">
+            {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
+          </div>
         </div>
 
         <button
+          ref={packButtonRef}
+          type="button"
           onClick={() => openBooster("STANDARD")}
           disabled={!canOpenStandard}
           className="aspect-[5/7] w-32 shrink-0 cursor-pointer transition-transform enabled:hover:-translate-y-1 enabled:hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
         >
+          <span className="sr-only">{t("home.a11y.openStandardPack")}</span>
           <PackVisual />
         </button>
       </section>

@@ -177,3 +177,28 @@ body {
 .glow-pulse {
   animation: glow-pulse 1.6s ease-in-out infinite;
 }
+
+/*
+ * Users who ask their system for less motion: no looping or decorative animation.
+ * (BoosterOverlay also skips the card-by-card reveal for them; "Reveal all" stops it for everyone.)
+ */
+@media (prefers-reduced-motion: reduce) {
+  .pack-idle,
+  .pack-shake,
+  .pack-burst,
+  .card-reveal,
+  .glow-pulse {
+    animation: none;
+  }
+
+  /* One-shot flashes that end transparent: without their animation they'd stay on screen. */
+  .burst-flash,
+  .rarity-burst {
+    animation: none;
+    opacity: 0;
+  }
+
+  .flip-card {
+    transition: none;
+  }
+}
