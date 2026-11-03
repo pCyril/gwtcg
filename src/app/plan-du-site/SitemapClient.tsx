@@ -28,6 +28,7 @@ function entries(marketEnabled: boolean): SitemapEntry[] {
     { href: "/changelog", label: "nav.changelog" },
     { href: "/contact", label: "nav.contact" },
     { href: "/mentions-legales", label: "legal.title" },
+    { href: "/accessibilite", label: "a11yStatement.title" },
   ];
 }
 

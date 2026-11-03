@@ -40,6 +40,8 @@ export const translations = {
     "footer.source": "Code source (GitHub)",
     "footer.contact": "Contact",
     "footer.legal": "Mentions légales",
+    "footer.a11y": "Accessibilité : partiellement conforme",
+    "a11yStatement.title": "Déclaration d'accessibilité",
     "legal.title": "Mentions légales",
 
     // Contact page
@@ -475,6 +477,8 @@ export const translations = {
     "footer.source": "Source code (GitHub)",
     "footer.contact": "Contact",
     "footer.legal": "Legal notice",
+    "footer.a11y": "Accessibility: partially compliant",
+    "a11yStatement.title": "Accessibility statement",
     "legal.title": "Legal notice",
 
     // Contact page

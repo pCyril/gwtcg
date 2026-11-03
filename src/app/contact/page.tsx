@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getServerLocale, pageTitle } from "@/lib/i18n/serverLocale";
 import { t } from "@/lib/i18n/translations";
 import { CONTACT_EMAIL } from "@/lib/contact";
@@ -28,6 +29,11 @@ export default async function ContactPage() {
           {t(locale, "contact.a11yTitle")}
         </h2>
         <p className="text-neutral-300">{t(locale, "contact.a11yBody")}</p>
+        <p>
+          <Link href="/accessibilite" className="underline hover:text-neutral-100">
+            {t(locale, "a11yStatement.title")}
+          </Link>
+        </p>
       </section>
     </main>
   );

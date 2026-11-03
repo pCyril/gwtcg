@@ -25,6 +25,9 @@ export function Footer() {
         <Link href="/mentions-legales" className="underline hover:text-neutral-300">
           {t("footer.legal")}
         </Link>
+        <Link href="/accessibilite" className="underline hover:text-neutral-300">
+          {t("footer.a11y")}
+        </Link>
         <a
           href="https://github.com/pCyril/gwtcg"
           target="_blank"
