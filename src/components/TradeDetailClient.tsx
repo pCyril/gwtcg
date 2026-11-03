@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { CardTile, type CardData } from "@/components/CardTile";
+import { useEffect, useId, useRef, useState } from "react";
+import { CardTile, CARD_TILE_OVERLAY_CLASS, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 
 const MAX_TRADE_ITEMS = 7;
+/** Focus target after removing the last card of the offer: the search field of my collection. */
+const FOCUS_SEARCH = "search";
 
 interface TradeSide {
   pseudo: string;
@@ -43,6 +45,15 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const [theirHasMore, setTheirHasMore] = useState(false);
   const theirPseudo = trade ? (trade.isInitiator ? trade.recipient.pseudo : trade.initiator.pseudo) : null;
   const tradeIsPending = trade?.status === "PENDING";
+  // Focus management: the "×" (remove) button and the confirm/cancel buttons disappear with
+  // what they act on, so focus is moved explicitly instead of falling back to <body>.
+  const searchMineId = useId();
+  const searchTheirsId = useId();
+  const searchMineRef = useRef<HTMLInputElement | null>(null);
+  const removeButtonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const focusAfterRemoveRef = useRef<string | null>(null);
+  const statusMessageRef = useRef<HTMLParagraphElement | null>(null);
+  const focusStatusRef = useRef(false);
 
   function refreshTrade(): Promise<TradeDetail | null> {
     return fetch(`/api/trade/${tradeId}`)
@@ -111,6 +122,22 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
     offerRef.current = offer;
   }, [offer]);
 
+  // After a card is removed from the offer, focus the next card's remove button (or the search field).
+  useEffect(() => {
+    const target = focusAfterRemoveRef.current;
+    if (!target) return;
+    focusAfterRemoveRef.current = null;
+    const el = target === FOCUS_SEARCH ? searchMineRef.current : removeButtonRefs.current.get(target);
+    el?.focus();
+  }, [offer]);
+
+  // Once the trade is settled (accepted, cancelled...) the action buttons are gone: focus the outcome message.
+  useEffect(() => {
+    if (!focusStatusRef.current || !trade || trade.status === "PENDING") return;
+    focusStatusRef.current = false;
+    statusMessageRef.current?.focus();
+  }, [trade]);
+
   // Seed the editable draft from my current offer, once per trade load. Adjusting
   // state during render (rather than in an effect) is the React-sanctioned way to
   // respond to a prop/data change without an extra commit-then-effect round trip.
@@ -123,7 +150,8 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   if (!trade) {
     return (
       <main className="py-10 text-neutral-400">
-        {error ? tError(error) : t("common.loading")}
+        <div role="status">{error ? null : t("common.loading")}</div>
+        <div role="alert">{error ? tError(error) : null}</div>
       </main>
     );
   }
@@ -207,10 +235,19 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   }
 
   function removeFromOffer(instanceId: string) {
-    changeOffer(offerRef.current.filter((c) => c.instanceId !== instanceId));
+    const current = offerRef.current;
+    const index = current.findIndex((c) => c.instanceId === instanceId);
+    const next = current.filter((c) => c.instanceId !== instanceId);
+    const neighbour = next[index] ?? next[index - 1];
+    focusAfterRemoveRef.current = neighbour?.instanceId ?? FOCUS_SEARCH;
+    changeOffer(next);
   }
 
+  // The buttons stay focusable while busy (aria-disabled instead of disabled), so the focus isn't lost.
+  const confirmBusy = pending || saving;
+
   async function confirm() {
+    if (confirmBusy) return;
     setPending(true);
     setError(null);
     try {
@@ -219,18 +256,23 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
       if (!res.ok) {
         setError(data.error);
       }
-      await refreshTrade();
+      focusStatusRef.current = true;
+      const fresh = await refreshTrade();
+      if (!fresh || fresh.status === "PENDING") focusStatusRef.current = false;
     } finally {
       setPending(false);
     }
   }
 
   async function cancel() {
+    if (pending) return;
     if (!window.confirm(t("trade.cancelConfirm"))) return;
     setPending(true);
     try {
       await fetch(`/api/trade/${tradeId}/cancel`, { method: "POST" });
-      await refreshTrade();
+      focusStatusRef.current = true;
+      const fresh = await refreshTrade();
+      if (!fresh || fresh.status === "PENDING") focusStatusRef.current = false;
     } finally {
       setPending(false);
     }
@@ -243,7 +285,11 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
       </div>
 
       {trade.status !== "PENDING" && (
-        <p className="rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2 text-sm text-neutral-300">
+        <p
+          ref={statusMessageRef}
+          tabIndex={-1}
+          className="rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2 text-sm text-neutral-300"
+        >
           {
             {
               ACCEPTED: t("trade.accepted"),
@@ -253,156 +299,197 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
           }
         </p>
       )}
-      {error && <p className="text-sm text-red-400">{tError(error)}</p>}
+      {/* One flex slot for the alert region and the columns: the persistent (usually empty) region adds no gap. */}
+      <div>
+        <div role="alert">{error && <p className="mb-6 text-sm text-red-400">{tError(error)}</p>}</div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* My side */}
+          <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">{t("trade.yourOffer")}</h2>
+              <span className={mine.confirmed ? "text-emerald-400" : "text-neutral-500"}>
+                {mine.confirmed ? t("common.confirmed") : t("common.pending")}
+              </span>
+            </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* My side */}
-        <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">{t("trade.yourOffer")}</h2>
-            <span className={mine.confirmed ? "text-emerald-400" : "text-neutral-500"}>
-              {mine.confirmed ? t("common.confirmed") : t("common.pending")}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {(isPending ? offer : mine.cards).map((card) => (
-              <div key={card.instanceId} className="relative">
-                <CardTile card={card} showCopies />
-                {isPending && (
-                  <button
-                    onClick={() => removeFromOffer(card.instanceId!)}
-                    aria-label={t("trade.removeCard", { title: card.title })}
-                    title={t("trade.removeCard", { title: card.title })}
-                    className="absolute left-2 top-9 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white shadow hover:bg-red-600"
-                  >
-                    ×
-                  </button>
-                )}
+            {(isPending ? offer : mine.cards).length === 0 ? (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
               </div>
-            ))}
-            {(isPending ? offer : mine.cards).length === 0 && (
-              <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
+            ) : (
+              // role="list": Tailwind's list-style reset drops the list semantics in Safari/VoiceOver.
+              <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {(isPending ? offer : mine.cards).map((card) => (
+                  <li key={card.instanceId} className="relative">
+                    <CardTile card={card} showCopies />
+                    {isPending && (
+                      <button
+                        type="button"
+                        ref={(el) => {
+                          if (el) removeButtonRefs.current.set(card.instanceId!, el);
+                          else removeButtonRefs.current.delete(card.instanceId!);
+                        }}
+                        onClick={() => removeFromOffer(card.instanceId!)}
+                        aria-label={t("trade.removeCard", { title: card.title })}
+                        title={t("trade.removeCard", { title: card.title })}
+                        className="absolute left-2 top-9 flex h-6 w-6 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white shadow hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
             )}
-          </div>
 
-          {isPending && (
-            <>
-              <p className="text-xs text-neutral-500">
-                {t("trade.selectedCount", { count: offer.length, max: MAX_TRADE_ITEMS })}
-                {saving && <span className="ml-2 text-emerald-400">{t("trade.saving")}</span>}
-              </p>
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setCollectionPage(1);
-                }}
-                placeholder={t("trade.searchPlaceholder")}
-                className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
-              />
-              <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
-                {myCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {myCollection?.map((card) => (
-                    <div
-                      key={card.instanceId}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => toggleCard(card)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          toggleCard(card);
-                        }
-                      }}
-                      className={`cursor-pointer rounded-lg transition ${
-                        offer.some((c) => c.cardId === card.cardId) ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
-                      }`}
-                    >
-                      <CardTile card={card} showCopies />
-                    </div>
-                  ))}
+            {isPending && (
+              <>
+                <p role="status" className="text-xs text-neutral-500">
+                  {t("trade.selectedCount", { count: offer.length, max: MAX_TRADE_ITEMS })}
+                  {saving && <span className="ml-2 text-emerald-400">{t("trade.saving")}</span>}
+                </p>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor={searchMineId} className="text-xs text-neutral-400">
+                    {t("trade.searchMineLabel")}
+                  </label>
+                  <input
+                    id={searchMineId}
+                    ref={searchMineRef}
+                    type="search"
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setCollectionPage(1);
+                    }}
+                    placeholder={t("trade.searchPlaceholder")}
+                    className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+                  />
                 </div>
-                {hasMore && (
-                  <button
-                    onClick={() => setCollectionPage((p) => p + 1)}
-                    className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
-                  >
-                    {t("trade.loadMore")}
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-        </section>
-
-        {/* Their side */}
-        <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">{t("trade.theirOffer", { pseudo: theirs.pseudo })}</h2>
-            <span className={theirs.confirmed ? "text-emerald-400" : "text-neutral-500"}>
-              {theirs.confirmed ? t("common.confirmed") : t("common.pending")}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {theirs.cards.map((card) => (
-              <CardTile key={card.instanceId} card={card} />
-            ))}
-            {theirs.cards.length === 0 && <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>}
-          </div>
-
-          {isPending && (
-            <>
-              <p className="text-xs text-neutral-500">{t("trade.theirMissing", { pseudo: theirs.pseudo })}</p>
-              <input
-                type="search"
-                value={theirSearch}
-                onChange={(e) => {
-                  setTheirSearch(e.target.value);
-                  setTheirPage(1);
-                }}
-                placeholder={t("trade.searchPlaceholder")}
-                className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
-              />
-              <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
-                {theirCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {theirCollection?.map((card) => (
-                    <div
-                      key={card.cardId}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => toggleRequested(card)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          toggleRequested(card);
-                        }
-                      }}
-                      className={`cursor-pointer rounded-lg transition ${
-                        theirs.cards.some((c) => c.cardId === card.cardId)
-                          ? "opacity-100 ring-2 ring-emerald-400"
-                          : "opacity-60 hover:opacity-90"
-                      }`}
+                <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
+                  <div role="status">
+                    {myCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
+                  </div>
+                  {!!myCollection?.length && (
+                    <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {myCollection.map((card) => {
+                        const selected = offer.some((c) => c.cardId === card.cardId);
+                        return (
+                          <li
+                            key={card.instanceId}
+                            className={`relative rounded-lg transition ${
+                              selected ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              aria-pressed={selected}
+                              aria-label={t("trade.offerCard", { title: card.title })}
+                              onClick={() => toggleCard(card)}
+                              className={CARD_TILE_OVERLAY_CLASS}
+                            />
+                            <CardTile card={card} showCopies underOverlay />
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={() => setCollectionPage((p) => p + 1)}
+                      className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
                     >
-                      <CardTile card={{ ...card, viewerCopies: undefined }} />
-                    </div>
-                  ))}
+                      {t("trade.loadMore")}
+                    </button>
+                  )}
                 </div>
-                {theirHasMore && (
-                  <button
-                    onClick={() => setTheirPage((p) => p + 1)}
-                    className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
-                  >
-                    {t("trade.loadMore")}
-                  </button>
-                )}
+              </>
+            )}
+          </section>
+
+          {/* Their side */}
+          <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">{t("trade.theirOffer", { pseudo: theirs.pseudo })}</h2>
+              <span className={theirs.confirmed ? "text-emerald-400" : "text-neutral-500"}>
+                {theirs.confirmed ? t("common.confirmed") : t("common.pending")}
+              </span>
+            </div>
+            {theirs.cards.length === 0 ? (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
               </div>
-            </>
-          )}
-        </section>
+            ) : (
+              <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {theirs.cards.map((card) => (
+                  <li key={card.instanceId}>
+                    <CardTile card={card} />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {isPending && (
+              <>
+                <p className="text-xs text-neutral-500">{t("trade.theirMissing", { pseudo: theirs.pseudo })}</p>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor={searchTheirsId} className="text-xs text-neutral-400">
+                    {t("trade.searchTheirsLabel", { pseudo: theirs.pseudo })}
+                  </label>
+                  <input
+                    id={searchTheirsId}
+                    type="search"
+                    value={theirSearch}
+                    onChange={(e) => {
+                      setTheirSearch(e.target.value);
+                      setTheirPage(1);
+                    }}
+                    placeholder={t("trade.searchPlaceholder")}
+                    className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+                  />
+                </div>
+                <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
+                  <div role="status">
+                    {theirCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
+                  </div>
+                  {!!theirCollection?.length && (
+                    <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {theirCollection.map((card) => {
+                        const requested = theirs.cards.some((c) => c.cardId === card.cardId);
+                        return (
+                          <li
+                            key={card.cardId}
+                            className={`relative rounded-lg transition ${
+                              requested ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              aria-pressed={requested}
+                              aria-label={t("trade.requestCard", { title: card.title })}
+                              onClick={() => toggleRequested(card)}
+                              className={CARD_TILE_OVERLAY_CLASS}
+                            />
+                            <CardTile card={{ ...card, viewerCopies: undefined }} underOverlay />
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {theirHasMore && (
+                    <button
+                      type="button"
+                      onClick={() => setTheirPage((p) => p + 1)}
+                      className="mt-2 w-full rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:border-emerald-400"
+                    >
+                      {t("trade.loadMore")}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </section>
+        </div>
       </div>
 
       {isPending && (
@@ -422,16 +509,18 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
       {isPending && (
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={confirm}
-            disabled={pending || saving}
-            className="rounded bg-emerald-600 px-5 py-2 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            aria-disabled={confirmBusy || undefined}
+            className="rounded bg-emerald-600 px-5 py-2 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
           >
             {t("trade.confirm")}
           </button>
           <button
+            type="button"
             onClick={cancel}
-            disabled={pending}
-            className="rounded border border-neutral-700 px-5 py-2 text-neutral-300 hover:border-red-400 hover:text-red-400 disabled:opacity-50"
+            aria-disabled={pending || undefined}
+            className="rounded border border-neutral-700 px-5 py-2 text-neutral-300 hover:border-red-400 hover:text-red-400 aria-disabled:opacity-50"
           >
             {t("trade.cancel")}
           </button>
