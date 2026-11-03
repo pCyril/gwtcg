@@ -78,12 +78,12 @@ export async function queryCollection(userId: string, options: CollectionQueryOp
   }
 
   // Only fetched for the "dropRate" sort: global drop count of each owned card
-  // (discarded copies included - they did drop), fewest first = rarest first.
+  // (discarded copies included - they did drop; exchange rewards left out), fewest first = rarest first.
   let dropCounts: Map<string, number> | null = null;
   if (sort === "dropRate") {
     const groups = await prisma.cardInstance.groupBy({
       by: ["cardId"],
-      where: { cardId: { in: [...copyCounts.keys()] } },
+      where: { cardId: { in: [...copyCounts.keys()] }, source: { not: "EXCHANGE" } },
       _count: { _all: true },
     });
     dropCounts = new Map(groups.map((g) => [g.cardId, g._count._all]));

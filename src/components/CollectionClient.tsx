@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Share2, Check } from "lucide-react";
 import { CardTile, CARD_TILE_OVERLAY_CLASS, type CardData } from "@/components/CardTile";
 import { CardDetailModal } from "@/components/CardDetailModal";
+import { ExchangeDialog } from "@/components/ExchangeDialog";
 import { RarityLegend } from "@/components/RarityLegend";
 import { CollectionSearchInput } from "@/components/CollectionSearchInput";
 import { FilterSelect, ProfessionFilter } from "@/components/CollectionFilters";
@@ -85,6 +86,7 @@ export function CollectionClient() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkPending, setBulkPending] = useState(false);
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [exchangeOpen, setExchangeOpen] = useState(false);
 
   const DISCARD_ERROR_MESSAGES: Record<string, string> = {
     CARD_IN_TRADE: t("error.CARD_IN_TRADE"),
@@ -188,7 +190,7 @@ export function CollectionClient() {
 
   return (
     <main className="flex flex-col gap-6 py-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t("collection.title")}</h1>
           {progress && (
@@ -201,7 +203,14 @@ export function CollectionClient() {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => setExchangeOpen(true)}
+            className="rounded border border-emerald-700 px-3 py-1.5 text-sm text-emerald-300 hover:border-emerald-500"
+          >
+            {t("exchange.open")}
+          </button>
           {/* The button's own label switches to "copied", but a focused button's name change isn't reliably read out. */}
           <span role="status" className="sr-only">
             {shareCopied ? t("collection.shareCopied") : ""}
@@ -350,6 +359,8 @@ export function CollectionClient() {
           {loadingMore && <p className="text-sm text-neutral-400">{t("common.loading")}</p>}
         </div>
       )}
+
+      {exchangeOpen && <ExchangeDialog onClose={() => setExchangeOpen(false)} onExchanged={refresh} />}
 
       {selectedCard && (
         <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} onDiscarded={refresh} onRarityChanged={refresh} />

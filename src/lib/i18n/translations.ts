@@ -3,6 +3,7 @@ import { a11yL2 } from "./a11y/l2";
 import { a11yL3 } from "./a11y/l3";
 import { a11yL4 } from "./a11y/l4";
 import { a11yL5 } from "./a11y/l5";
+import { exchangeStrings } from "./exchange";
 
 export type Locale = "fr" | "en";
 export const LOCALES: Locale[] = ["fr", "en"];
@@ -18,6 +19,7 @@ export const translations = {
     ...a11yL3.fr,
     ...a11yL4.fr,
     ...a11yL5.fr,
+    ...exchangeStrings.fr,
     // Common / shared
     "common.close": "Fermer",
     "common.cancel": "Annuler",
@@ -457,6 +459,7 @@ export const translations = {
     ...a11yL3.en,
     ...a11yL4.en,
     ...a11yL5.en,
+    ...exchangeStrings.en,
     "common.close": "Close",
     "common.cancel": "Cancel",
     "common.save": "Save",

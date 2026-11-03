@@ -20,6 +20,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Textes gris et boutons verts plus contrastés pour être lisibles par tous, et nouvelle page « Plan du site » accessible depuis le pied de page.",
       "Si ton système demande de réduire les animations, l'ouverture de booster révèle les cartes directement, sans animation.",
       "Nouvelles pages « Contact » et « Mentions légales » (éditeur, hébergeur, données personnelles, cookies), accessibles depuis le pied de page, le menu Infos et le plan du site, ainsi qu'une « Déclaration d'accessibilité » qui indique où en est le site et comment signaler un problème.",
+      "Nouveau : dans « Ma collection », le bouton « Échanger des doublons » te permet de donner 10 doublons d'une même rareté contre une carte de cette rareté que tu n'as pas encore, tirée au hasard. Tu gardes toujours au moins un exemplaire de chaque carte, et c'est limité à 5 échanges par jour.",
     ],
     en: [
       "Accessibility: the whole site can be used with the keyboard, with a \"Skip to content\" link, dialogs (card details, booster opening) that close with Escape, and buttons to rotate or flip a card without a mouse.",
@@ -29,6 +30,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Higher-contrast gray text and green buttons so everyone can read them, and a new \"Sitemap\" page linked from the footer.",
       "If your system asks to reduce motion, opening a booster reveals the cards straight away, without animation.",
       "New \"Contact\" and \"Legal notice\" pages (publisher, hosting, personal data, cookies), linked from the footer, the Info menu and the sitemap, plus an \"Accessibility statement\" page explaining where the site stands and how to report a problem.",
+      "New: in \"My collection\", the \"Exchange duplicates\" button lets you give 10 duplicates of the same rarity for a random card of that rarity you don't have yet. You always keep at least one copy of each card, and it's limited to 5 exchanges per day.",
     ],
   },
   {

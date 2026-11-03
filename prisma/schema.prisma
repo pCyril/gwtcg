@@ -77,6 +77,7 @@ enum AcquisitionSource {
   BOOSTER
   TRADE
   AUCTION
+  EXCHANGE
 }
 
 model CardInstance {
@@ -95,8 +96,29 @@ model CardInstance {
   tradeItems TradeItem[]
   auctions   Auction[]
 
+  // Set on the 10 duplicates given up in a duplicate exchange (they are also discarded).
+  givenInExchangeId String?
+  givenInExchange   CardExchange? @relation("ExchangeGiven", fields: [givenInExchangeId], references: [id])
+  receivedFromExchange CardExchange? @relation("ExchangeReceived")
+
   @@index([ownerId])
   @@index([cardId])
+}
+
+// Duplicate exchange: a player gives up EXCHANGE_COST spare copies of one rarity
+// and gets a random card of that rarity they don't own yet (capped per day).
+model CardExchange {
+  id                 String       @id @default(cuid())
+  userId             String
+  user               User         @relation(fields: [userId], references: [id])
+  rarity             Rarity
+  receivedInstanceId String       @unique
+  receivedInstance   CardInstance @relation("ExchangeReceived", fields: [receivedInstanceId], references: [id])
+  createdAt          DateTime     @default(now())
+
+  given CardInstance[] @relation("ExchangeGiven")
+
+  @@index([userId, createdAt])
 }
 
 model User {
@@ -118,6 +140,7 @@ model User {
   auctionsSelling  Auction[]        @relation("AuctionSeller")
   bids             Bid[]            @relation("Bidder")
   artSubmissions   ArtSubmission[]
+  cardExchanges    CardExchange[]
 }
 
 enum ArtSubmissionStatus {
