@@ -21,6 +21,7 @@ interface NavLink {
 const INFO_LINKS: NavLink[] = [
   { href: "/drops", label: "nav.drops" },
   { href: "/changelog", label: "nav.changelog" },
+  { href: "/contact", label: "nav.contact" },
   { href: "https://github.com/pCyril/gwtcg", label: "nav.source", external: true },
 ];
 

@@ -84,7 +84,8 @@ describe("SiteNav", () => {
     renderNav();
     const toggle = screen.getByRole("button", { name: "Infos" });
     await user.click(toggle);
-    // Tab through the three links, then out of the group.
+    // Tab through the four links, then out of the group.
+    await user.tab();
     await user.tab();
     await user.tab();
     await user.tab();

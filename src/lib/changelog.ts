@@ -19,6 +19,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Avant d'enchérir, d'acheter immédiatement, d'annuler une enchère ou de confirmer une remise, le Kamadan te demande une confirmation. Dans « Mes enchères », chaque ligne affiche le nom de la carte.",
       "Textes gris et boutons verts plus contrastés pour être lisibles par tous, et nouvelle page « Plan du site » accessible depuis le pied de page.",
       "Si ton système demande de réduire les animations, l'ouverture de booster révèle les cartes directement, sans animation.",
+      "Nouvelles pages « Contact » et « Mentions légales » (éditeur, hébergeur, données personnelles, cookies), accessibles depuis le pied de page, le menu Infos et le plan du site.",
     ],
     en: [
       "Accessibility: the whole site can be used with the keyboard, with a \"Skip to content\" link, dialogs (card details, booster opening) that close with Escape, and buttons to rotate or flip a card without a mouse.",
@@ -27,6 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Before bidding, buying out, cancelling an auction or confirming a hand-off, the Kamadan asks for confirmation. In \"My auctions\", each row shows the card name.",
       "Higher-contrast gray text and green buttons so everyone can read them, and a new \"Sitemap\" page linked from the footer.",
       "If your system asks to reduce motion, opening a booster reveals the cards straight away, without animation.",
+      "New \"Contact\" and \"Legal notice\" pages (publisher, hosting, personal data, cookies), linked from the footer, the Info menu and the sitemap.",
     ],
   },
   {

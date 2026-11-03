@@ -38,6 +38,17 @@ export const translations = {
     "footer.license": "Textes des cartes adaptés du Guild Wars Wiki sous licence GNU FDL.",
     "footer.changelog": "Nouveautés",
     "footer.source": "Code source (GitHub)",
+    "footer.contact": "Contact",
+    "footer.legal": "Mentions légales",
+    "legal.title": "Mentions légales",
+
+    // Contact page
+    "nav.contact": "Contact",
+    "contact.title": "Contact",
+    "contact.intro": "Une question, un bug, une idée ou un souci avec ton compte ? Écris-moi à cette adresse :",
+    "contact.emailNote": "Je réponds dès que possible.",
+    "contact.a11yTitle": "Accessibilité",
+    "contact.a11yBody": "Si tu n'arrives pas à accéder à un contenu ou à une fonctionnalité du site, écris à la même adresse en indiquant la page concernée et ce qui te bloque : je te répondrai et te proposerai une solution ou une alternative.",
 
     // Rarity labels
     "rarity.COMMON": "Commune",
@@ -462,6 +473,17 @@ export const translations = {
     "footer.license": "Card text adapted from the Guild Wars Wiki under the GNU FDL license.",
     "footer.changelog": "What's new",
     "footer.source": "Source code (GitHub)",
+    "footer.contact": "Contact",
+    "footer.legal": "Legal notice",
+    "legal.title": "Legal notice",
+
+    // Contact page
+    "nav.contact": "Contact",
+    "contact.title": "Contact",
+    "contact.intro": "A question, a bug, an idea or a problem with your account? Write to me at:",
+    "contact.emailNote": "I'll reply as soon as I can.",
+    "contact.a11yTitle": "Accessibility",
+    "contact.a11yBody": "If you can't access some content or feature of the site, write to the same address with the page concerned and what is blocking you: I'll get back to you with a fix or an alternative.",
 
     "rarity.COMMON": "Common",
     "rarity.UNCOMMON": "Uncommon",

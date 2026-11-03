@@ -26,6 +26,8 @@ function entries(marketEnabled: boolean): SitemapEntry[] {
       : []),
     { href: "/drops", label: "nav.drops" },
     { href: "/changelog", label: "nav.changelog" },
+    { href: "/contact", label: "nav.contact" },
+    { href: "/mentions-legales", label: "legal.title" },
   ];
 }
 

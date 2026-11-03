@@ -21,7 +21,7 @@ describe("Plan du site (12.1)", () => {
     const hrefs = within(main)
       .getAllByRole("link")
       .map((a) => a.getAttribute("href"));
-    expect(hrefs).toEqual(["/", "/collection", "/trade", "/market", "/market/mine", "/drops", "/changelog"]);
+    expect(hrefs).toEqual(["/", "/collection", "/trade", "/market", "/market/mine", "/drops", "/changelog", "/contact", "/mentions-legales"]);
     expect(screen.getByRole("link", { name: "Mes enchères" }).closest("li")?.parentElement?.closest("li")).not.toBeNull();
   });
 
