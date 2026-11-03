@@ -214,6 +214,7 @@ export function CardDetailModal({
   const images = (card.imageUrls ?? []).filter((u) => !removedImages.includes(u));
 
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- RGAA 7.3: click on the native <dialog> backdrop is a pointer shortcut; Escape (cancel event) and the Close button cover the keyboard, test CardDetailModal.test.tsx
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
@@ -230,6 +231,7 @@ export function CardDetailModal({
       <div role="status" className="sr-only">
         {shareCopied ? t("collection.shareCopied") : ""}
       </div>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- only stops backdrop clicks from bubbling to the dialog; not an interaction */}
       <div
         className="flex min-h-full flex-col items-center justify-center gap-4 p-4"
         onClick={(e) => e.stopPropagation()}

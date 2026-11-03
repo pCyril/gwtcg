@@ -32,6 +32,8 @@ jobs:
       - run: npx next typegen
       - run: npx tsc --noEmit
       - run: npm run lint
+      # RGAA accessibility regression tests (Testing Library + axe).
+      - run: npm test
 
   build-and-push:
     needs: check

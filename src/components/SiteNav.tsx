@@ -121,6 +121,7 @@ function NavDropdown({
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- focusout listener that closes the popover when keyboard focus leaves it (RGAA 10.13/12.8), not an interaction
     <div ref={ref} className="relative" onBlur={onBlur}>
       <button
         ref={buttonRef}

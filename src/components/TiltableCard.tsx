@@ -75,6 +75,7 @@ export function TiltableCard({ card, className }: { card: CardData; className: s
   return (
     <div className="flex flex-col items-center gap-3">
       <div style={{ perspective: "1400px" }}>
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- RGAA 13.10: pointer drag to tilt; the rotate/flip buttons below are the keyboard and single-pointer equivalent, test TiltableCard.test.tsx */}
         <div
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
