@@ -209,7 +209,7 @@ export function HomeClient() {
           </h2>
           <p className="text-sm text-neutral-400">{t("home.standardBoosterDesc")}</p>
           {me.boostersAvailable === 0 && me.nextBoosterInMs !== null && (
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-400">
               {t("home.nextBoosterIn", { time: formatCountdown(me.nextBoosterInMs) })}
             </p>
           )}

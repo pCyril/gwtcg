@@ -78,7 +78,7 @@ export function AdminArtReviewClient() {
               {/* eslint-disable-next-line @next/next/no-img-element -- user-submitted moderation queue, not an optimizable local asset set */}
               <img src={s.imageUrl} alt="" className="aspect-[3/2] w-full rounded object-cover" />
               <p className="text-sm font-semibold">{s.wikiPageTitle}</p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-400">
                 {interpolateJsx(
                   t("admin.by", { pseudo: s.submitterPseudo }),
                   "wikiLink",
@@ -91,7 +91,7 @@ export function AdminArtReviewClient() {
                 <button
                   onClick={() => review(s.id, "approve")}
                   disabled={pending === s.id}
-                  className="flex-1 rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                  className="flex-1 rounded bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
                 >
                   {t("admin.approve")}
                 </button>

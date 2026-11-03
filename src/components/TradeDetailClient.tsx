@@ -307,14 +307,14 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
           <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">{t("trade.yourOffer")}</h2>
-              <span className={mine.confirmed ? "text-emerald-400" : "text-neutral-500"}>
+              <span className={mine.confirmed ? "text-emerald-400" : "text-neutral-400"}>
                 {mine.confirmed ? t("common.confirmed") : t("common.pending")}
               </span>
             </div>
 
             {(isPending ? offer : mine.cards).length === 0 ? (
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
+                <p className="text-sm text-neutral-400">{t("trade.nothingYet")}</p>
               </div>
             ) : (
               // role="list": Tailwind's list-style reset drops the list semantics in Safari/VoiceOver.
@@ -344,7 +344,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
 
             {isPending && (
               <>
-                <p role="status" className="text-xs text-neutral-500">
+                <p role="status" className="text-xs text-neutral-400">
                   {t("trade.selectedCount", { count: offer.length, max: MAX_TRADE_ITEMS })}
                   {saving && <span className="ml-2 text-emerald-400">{t("trade.saving")}</span>}
                 </p>
@@ -362,12 +362,12 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                       setCollectionPage(1);
                     }}
                     placeholder={t("trade.searchPlaceholder")}
-                    className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+                    className="rounded border border-neutral-500 bg-neutral-900 px-3 py-1.5 text-sm"
                   />
                 </div>
                 <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
                   <div role="status">
-                    {myCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
+                    {myCollection?.length === 0 && <p className="text-sm text-neutral-400">{t("trade.noResults")}</p>}
                   </div>
                   {!!myCollection?.length && (
                     <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -377,7 +377,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                           <li
                             key={card.instanceId}
                             className={`relative rounded-lg transition ${
-                              selected ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
+                              selected ? "opacity-100 ring-2 ring-emerald-400" : "opacity-80 hover:opacity-90"
                             }`}
                           >
                             <button
@@ -411,13 +411,13 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
           <section className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">{t("trade.theirOffer", { pseudo: theirs.pseudo })}</h2>
-              <span className={theirs.confirmed ? "text-emerald-400" : "text-neutral-500"}>
+              <span className={theirs.confirmed ? "text-emerald-400" : "text-neutral-400"}>
                 {theirs.confirmed ? t("common.confirmed") : t("common.pending")}
               </span>
             </div>
             {theirs.cards.length === 0 ? (
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                <p className="text-sm text-neutral-500">{t("trade.nothingYet")}</p>
+                <p className="text-sm text-neutral-400">{t("trade.nothingYet")}</p>
               </div>
             ) : (
               <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -431,7 +431,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
 
             {isPending && (
               <>
-                <p className="text-xs text-neutral-500">{t("trade.theirMissing", { pseudo: theirs.pseudo })}</p>
+                <p className="text-xs text-neutral-400">{t("trade.theirMissing", { pseudo: theirs.pseudo })}</p>
                 <div className="flex flex-col gap-1">
                   <label htmlFor={searchTheirsId} className="text-xs text-neutral-400">
                     {t("trade.searchTheirsLabel", { pseudo: theirs.pseudo })}
@@ -445,12 +445,12 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                       setTheirPage(1);
                     }}
                     placeholder={t("trade.searchPlaceholder")}
-                    className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+                    className="rounded border border-neutral-500 bg-neutral-900 px-3 py-1.5 text-sm"
                   />
                 </div>
                 <div className="max-h-72 overflow-y-auto rounded border border-neutral-800 p-2">
                   <div role="status">
-                    {theirCollection?.length === 0 && <p className="text-sm text-neutral-500">{t("trade.noResults")}</p>}
+                    {theirCollection?.length === 0 && <p className="text-sm text-neutral-400">{t("trade.noResults")}</p>}
                   </div>
                   {!!theirCollection?.length && (
                     <ul role="list" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -460,7 +460,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
                           <li
                             key={card.cardId}
                             className={`relative rounded-lg transition ${
-                              requested ? "opacity-100 ring-2 ring-emerald-400" : "opacity-60 hover:opacity-90"
+                              requested ? "opacity-100 ring-2 ring-emerald-400" : "opacity-80 hover:opacity-90"
                             }`}
                           >
                             <button
@@ -512,7 +512,7 @@ export function TradeDetailClient({ tradeId }: { tradeId: string }) {
             type="button"
             onClick={confirm}
             aria-disabled={confirmBusy || undefined}
-            className="rounded bg-emerald-600 px-5 py-2 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+            className="rounded bg-emerald-700 px-5 py-2 font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
           >
             {t("trade.confirm")}
           </button>

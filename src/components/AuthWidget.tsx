@@ -58,7 +58,7 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
   }
 
   const closeButton = (
-    <button type="button" onClick={closePanel} className="text-neutral-500 hover:text-neutral-300">
+    <button type="button" onClick={closePanel} className="text-neutral-400 hover:text-neutral-300">
       <span aria-hidden="true">✕</span>
       <span className="sr-only">{t("common.close")}</span>
     </button>
@@ -140,7 +140,7 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
     }
   }
 
-  const inputClass = "rounded border border-neutral-700 bg-neutral-950 px-2 py-1";
+  const inputClass = "rounded border border-neutral-500 bg-neutral-950 px-2 py-1";
 
   return (
     <form
@@ -200,7 +200,7 @@ export function AuthWidget({ isGuest, email, onAuthChange }: AuthWidgetProps) {
       <button
         type="submit"
         aria-disabled={pending || undefined}
-        className="rounded bg-emerald-600 px-3 py-1.5 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+        className="rounded bg-emerald-700 px-3 py-1.5 font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
       >
         {t("auth.submitLogin")}
       </button>

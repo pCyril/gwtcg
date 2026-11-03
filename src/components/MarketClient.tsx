@@ -104,9 +104,9 @@ export function MarketClient() {
                       : t("market.startingPrice", { amount: a.startingPrice })}
                   </p>
                   {a.buyoutPrice && (
-                    <p className="text-neutral-500">{t("market.buyoutPrice", { amount: a.buyoutPrice })}</p>
+                    <p className="text-neutral-400">{t("market.buyoutPrice", { amount: a.buyoutPrice })}</p>
                   )}
-                  <p className="text-neutral-500">
+                  <p className="text-neutral-400">
                     {a.sellerPseudo}
                     {a.sellerCompletedSales > 0 && (
                       <span className="text-emerald-400/80">

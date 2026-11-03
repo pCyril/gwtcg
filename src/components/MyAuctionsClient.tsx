@@ -16,7 +16,7 @@ interface AuctionRow {
 
 function AuctionList({ rows }: { rows: AuctionRow[] }) {
   const { t } = useLocale();
-  if (rows.length === 0) return <p className="text-sm text-neutral-500">{t("myAuctions.empty")}</p>;
+  if (rows.length === 0) return <p className="text-sm text-neutral-400">{t("myAuctions.empty")}</p>;
   return (
     // role="list": Safari drops list semantics when list-style is none (Tailwind preflight).
     <ul role="list" className="flex flex-col divide-y divide-neutral-800 rounded-lg border border-neutral-800">

@@ -36,7 +36,7 @@ function isActive(pathname: string, href: string) {
 function Badge({ count, label }: { count: number; label: string }) {
   return (
     <span
-      className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-xs font-semibold leading-5 text-white"
+      className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-700 px-1.5 text-xs font-semibold leading-5 text-white"
       aria-label={label}
       title={label}
     >
@@ -292,7 +292,7 @@ export function SiteNav() {
                   </li>
                 ))}
               </ul>
-              <p id="site-nav-mobile-info" className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              <p id="site-nav-mobile-info" className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
                 {t("nav.info")}
               </p>
               <ul role="list" aria-labelledby="site-nav-mobile-info" className="flex flex-col">
@@ -306,7 +306,7 @@ export function SiteNav() {
                 <>
                   <p
                     id="site-nav-mobile-admin"
-                    className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-500"
+                    className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-neutral-400"
                   >
                     {t("nav.admin")}
                   </p>

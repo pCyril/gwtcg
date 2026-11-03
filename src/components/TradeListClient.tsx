@@ -97,7 +97,7 @@ export function TradeListClient() {
                 ref={registerButtonRef}
                 type="button"
                 onClick={() => setShowRegister(true)}
-                className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800"
               >
                 {t("auth.register")}
               </button>
@@ -131,12 +131,12 @@ export function TradeListClient() {
                 onChange={(e) => setPseudo(e.target.value)}
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? ids.error : undefined}
-                className="min-w-0 flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
+                className="min-w-0 flex-1 rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5 text-sm"
               />
               <button
                 type="submit"
                 aria-disabled={pending || undefined}
-                className="shrink-0 rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+                className="shrink-0 rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
               >
                 {t("tradeList.propose")}
               </button>

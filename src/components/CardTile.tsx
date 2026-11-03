@@ -83,7 +83,7 @@ export function CardTile({
         {card.viewerCopies !== undefined && (
           <span
             className={`absolute left-1 top-1 z-10 rounded-full px-1.5 py-0.5 text-[8px] font-bold shadow ${
-              card.viewerCopies > 0 ? "bg-emerald-500 text-white" : "bg-black/70 text-neutral-300"
+              card.viewerCopies > 0 ? "bg-emerald-700 text-white" : "bg-black/70 text-neutral-300"
             }`}
           >
             {card.viewerCopies > 0
@@ -172,7 +172,7 @@ export function CardTile({
         <p lang="en" className={`flex-1 text-neutral-300 ${large ? "line-clamp-5" : "line-clamp-3"}`}>
           {card.extract}
         </p>
-        <div className={`flex items-center justify-between text-neutral-500 ${large ? "text-xs" : "text-[8px]"}`}>
+        <div className={`flex items-center justify-between text-neutral-400 ${large ? "text-xs" : "text-[8px]"}`}>
           <span className="truncate">{card.campaign}</span>
           <a
             href={wikiUrl(card.url)}

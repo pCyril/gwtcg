@@ -27,7 +27,7 @@ export function SharedCardClient({ card }: { card: CardData & { cardId: string }
   return (
     <main className="flex flex-col items-center gap-5 py-10">
       <TiltableCard card={card} className="w-[min(26rem,78vw)]" />
-      <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
+      <p className="text-xs text-neutral-400">{t("cardDetail.dragHint")}</p>
       {dropStats && dropStats.total > 0 && (
         <p className="text-sm text-neutral-300">
           {t("cardDetail.dropRate", {
@@ -42,7 +42,7 @@ export function SharedCardClient({ card }: { card: CardData & { cardId: string }
       )}
       <Link
         href="/"
-        className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+        className="rounded-lg bg-emerald-700 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-800"
       >
         {t("sharedCard.cta")}
       </Link>

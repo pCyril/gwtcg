@@ -37,7 +37,7 @@ export function CollectionSearchInput({ value, onChange }: { value: string; onCh
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t("collection.searchPlaceholder")}
-        className="w-full rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm"
+        className="w-full rounded border border-neutral-500 bg-neutral-900 px-3 py-2 text-sm"
       />
     </div>
   );

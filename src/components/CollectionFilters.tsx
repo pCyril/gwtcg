@@ -38,7 +38,7 @@ export function FilterSelect({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm"
+        className="rounded border border-neutral-500 bg-neutral-900 px-3 py-1.5 text-sm"
       >
         {children}
       </select>
@@ -56,7 +56,7 @@ export function ProfessionFilter({ selected, onToggle }: { selected: string[]; o
   const labelId = useId();
   return (
     <div role="group" aria-labelledby={labelId} className="flex flex-wrap items-center gap-2">
-      <span id={labelId} className="text-xs uppercase tracking-wide text-neutral-500">
+      <span id={labelId} className="text-xs uppercase tracking-wide text-neutral-400">
         {t("collection.filterByProfession")}
       </span>
       {PROFESSIONS.map((profession) => {

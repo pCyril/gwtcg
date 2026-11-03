@@ -49,7 +49,7 @@ export function DropsClient({ rates }: { rates: DropRates }) {
         <p className="text-sm text-neutral-400">{t("drops.rarity.intro")}</p>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm" aria-labelledby={rarityHeadingId}>
-            <thead className="text-xs uppercase tracking-wide text-neutral-500">
+            <thead className="text-xs uppercase tracking-wide text-neutral-400">
               <tr>
                 <th className="py-1 pr-3 font-semibold">{t("drops.rarity.col.rarity")}</th>
                 <th className="py-1 pr-3 text-right font-semibold">{t("drops.rarity.col.share")}</th>
@@ -75,14 +75,14 @@ export function DropsClient({ rates }: { rates: DropRates }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-neutral-500">{t("drops.rarity.note")}</p>
+        <p className="text-xs text-neutral-400">{t("drops.rarity.note")}</p>
       </Section>
 
       <Section title={t("drops.family.title")} headingId={familyHeadingId}>
         <p className="text-sm text-neutral-400">{t("drops.family.intro")}</p>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm" aria-labelledby={familyHeadingId}>
-            <thead className="text-xs uppercase tracking-wide text-neutral-500">
+            <thead className="text-xs uppercase tracking-wide text-neutral-400">
               <tr>
                 <th className="py-1 pr-3 font-semibold">{t("drops.family.col.family")}</th>
                 <th className="py-1 pr-3 text-right font-semibold">{t("drops.family.col.cards")}</th>
@@ -100,7 +100,7 @@ export function DropsClient({ rates }: { rates: DropRates }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-neutral-500">{t("drops.family.note")}</p>
+        <p className="text-xs text-neutral-400">{t("drops.family.note")}</p>
       </Section>
 
       <Section title={t("drops.assign.title")}>

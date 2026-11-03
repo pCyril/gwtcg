@@ -289,7 +289,7 @@ export function CardDetailModal({
         <div role="alert" className="-mt-4">
           {rarityError && <p className="mt-4 text-xs text-red-400">{rarityError}</p>}
         </div>
-        <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
+        <p className="text-xs text-neutral-400">{t("cardDetail.dragHint")}</p>
         <div className="flex flex-wrap justify-center gap-3">
           <button
             onClick={onClose}
@@ -351,7 +351,7 @@ export function CardDetailModal({
                   // The button is replaced by the form: move focus to its first field.
                   focusAfterRender(() => (registerFormRef.current ? firstFocusable(registerFormRef.current) : null));
                 }}
-                className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800"
               >
                 {t("auth.register")}
               </button>

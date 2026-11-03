@@ -24,9 +24,9 @@ interface Stats {
 function StatCard({ label, value, sub }: { label: string; value: number; sub?: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4">
-      <span className="text-xs uppercase tracking-wide text-neutral-500">{label}</span>
+      <span className="text-xs uppercase tracking-wide text-neutral-400">{label}</span>
       <span className="text-2xl font-bold tracking-tight">{value.toLocaleString()}</span>
-      {sub && <span className="text-xs text-neutral-500">{sub}</span>}
+      {sub && <span className="text-xs text-neutral-400">{sub}</span>}
     </div>
   );
 }
@@ -182,7 +182,7 @@ export function AdminStatsClient() {
             {wikiArchive ? t("admin.wikiArchive.disable") : t("admin.wikiArchive.enable")}
           </button>
           {wikiArchive !== null && (
-            <span className={`text-sm ${wikiArchive ? "text-amber-400" : "text-neutral-500"}`}>
+            <span className={`text-sm ${wikiArchive ? "text-amber-400" : "text-neutral-400"}`}>
               {wikiArchive ? t("admin.wikiArchive.onArchive") : t("admin.wikiArchive.onLive")}
             </span>
           )}

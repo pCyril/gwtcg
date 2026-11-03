@@ -96,13 +96,13 @@ export function PseudoField({ value, onSaved }: { value: string; onSaved: () => 
         maxLength={24}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${ids.help} ${ids.error}` : ids.help}
-        className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-neutral-200"
+        className="rounded border border-neutral-500 bg-neutral-900 px-2 py-1 text-neutral-200"
       />
       <button
         type="button"
         onClick={save}
         aria-disabled={pending || undefined}
-        className="rounded bg-emerald-600 px-2 py-1 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+        className="rounded bg-emerald-700 px-2 py-1 font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
       >
         {t("common.save")}
         <span className="sr-only"> {t("a11y.l3.pseudoTarget")}</span>
@@ -118,7 +118,7 @@ export function PseudoField({ value, onSaved }: { value: string; onSaved: () => 
         {t("common.cancel")}
         <span className="sr-only"> {t("a11y.l3.pseudoCancelTarget")}</span>
       </button>
-      <span id={ids.help} className="basis-full text-neutral-500">
+      <span id={ids.help} className="basis-full text-neutral-400">
         {t("a11y.l3.pseudoHelp")}
       </span>
       {/* Always mounted so screen readers announce the message when it is filled in. */}

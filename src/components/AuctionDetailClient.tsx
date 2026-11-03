@@ -227,7 +227,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
         {auction.buyoutPrice && <p>{t("auction.buyoutPriceLabel", { amount: auction.buyoutPrice })}</p>}
         <p>{t("auction.currentBidLabel", { amount: topBid !== null ? `${topBid} ecto` : t("auction.currentBidNone") })}</p>
         {isActive && (
-          <p className="text-neutral-500">
+          <p className="text-neutral-400">
             {t("auction.endsAtLabel", { date: new Date(auction.endsAt).toLocaleString(locale === "fr" ? "fr-FR" : "en-US") })}
           </p>
         )}
@@ -289,13 +289,13 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
               onChange={(e) => setBidAmount(e.target.value === "" ? "" : Number(e.target.value))}
               aria-describedby={bidError ? `${bidHintId} ${errorId}` : bidHintId}
               aria-invalid={bidError || undefined}
-              className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm"
+              className="flex-1 rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5 text-sm"
             />
             <button
               type="button"
               onClick={onBidClick}
               aria-disabled={pending || bidAmount === "" || undefined}
-              className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+              className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
             >
               {t("auction.bid")}
             </button>
@@ -333,7 +333,7 @@ export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
             type="button"
             onClick={onConfirmHandoffClick}
             aria-disabled={pending || undefined}
-            className="rounded bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+            className="rounded bg-emerald-700 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
           >
             {t("auction.confirmHandoff")}
           </button>

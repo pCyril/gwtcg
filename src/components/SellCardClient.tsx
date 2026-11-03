@@ -88,7 +88,7 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
             onChange={(e) => setStartingPrice(Math.max(1, Number(e.target.value)))}
             aria-invalid={startingInvalid || undefined}
             aria-describedby={startingInvalid ? errorId : undefined}
-            className="rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5"
+            className="rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -100,7 +100,7 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
             onChange={(e) => setBuyoutPrice(e.target.value === "" ? "" : Number(e.target.value))}
             aria-invalid={buyoutInvalid || undefined}
             aria-describedby={buyoutInvalid ? errorId : undefined}
-            className="rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5"
+            className="rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -113,11 +113,11 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
             onChange={(e) => setDurationHours(Math.min(72, Math.max(1, Number(e.target.value))))}
             aria-invalid={durationInvalid || undefined}
             aria-describedby={durationInvalid ? errorId : undefined}
-            className="rounded border border-neutral-700 bg-neutral-950 px-3 py-1.5"
+            className="rounded border border-neutral-500 bg-neutral-950 px-3 py-1.5"
           />
         </label>
 
-        <p className="text-xs text-neutral-500">{t("sell.noFeeNote")}</p>
+        <p className="text-xs text-neutral-400">{t("sell.noFeeNote")}</p>
         <p id={cancelInfoId} className="text-xs text-neutral-400">
           {t("sell.cancelInfo")}
         </p>
@@ -131,7 +131,7 @@ export function SellCardClient({ instanceId }: { instanceId: string }) {
           onClick={submit}
           aria-disabled={pending || undefined}
           aria-describedby={cancelInfoId}
-          className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+          className="rounded bg-emerald-700 px-4 py-2 font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
         >
           {t("sell.submit")}
         </button>

@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 export function Footer() {
   const { t } = useLocale();
   return (
-    <footer className="border-t border-neutral-800 px-4 py-6 text-center text-xs text-neutral-500">
+    <footer className="border-t border-neutral-800 px-4 py-6 text-center text-xs text-neutral-400">
       <p>{t("footer.disclaimer")}</p>
       <p>{t("footer.license")}</p>
       <p className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1">

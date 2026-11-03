@@ -207,7 +207,7 @@ export function BoosterOverlay({
               ref={skipRef}
               type="button"
               onClick={() => setSkipped(true)}
-              className="text-sm text-neutral-500 underline hover:text-neutral-300"
+              className="text-sm text-neutral-400 underline hover:text-neutral-300"
             >
               {t("booster.revealAll")}
             </button>
@@ -240,7 +240,7 @@ export function BoosterOverlay({
                         registerFormRef.current ? firstFocusable(registerFormRef.current) : null,
                       );
                     }}
-                    className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                    className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-800"
                   >
                     {t("auth.register")}
                   </button>
@@ -317,7 +317,7 @@ function RevealingCard({ card, index, total }: { card: CardData; index: number; 
         {Array.from({ length: total }).map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-neutral-200" : "bg-neutral-700"}`}
+            className={`h-1.5 w-1.5 rounded-full ${i === index ? "bg-neutral-200" : "bg-neutral-500"}`}
           />
         ))}
       </div>

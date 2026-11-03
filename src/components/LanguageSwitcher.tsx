@@ -22,7 +22,7 @@ export function LanguageSwitcher() {
           onClick={() => switchTo(l)}
           aria-current={locale === l}
           className={`rounded-full px-2 py-1 uppercase transition-colors ${
-            locale === l ? "bg-emerald-600 text-white" : "text-neutral-400 hover:text-neutral-200"
+            locale === l ? "bg-emerald-700 text-white" : "text-neutral-400 hover:text-neutral-200"
           }`}
         >
           {l}

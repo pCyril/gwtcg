@@ -347,7 +347,7 @@ export function CollectionClient() {
 
       {cards && cards.length > 0 && (
         <div ref={sentinelRef} role="status" className="flex justify-center py-2">
-          {loadingMore && <p className="text-sm text-neutral-500">{t("common.loading")}</p>}
+          {loadingMore && <p className="text-sm text-neutral-400">{t("common.loading")}</p>}
         </div>
       )}
 

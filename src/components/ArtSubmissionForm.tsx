@@ -124,14 +124,14 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
         {prompt}
       </pre>
 
-      <p className="text-[11px] text-neutral-500">{t("art.privacyNote")}</p>
+      <p className="text-[11px] text-neutral-400">{t("art.privacyNote")}</p>
 
       {/* Label and accepted formats come before the field, so they're known before choosing a file. */}
       <div className="flex flex-col gap-1">
         <label htmlFor={fileId} className="text-xs text-neutral-300">
           {t("art.fileLabel")}
         </label>
-        <p id={fileHintId} className="text-[11px] text-neutral-500">
+        <p id={fileHintId} className="text-[11px] text-neutral-400">
           {t("art.fileHint")}
         </p>
         <input
@@ -168,7 +168,7 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
           type="button"
           onClick={submit}
           disabled={!file || !certified || pending}
-          className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="rounded bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
         >
           {t("art.submit")}
         </button>

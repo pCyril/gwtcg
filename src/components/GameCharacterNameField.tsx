@@ -64,7 +64,7 @@ export function GameCharacterNameField({
 
   if (!editing) {
     return (
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-neutral-400">
         {t("gameChar.title")} {value ?? <span className="italic">{t("gameChar.notSet")}</span>}{" "}
         <button
           ref={editButtonRef}
@@ -85,7 +85,7 @@ export function GameCharacterNameField({
 
   return (
     <form onSubmit={save} noValidate className="flex flex-wrap items-center gap-2 text-xs">
-      <label htmlFor={ids.input} className="text-neutral-500">
+      <label htmlFor={ids.input} className="text-neutral-400">
         {t("gameChar.title")}
       </label>
       <input
@@ -99,12 +99,12 @@ export function GameCharacterNameField({
         autoComplete="off"
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${ids.help} ${ids.error}` : ids.help}
-        className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-neutral-200"
+        className="rounded border border-neutral-500 bg-neutral-900 px-2 py-1 text-neutral-200"
       />
       <button
         type="submit"
         aria-disabled={pending || undefined}
-        className="rounded bg-emerald-600 px-2 py-1 font-medium text-white hover:bg-emerald-500 aria-disabled:opacity-50"
+        className="rounded bg-emerald-700 px-2 py-1 font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
       >
         {t("common.save")}
         <span className="sr-only"> {t("a11y.l3.gameCharTarget")}</span>
@@ -120,7 +120,7 @@ export function GameCharacterNameField({
         {t("common.cancel")}
         <span className="sr-only"> {t("a11y.l3.gameCharCancelTarget")}</span>
       </button>
-      <span id={ids.help} className="w-full text-neutral-500">
+      <span id={ids.help} className="w-full text-neutral-400">
         {t("a11y.l3.gameCharHelp")}
       </span>
       {/* Always mounted so screen readers announce the message when it is filled in. */}

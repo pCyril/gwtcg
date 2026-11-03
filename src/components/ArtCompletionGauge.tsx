@@ -47,7 +47,7 @@ export function ArtCompletionGauge() {
             {t("completion.title")}
             <ChevronDown
               aria-hidden="true"
-              className={`h-5 w-5 shrink-0 text-neutral-500 transition-transform ${expanded ? "rotate-180" : ""}`}
+              className={`h-5 w-5 shrink-0 text-neutral-400 transition-transform ${expanded ? "rotate-180" : ""}`}
             />
           </button>
         </h2>
