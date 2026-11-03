@@ -57,7 +57,7 @@ export const translations = {
     "family.LORE": "Lore",
 
     // Shared error codes (reused across trade/auction/discard/art/auth)
-    "error.INVALID_EMAIL": "Adresse email invalide.",
+    "error.INVALID_EMAIL": "Adresse email invalide. Format attendu : nom@domaine.fr",
     "error.PASSWORD_TOO_SHORT": "Le mot de passe doit faire au moins 8 caractères.",
     "error.INVALID_PSEUDO": "Pseudo invalide (lettres, chiffres, _ ou -, 3 à 24 caractères).",
     "error.ALREADY_REGISTERED": "Ce compte a déjà un mot de passe.",
@@ -90,7 +90,7 @@ export const translations = {
     "error.AUCTION_ENDED": "L'enchère vient de se terminer.",
     "error.CANNOT_BID_OWN_AUCTION": "Tu ne peux pas enchérir sur ta propre vente.",
     "error.BID_TOO_LOW": "Ta mise doit être supérieure à l'enchère actuelle.",
-    "error.INVALID_AMOUNT": "Montant invalide.",
+    "error.INVALID_AMOUNT": "Montant invalide : saisis un nombre entier d'ecto supérieur à zéro et à l'enchère actuelle, par exemple 15.",
     "error.NOT_THE_SELLER": "Tu n'es pas le vendeur.",
     "error.CANNOT_CANCEL_WITH_BIDS": "Impossible d'annuler : des enchères ont déjà été placées.",
     "error.AUCTION_NOT_AWAITING_HANDOFF": "Cette enchère n'attend pas de remise.",
@@ -478,7 +478,7 @@ export const translations = {
     "family.WEAPON": "Weapon",
     "family.LORE": "Lore",
 
-    "error.INVALID_EMAIL": "Invalid email address.",
+    "error.INVALID_EMAIL": "Invalid email address. Expected format: name@example.com",
     "error.PASSWORD_TOO_SHORT": "Password must be at least 8 characters.",
     "error.INVALID_PSEUDO": "Invalid handle (letters, digits, _ or -, 3 to 24 characters).",
     "error.ALREADY_REGISTERED": "This account already has a password.",
@@ -511,7 +511,7 @@ export const translations = {
     "error.AUCTION_ENDED": "This auction just ended.",
     "error.CANNOT_BID_OWN_AUCTION": "You can't bid on your own auction.",
     "error.BID_TOO_LOW": "Your bid must be higher than the current one.",
-    "error.INVALID_AMOUNT": "Invalid amount.",
+    "error.INVALID_AMOUNT": "Invalid amount: enter a whole number of ecto, greater than zero and than the current bid, for example 15.",
     "error.NOT_THE_SELLER": "You're not the seller.",
     "error.CANNOT_CANCEL_WITH_BIDS": "Can't cancel: bids have already been placed.",
     "error.AUCTION_NOT_AWAITING_HANDOFF": "This auction isn't awaiting a handoff.",
