@@ -30,7 +30,7 @@ export function FilterSelect({
 }) {
   const id = useId();
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 max-w-full items-center gap-2">
       <label htmlFor={id} className="text-sm text-neutral-400">
         {label}
       </label>
@@ -38,7 +38,7 @@ export function FilterSelect({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-neutral-500 bg-neutral-900 px-3 py-1.5 text-sm"
+        className="min-w-0 max-w-full rounded border border-neutral-500 bg-neutral-900 px-3 py-1.5 text-sm"
       >
         {children}
       </select>

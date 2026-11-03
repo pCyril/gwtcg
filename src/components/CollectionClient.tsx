@@ -163,7 +163,7 @@ export function CollectionClient() {
   }
 
   async function discardSelected() {
-    if (selectedIds.size === 0) return;
+    if (selectedIds.size === 0 || bulkPending) return;
     if (!window.confirm(t("collection.discardConfirm", { count: selectedIds.size }))) return;
     setBulkPending(true);
     setBulkError(null);
@@ -285,8 +285,8 @@ export function CollectionClient() {
           <button
             type="button"
             onClick={discardSelected}
-            disabled={selectedIds.size === 0 || bulkPending}
-            className="rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-600 disabled:opacity-50"
+            aria-disabled={selectedIds.size === 0 || bulkPending || undefined}
+            className="rounded bg-red-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-600 aria-disabled:opacity-50"
           >
             {t("collection.discardSelected")}
           </button>

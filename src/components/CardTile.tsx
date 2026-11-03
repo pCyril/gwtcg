@@ -92,7 +92,7 @@ export function CardTile({
           </span>
         )}
         {card.isNew && (
-          <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
+          <span className="absolute right-1 top-1 z-10 rounded-full bg-emerald-700 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white shadow">
             {t("card.new")}
           </span>
         )}

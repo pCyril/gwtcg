@@ -42,7 +42,7 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
   }
 
   async function submit() {
-    if (!file || !certified) return;
+    if (!file || !certified || pending) return;
     setPending(true);
     setError(null);
     try {
@@ -167,8 +167,8 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
         <button
           type="button"
           onClick={submit}
-          disabled={!file || !certified || pending}
-          className="rounded bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
+          aria-disabled={!file || !certified || pending || undefined}
+          className="rounded bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-800 aria-disabled:opacity-50"
         >
           {t("art.submit")}
         </button>

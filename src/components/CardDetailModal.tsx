@@ -108,7 +108,7 @@ export function CardDetailModal({
   }, []);
 
   async function discard() {
-    if (!card.instanceId) return;
+    if (!card.instanceId || discardPending) return;
     if (!window.confirm(t("collection.discardSingleConfirm", { title: card.title }))) return;
     setDiscardPending(true);
     setDiscardError(null);
@@ -191,7 +191,7 @@ export function CardDetailModal({
   }
 
   async function proposeTrade() {
-    if (!tradeWithPseudo) return;
+    if (!tradeWithPseudo || tradePending) return;
     setTradePending(true);
     setTradeError(null);
     try {
@@ -317,8 +317,8 @@ export function CardDetailModal({
           {card.instanceId && (
             <button
               onClick={discard}
-              disabled={discardPending}
-              className="rounded-lg border border-red-800 px-4 py-1.5 text-sm text-red-400 hover:border-red-500 disabled:opacity-50"
+              aria-disabled={discardPending || undefined}
+              className="rounded-lg border border-red-800 px-4 py-1.5 text-sm text-red-400 hover:border-red-500 aria-disabled:opacity-50"
             >
               {t("cardDetail.discardButton")}
             </button>
@@ -327,8 +327,8 @@ export function CardDetailModal({
             <button
               ref={tradeButtonRef}
               onClick={proposeTrade}
-              disabled={tradePending}
-              className="rounded-lg border border-emerald-700 px-4 py-1.5 text-sm text-emerald-300 hover:border-emerald-400 disabled:opacity-50"
+              aria-disabled={tradePending || undefined}
+              className="rounded-lg border border-emerald-700 px-4 py-1.5 text-sm text-emerald-300 hover:border-emerald-400 aria-disabled:opacity-50"
             >
               {t("collection.shared.proposeTrade")}
             </button>

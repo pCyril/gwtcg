@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 import { interpolateJsx } from "@/lib/i18n/interpolateJsx";
 import type { TranslationKey } from "@/lib/i18n/translations";
 
@@ -26,6 +27,8 @@ interface AuctionDetail {
 export function AuctionDetailClient({ auctionId }: { auctionId: string }) {
   const { t, tError, locale } = useLocale();
   const [auction, setAuction] = useState<AuctionDetail | null>(null);
+  // RGAA 8.6: the static metadata title is generic; name the card once it is known.
+  useDocumentTitle(auction ? t("market.auctionLink", { title: auction.card.title }) : null);
   const [bidAmount, setBidAmount] = useState<number | "">("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);

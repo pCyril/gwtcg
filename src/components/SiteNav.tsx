@@ -37,10 +37,10 @@ function Badge({ count, label }: { count: number; label: string }) {
   return (
     <span
       className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-700 px-1.5 text-xs font-semibold leading-5 text-white"
-      aria-label={label}
       title={label}
     >
-      {count > 9 ? "9+" : count}
+      <span aria-hidden="true">{count > 9 ? "9+" : count}</span>
+      <span className="sr-only">{`, ${label}`}</span>
     </span>
   );
 }

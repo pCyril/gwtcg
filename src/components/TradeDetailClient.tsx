@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CardTile, CARD_TILE_OVERLAY_CLASS, type CardData } from "@/components/CardTile";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 const MAX_TRADE_ITEMS = 7;
 /** Focus target after removing the last card of the offer: the search field of my collection. */
@@ -25,6 +26,10 @@ interface TradeDetail {
 export function TradeDetailClient({ tradeId }: { tradeId: string }) {
   const { t, tError } = useLocale();
   const [trade, setTrade] = useState<TradeDetail | null>(null);
+  // RGAA 8.6: the static metadata title is generic; name the trade partner once known.
+  useDocumentTitle(
+    trade ? t("trade.title", { pseudo: (trade.isInitiator ? trade.recipient : trade.initiator).pseudo }) : null,
+  );
   const [myCollection, setMyCollection] = useState<CardData[] | null>(null);
   const [search, setSearch] = useState("");
   const [collectionPage, setCollectionPage] = useState(1);

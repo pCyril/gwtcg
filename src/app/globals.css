@@ -5,6 +5,13 @@
   --foreground: #ededed;
 }
 
+/* RGAA 3.2: Tailwind's default placeholder (50% of the text colour) falls below 4.5:1 on dark fields. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-neutral-400);
+  opacity: 1;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
