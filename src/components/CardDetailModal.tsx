@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState, type SyntheticEvent } from "react";
 import Link from "next/link";
 import { Share2, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useMarketEnabled } from "@/lib/useMarketEnabled";
 import type { RarityKey } from "@/lib/game/rarityStyles";
 import { rarityLabelKey } from "@/lib/game/rarityStyles";
+import { firstFocusable, useFocusAfterRender, useModalDialog } from "@/lib/useModalDialog";
 
 const RARITY_OPTIONS: RarityKey[] = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"];
 
@@ -51,6 +52,25 @@ export function CardDetailModal({
   const [showRegister, setShowRegister] = useState(false);
   const [justRegistered, setJustRegistered] = useState(false);
   const stillGuest = viewerIsGuest && !justRegistered;
+  const titleId = useId();
+  const registerButtonRef = useRef<HTMLButtonElement>(null);
+  const registerFormRef = useRef<HTMLDivElement>(null);
+  const tradeButtonRef = useRef<HTMLButtonElement>(null);
+  const focusAfterRender = useFocusAfterRender();
+
+  // Native modal dialog: background inert, focus moved inside on open and given back to the
+  // card that opened it on close; Escape closes (via the "cancel" event).
+  const { ref: dialogRef, isStaleClose } = useModalDialog();
+
+  function onCancel(e: SyntheticEvent<HTMLDialogElement>) {
+    e.preventDefault();
+    onClose();
+  }
+
+  // The browser may close the dialog itself (e.g. repeated Escape): keep the parent in sync.
+  function onNativeClose() {
+    if (!isStaleClose()) onClose();
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -194,18 +214,27 @@ export function CardDetailModal({
   const images = (card.imageUrls ?? []).filter((u) => !removedImages.includes(u));
 
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden bg-black/80 backdrop-blur-sm"
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onCancel={onCancel}
+      onClose={onNativeClose}
+      className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none overflow-y-auto overflow-x-hidden border-0 bg-black/80 p-0 text-inherit backdrop-blur-sm backdrop:bg-transparent"
       onClick={onClose}
     >
+      {/* Dialog name. CardTile renders the visible title (h3) without an id, so it is mirrored here. */}
+      <span id={titleId} hidden>
+        {card.title}
+      </span>
+      {/* "Link copied" is otherwise only a change of the button's text. */}
+      <div role="status" className="sr-only">
+        {shareCopied ? t("collection.shareCopied") : ""}
+      </div>
       <div
         className="flex min-h-full flex-col items-center justify-center gap-4 p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <TiltableCard
-          card={{ ...card, rarity, imageUrls: images }}
-          className="w-[min(26rem,78vw,calc((100dvh_-_14.5rem)*5/7))]"
-        />
+        <TiltableCard card={{ ...card, rarity, imageUrls: images }} className="w-[min(26rem,78vw)]" />
 
         {dropStats && dropStats.total > 0 && (
           <p className="text-sm text-neutral-300">
@@ -256,9 +285,12 @@ export function CardDetailModal({
             </div>
           </div>
         )}
-        {rarityError && <p className="text-xs text-red-400">{rarityError}</p>}
+        {/* Persistent alert regions (empty until an error): -mt-4/mt-4 keep the column's gap-4 unchanged. */}
+        <div role="alert" className="-mt-4">
+          {rarityError && <p className="mt-4 text-xs text-red-400">{rarityError}</p>}
+        </div>
         <p className="text-xs text-neutral-500">{t("cardDetail.dragHint")}</p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <button
             onClick={onClose}
             className="rounded-lg border border-neutral-700 px-4 py-1.5 text-sm text-neutral-200 hover:border-neutral-500"
@@ -293,6 +325,7 @@ export function CardDetailModal({
           )}
           {tradeWithPseudo && !stillGuest && (
             <button
+              ref={tradeButtonRef}
               onClick={proposeTrade}
               disabled={tradePending}
               className="rounded-lg border border-emerald-700 px-4 py-1.5 text-sm text-emerald-300 hover:border-emerald-400 disabled:opacity-50"
@@ -302,27 +335,39 @@ export function CardDetailModal({
           )}
         </div>
 
-        {discardError && <p className="text-xs text-red-400">{discardError}</p>}
-        {tradeError && <p className="text-xs text-red-400">{tradeError}</p>}
+        <div role="alert" className="-mt-4 flex flex-col items-center">
+          {discardError && <p className="mt-4 text-xs text-red-400">{discardError}</p>}
+          {tradeError && <p className="mt-4 text-xs text-red-400">{tradeError}</p>}
+        </div>
 
         {tradeWithPseudo && stillGuest && (
           <div className="flex w-full max-w-sm flex-col items-center gap-3 rounded-lg border border-emerald-800/60 bg-emerald-950/20 p-4 text-center">
             <p className="text-sm text-emerald-200">{t("error.GUEST_CANNOT_TRADE")}</p>
             {!showRegister ? (
               <button
-                onClick={() => setShowRegister(true)}
+                ref={registerButtonRef}
+                onClick={() => {
+                  setShowRegister(true);
+                  // The button is replaced by the form: move focus to its first field.
+                  focusAfterRender(() => (registerFormRef.current ? firstFocusable(registerFormRef.current) : null));
+                }}
                 className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
               >
                 {t("auth.register")}
               </button>
             ) : (
-              <div className="w-full max-w-xs text-left">
+              <div ref={registerFormRef} className="w-full max-w-xs text-left">
                 <RegisterForm
                   onSuccess={() => {
                     setJustRegistered(true);
                     setShowRegister(false);
+                    // The guest prompt disappears and "Propose a trade" takes its place.
+                    focusAfterRender(() => tradeButtonRef.current);
                   }}
-                  onCancel={() => setShowRegister(false)}
+                  onCancel={() => {
+                    setShowRegister(false);
+                    focusAfterRender(() => registerButtonRef.current);
+                  }}
                 />
               </div>
             )}
@@ -331,6 +376,6 @@ export function CardDetailModal({
 
         <ArtSubmissionForm card={card} />
       </div>
-    </div>
+    </dialog>
   );
 }
