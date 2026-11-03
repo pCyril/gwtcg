@@ -11,6 +11,25 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-11-03",
+    fr: [
+      "Accessibilité : le site se parcourt entièrement au clavier, avec un lien « Aller au contenu », des fenêtres (détail de carte, ouverture de booster) qui se ferment avec Échap, et des boutons pour tourner ou retourner une carte sans souris.",
+      "Les lecteurs d'écran annoncent maintenant les chargements, les erreurs, les résultats et les cartes révélées dans un booster, et chaque onglet du navigateur porte le titre de sa page.",
+      "Les formulaires (connexion, inscription, pseudo, échange, mise en vente, enchère) ont des libellés visibles, indiquent les champs obligatoires et les formats attendus, se valident avec Entrée et donnent des messages d'erreur plus clairs.",
+      "Avant d'enchérir, d'acheter immédiatement, d'annuler une enchère ou de confirmer une remise, le Kamadan te demande une confirmation. Dans « Mes enchères », chaque ligne affiche le nom de la carte.",
+      "Textes gris et boutons verts plus contrastés pour être lisibles par tous, et nouvelle page « Plan du site » accessible depuis le pied de page.",
+      "Si ton système demande de réduire les animations, l'ouverture de booster révèle les cartes directement, sans animation.",
+    ],
+    en: [
+      "Accessibility: the whole site can be used with the keyboard, with a \"Skip to content\" link, dialogs (card details, booster opening) that close with Escape, and buttons to rotate or flip a card without a mouse.",
+      "Screen readers now announce loading states, errors, results and the cards revealed in a booster, and each browser tab shows its page title.",
+      "Forms (login, sign-up, pseudo, trade, listing, bid) have visible labels, mark required fields and expected formats, submit with Enter and show clearer error messages.",
+      "Before bidding, buying out, cancelling an auction or confirming a hand-off, the Kamadan asks for confirmation. In \"My auctions\", each row shows the card name.",
+      "Higher-contrast gray text and green buttons so everyone can read them, and a new \"Sitemap\" page linked from the footer.",
+      "If your system asks to reduce motion, opening a booster reveals the cards straight away, without animation.",
+    ],
+  },
+  {
     date: "2026-10-24",
     fr: ["Quand le wiki Guild Wars est en maintenance, les liens « wiki » des cartes peuvent renvoyer vers sa dernière copie archivée sur archive.org."],
     en: ["When the Guild Wars wiki is down for maintenance, card \"wiki\" links can point to its latest archived copy on archive.org."],
