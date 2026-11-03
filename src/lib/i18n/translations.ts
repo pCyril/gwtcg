@@ -1,3 +1,9 @@
+import { a11yL1 } from "./a11y/l1";
+import { a11yL2 } from "./a11y/l2";
+import { a11yL3 } from "./a11y/l3";
+import { a11yL4 } from "./a11y/l4";
+import { a11yL5 } from "./a11y/l5";
+
 export type Locale = "fr" | "en";
 export const LOCALES: Locale[] = ["fr", "en"];
 export const DEFAULT_LOCALE: Locale = "fr";
@@ -7,6 +13,11 @@ export type TranslationKey = keyof typeof translations.fr;
 // Flat key -> string per locale. `{param}` placeholders are interpolated by t().
 export const translations = {
   fr: {
+    ...a11yL1.fr,
+    ...a11yL2.fr,
+    ...a11yL3.fr,
+    ...a11yL4.fr,
+    ...a11yL5.fr,
     // Common / shared
     "common.close": "Fermer",
     "common.cancel": "Annuler",
@@ -428,6 +439,11 @@ export const translations = {
     "booster.cardsObtained": "Cartes obtenues",
   },
   en: {
+    ...a11yL1.en,
+    ...a11yL2.en,
+    ...a11yL3.en,
+    ...a11yL4.en,
+    ...a11yL5.en,
     "common.close": "Close",
     "common.cancel": "Cancel",
     "common.save": "Save",
