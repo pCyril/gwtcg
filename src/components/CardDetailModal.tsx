@@ -376,7 +376,8 @@ export function CardDetailModal({
           </div>
         )}
 
-        <ArtSubmissionForm card={card} />
+        {/* Live rarity: the prompt depends on it, and an admin may just have changed it above. */}
+        <ArtSubmissionForm card={{ ...card, rarity }} />
       </div>
     </dialog>
   );

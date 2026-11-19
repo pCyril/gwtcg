@@ -8,6 +8,8 @@ import type { CardFamily } from "@prisma/client";
 const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
 
 export const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024;
+// Animated GIFs are much heavier than a still image - keep nginx's client_max_body_size (deploy/) above this.
+export const MAX_GIF_SIZE_BYTES = 20 * 1024 * 1024;
 export const MAX_PENDING_PER_USER = 25;
 // Rolling 24h cap on uploads per user (any status), to stop one account flooding the disk.
 export const MAX_UPLOADS_PER_DAY = 300;
@@ -15,6 +17,8 @@ export const ALLOWED_MIME_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
+  // Animated illustrations (Gemini can now generate GIFs) - mythic cards only, see createArtSubmission.
+  "image/gif": "gif",
 };
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "card-art");
@@ -50,6 +54,9 @@ function sniffImageMimeType(bytes: Buffer): string | null {
   ) {
     return "image/webp";
   }
+  if (bytes.length >= 6 && ["GIF87a", "GIF89a"].includes(bytes.subarray(0, 6).toString("ascii"))) {
+    return "image/gif";
+  }
   return null;
 }
 
@@ -61,7 +68,8 @@ export async function createArtSubmission(
   autoApprove = false,
 ) {
   if (!certifiedOriginal) throw new Error("CONSENT_REQUIRED");
-  if (file.size > MAX_FILE_SIZE_BYTES) throw new Error("FILE_TOO_LARGE");
+  // Cheap upper bound before reading the file; the per-format limit is checked once it is sniffed.
+  if (file.size > MAX_GIF_SIZE_BYTES) throw new Error("GIF_TOO_LARGE");
 
   if (!autoApprove) {
     const uploadsLast24h = await prisma.artSubmission.count({
@@ -74,9 +82,17 @@ export async function createArtSubmission(
   const sniffedType = sniffImageMimeType(bytes);
   const extension = sniffedType ? ALLOWED_MIME_TYPES[sniffedType] : undefined;
   if (!extension) throw new Error("UNSUPPORTED_FILE_TYPE");
+  const isGif = sniffedType === "image/gif";
+  if (!isGif && file.size > MAX_FILE_SIZE_BYTES) throw new Error("FILE_TOO_LARGE");
 
   const wikiPage = await prisma.wikiPage.findUnique({ where: { id: wikiPageId } });
   if (!wikiPage) throw new Error("WIKI_PAGE_NOT_FOUND");
+
+  // Animation is a perk of the rarest cards.
+  if (isGif) {
+    const mythicCards = await prisma.card.count({ where: { wikiPageId, rarity: "MYTHIC" } });
+    if (mythicCards === 0) throw new Error("GIF_MYTHIC_ONLY");
+  }
 
   if (!autoApprove) {
     const pendingCount = await prisma.artSubmission.count({

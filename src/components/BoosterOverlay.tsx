@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type SyntheticEvent } from "react";
+import { prefersReducedEffects } from "@/lib/visualEffects";
 import { CardTile, type CardData } from "@/components/CardTile";
 import { RarityLegend } from "@/components/RarityLegend";
 import { RARITY_STYLES, rarityLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
@@ -22,12 +23,11 @@ const REVEAL_DELAY_MS: Record<RarityKey, number> = {
 
 const BURST_DURATION_MS = 450;
 
-/** Users who asked the system for less motion get the final hand straight away (no shake, flip or pulse). */
-function prefersReducedMotion(): boolean {
-  return typeof window !== "undefined" && typeof window.matchMedia === "function"
-    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    : false;
-}
+/**
+ * Users who asked the system for less motion, or turned visual effects off on the site,
+ * get the final hand straight away (no shake, flip or pulse).
+ */
+const prefersReducedMotion = prefersReducedEffects;
 
 /**
  * The closed, unopened booster pack object - what you click to open.

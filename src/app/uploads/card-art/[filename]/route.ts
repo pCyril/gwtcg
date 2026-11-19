@@ -14,8 +14,9 @@ const CONTENT_TYPES: Record<string, string> = {
   ".jpeg": "image/jpeg",
   ".png": "image/png",
   ".webp": "image/webp",
+  ".gif": "image/gif",
 };
-const FILENAME_PATTERN = /^[a-zA-Z0-9-]+\.(jpg|jpeg|png|webp)$/;
+const FILENAME_PATTERN = /^[a-zA-Z0-9-]+\.(jpg|jpeg|png|webp|gif)$/;
 
 export async function GET(_request: Request, ctx: RouteContext<"/uploads/card-art/[filename]">) {
   const { filename } = await ctx.params;

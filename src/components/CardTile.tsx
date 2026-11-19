@@ -1,11 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RARITY_STYLES, rarityLabelKey, familyLabelKey, type RarityKey } from "@/lib/game/rarityStyles";
 import { FamilyIcon } from "@/components/FamilyIcon";
 import { cardGradient } from "@/lib/game/cardArt";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { useWikiUrl } from "@/lib/useWikiUrl";
+import { holoVars, useHoloPointer, type HoloPointer } from "@/lib/useHoloPointer";
+import { useReducedEffects } from "@/lib/visualEffects";
+
+const ART_CLASS = "no-drag h-full w-full object-cover object-center";
+
+/**
+ * The card illustration. Animated GIFs can't be paused by CSS, so when visual effects
+ * are off (site switch or `prefers-reduced-motion`) their first frame is painted on a
+ * canvas instead (RGAA 13.8).
+ */
+function CardArt({ src }: { src: string }) {
+  const frozen = useReducedEffects() && /\.gif$/i.test(src);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!frozen) return;
+    const image = new Image();
+    image.onload = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      canvas.getContext("2d")?.drawImage(image, 0, 0);
+    };
+    image.src = src;
+    return () => {
+      image.onload = null;
+    };
+  }, [frozen, src]);
+
+  if (frozen) return <canvas ref={canvasRef} aria-hidden="true" data-frozen-art="" className={ART_CLASS} />;
+  // eslint-disable-next-line @next/next/no-img-element -- arbitrary/original card art, not an optimizable local asset set
+  return <img src={src} alt="" draggable={false} className={ART_CLASS} />;
+}
 
 export interface CardData {
   instanceId?: string;
@@ -44,12 +78,18 @@ export function CardTile({
   size = "sm",
   showCopies = false,
   underOverlay = false,
+  holoPointer,
 }: {
   card: CardData;
   size?: "sm" | "lg";
   showCopies?: boolean;
   /** Set when a sibling control is laid over the tile (CARD_TILE_OVERLAY_CLASS): keeps the wiki link and illustration buttons clickable. */
   underOverlay?: boolean;
+  /**
+   * Drives the holographic light from outside (e.g. from the 3D rotation) instead of
+   * following the pointer; the foil then stays lit and the card doesn't tilt on hover.
+   */
+  holoPointer?: HoloPointer;
 }) {
   const { t } = useLocale();
   const wikiUrl = useWikiUrl();
@@ -60,10 +100,17 @@ export function CardTile({
   const activeImage = images[Math.min(variant, images.length - 1)];
   const activeImageCredit = activeImage ? card.imageCredits?.[activeImage] : undefined;
   const raised = underOverlay ? "relative z-30 " : "";
+  const rootRef = useRef<HTMLDivElement>(null);
+  useHoloPointer(rootRef, holoPointer === undefined);
 
   return (
     <div
-      className={`relative flex aspect-[5/7] w-full flex-col overflow-hidden rounded-[10px] border-[3px] ${style.border} ${style.bg} ${style.glow}`}
+      ref={rootRef}
+      data-rarity={card.rarity}
+      className={`holo-card relative flex aspect-[5/7] w-full flex-col overflow-hidden rounded-[10px] border-[3px] ${style.border} ${style.bg} ${style.glow}${
+        holoPointer ? " is-active" : ""
+      }`}
+      style={holoPointer ? holoVars(holoPointer) : undefined}
     >
       {/* Title bar */}
       <div className="flex shrink-0 items-center justify-between gap-1 border-b border-black/50 bg-neutral-900/80 px-2 py-1">
@@ -98,13 +145,7 @@ export function CardTile({
         )}
 
         {activeImage ? (
-          // eslint-disable-next-line @next/next/no-img-element -- arbitrary/original card art, not an optimizable local asset set
-          <img
-            src={activeImage}
-            alt=""
-            draggable={false}
-            className="no-drag h-full w-full object-cover object-center"
-          />
+          <CardArt src={activeImage} />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center"
@@ -116,6 +157,9 @@ export function CardTile({
             />
           </div>
         )}
+
+        {/* Holographic foil on the illustration (drawn for Rare and up, see globals.css). */}
+        <div aria-hidden="true" className="holo-art" />
 
         {activeImageCredit && (
           <div className="absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[7px] leading-none text-neutral-200">
@@ -186,6 +230,10 @@ export function CardTile({
           </a>
         </div>
       </div>
+
+      {/* Holographic foil and glare over the whole card - decorative, depends on the rarity (globals.css). */}
+      <div aria-hidden="true" className="holo-shine" />
+      <div aria-hidden="true" className="holo-glare" />
     </div>
   );
 }

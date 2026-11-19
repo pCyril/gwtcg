@@ -37,6 +37,17 @@ async function openForm() {
 }
 
 describe("ArtSubmissionForm (RGAA 7.3, 7.5, 9.1, 11.1, 11.10)", () => {
+  it("offers animated GIFs on mythic cards only", async () => {
+    const user = userEvent.setup();
+    render(<ArtSubmissionForm card={{ ...card, rarity: "MYTHIC" }} />);
+    await user.click(screen.getByRole("button", { name: "Proposer une illustration" }));
+    const file = screen.getByLabelText("Illustration à envoyer (obligatoire)");
+    expect(file).toHaveAttribute("accept", "image/jpeg,image/png,image/webp,image/gif");
+    expect(file).toHaveAccessibleDescription(
+      "Formats acceptés : JPEG, PNG ou WebP (8 Mo maximum), ou GIF animé (20 Mo maximum).",
+    );
+  });
+
   it("opens on a focused heading, with a labelled, described and required file field", async () => {
     await openForm();
     const heading = screen.getByRole("heading", { level: 3, name: "Proposer une illustration pour « Mistrust »" });
@@ -46,6 +57,7 @@ describe("ArtSubmissionForm (RGAA 7.3, 7.5, 9.1, 11.1, 11.10)", () => {
     const file = screen.getByLabelText("Illustration à envoyer (obligatoire)");
     expect(file).toHaveAttribute("type", "file");
     expect(file).toBeRequired();
+    expect(file).toHaveAttribute("accept", "image/jpeg,image/png,image/webp");
     expect(file).toHaveAccessibleDescription("Formats acceptés : JPEG, PNG ou WebP, 8 Mo maximum.");
     // Instructions come before the field.
     const hint = screen.getByText(/Formats acceptés/);

@@ -15,6 +15,7 @@ export const a11yL2 = {
     // ArtSubmissionForm: label and instructions shown before the fields
     "art.fileLabel": "Illustration à envoyer (obligatoire)",
     "art.fileHint": "Formats acceptés : JPEG, PNG ou WebP, 8 Mo maximum.",
+    "art.fileHintMythic": "Formats acceptés : JPEG, PNG ou WebP (8 Mo maximum), ou GIF animé (20 Mo maximum).",
     "art.requiredMark": "(obligatoire)",
   },
   en: {
@@ -28,6 +29,7 @@ export const a11yL2 = {
     "home.a11y.openStandardPack": "Open a standard booster",
     "art.fileLabel": "Illustration to upload (required)",
     "art.fileHint": "Accepted formats: JPEG, PNG or WebP, 8 MB max.",
+    "art.fileHintMythic": "Accepted formats: JPEG, PNG or WebP (8 MB max), or animated GIF (20 MB max).",
     "art.requiredMark": "(required)",
   },
 } as const;

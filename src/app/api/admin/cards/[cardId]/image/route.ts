@@ -45,7 +45,7 @@ export async function DELETE(request: Request, ctx: RouteContext<"/api/admin/car
     }),
   ]);
 
-  if (/^\/uploads\/card-art\/[a-zA-Z0-9-]+\.(jpg|png|webp)$/.test(imageUrl)) {
+  if (/^\/uploads\/card-art\/[a-zA-Z0-9-]+\.(jpg|png|webp|gif)$/.test(imageUrl)) {
     await unlink(path.join(process.cwd(), "public", imageUrl.replace(/^\//, ""))).catch(() => {});
   }
   return NextResponse.json({ ok: true });

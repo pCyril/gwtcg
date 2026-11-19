@@ -6,6 +6,8 @@ import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
 import { CONTENT_ID } from "@/lib/contentId";
 import { getServerLocale } from "@/lib/i18n/serverLocale";
+import { cookies } from "next/headers";
+import { EFFECTS_COOKIE, EFFECTS_REDUCED_VALUE } from "@/lib/visualEffects";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,10 +32,12 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getServerLocale();
+  const reducedEffects = (await cookies()).get(EFFECTS_COOKIE)?.value === EFFECTS_REDUCED_VALUE;
 
   return (
     <html
       lang={locale}
+      data-reduce-effects={reducedEffects ? "" : undefined}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-neutral-950 text-neutral-100">
@@ -44,7 +48,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <div id={CONTENT_ID} tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 px-4 focus:outline-none">
             {children}
           </div>
-          <Footer />
+          <Footer reducedEffects={reducedEffects} />
         </LocaleProvider>
       </body>
     </html>

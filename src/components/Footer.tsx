@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import { VisualEffectsToggle } from "@/components/VisualEffectsToggle";
 
-export function Footer() {
+export function Footer({ reducedEffects = false }: { reducedEffects?: boolean }) {
   const { t } = useLocale();
   return (
     <footer className="border-t border-neutral-800 px-4 py-6 text-center text-xs text-neutral-400">
@@ -37,6 +38,9 @@ export function Footer() {
           {t("footer.source")}
         </a>
       </p>
+      <div className="mt-3 flex justify-center">
+        <VisualEffectsToggle initialReduced={reducedEffects} />
+      </div>
     </footer>
   );
 }

@@ -30,6 +30,8 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
   if (!card.wikiPageId) return null;
 
   const prompt = buildArtPrompt(locale, card);
+  // Animated GIFs are reserved for mythic cards (enforced server-side in createArtSubmission).
+  const allowGif = card.rarity === "MYTHIC";
 
   async function copy(text: string, which: "url" | "prompt") {
     try {
@@ -132,12 +134,12 @@ export function ArtSubmissionForm({ card }: { card: CardData }) {
           {t("art.fileLabel")}
         </label>
         <p id={fileHintId} className="text-[11px] text-neutral-400">
-          {t("art.fileHint")}
+          {t(allowGif ? "art.fileHintMythic" : "art.fileHint")}
         </p>
         <input
           id={fileId}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept={`image/jpeg,image/png,image/webp${allowGif ? ",image/gif" : ""}`}
           required
           aria-describedby={fileHintId}
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}

@@ -11,6 +11,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-11-19",
+    fr: [
+      "Les cartes mythiques peuvent maintenant recevoir une illustration animée : pour elles, les GIF sont acceptés à l'envoi (20 Mo maximum), en plus des JPEG, PNG et WebP. Pour les compétences mythiques, le prompt à copier demande à l'IA un GIF animé si elle sait en produire. Avec les effets visuels coupés, les illustrations animées restent figées.",
+    ],
+    en: [
+      "Mythic cards can now get an animated illustration: for them, GIFs are accepted on upload (20 MB max), alongside JPEG, PNG and WebP. For mythic skills, the prompt to copy asks the AI for an animated GIF if it can make one. With visual effects turned off, animated illustrations stay still.",
+    ],
+  },
+  {
+    date: "2026-11-05",
+    fr: [
+      "Les cartes sont maintenant holographiques : survole-les (ou fais tourner une carte en 3D) pour voir leur reflet bouger. Plus la carte est rare, plus l'effet est riche : simple reflet pour les communes, éclat bleu pour les peu communes, illustration arc-en-ciel pour les rares, dorure pour les épiques, holo complet pour les légendaires et un holo encore plus intense, qui brille même au repos, pour les mythiques.",
+      "Accessibilité : un bouton « Effets visuels » en bas de chaque page permet de couper les reflets holographiques, l'inclinaison des cartes et les animations décoratives. Ton choix est mémorisé sur cet appareil.",
+    ],
+    en: [
+      "Cards are now holographic: hover them (or turn a card in 3D) to watch the foil catch the light. The rarer the card, the richer the effect: a simple glare on commons, a blue sheen on uncommons, a rainbow illustration on rares, gold foil on epics, full holo on legendaries and an even stronger holo that shines even at rest on mythics.",
+      "Accessibility: a \"Visual effects\" button at the bottom of every page turns off the holographic foil, card tilting and decorative animations. Your choice is remembered on this device.",
+    ],
+  },
+  {
     date: "2026-11-03",
     fr: [
       "Accessibilité : le site se parcourt entièrement au clavier, avec un lien « Aller au contenu », des fenêtres (détail de carte, ouverture de booster) qui se ferment avec Échap, et des boutons pour tourner ou retourner une carte sans souris.",
