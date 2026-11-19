@@ -13,11 +13,11 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-11-19",
     fr: [
-      "Les cartes mythiques peuvent maintenant recevoir une illustration animée : pour elles, les GIF sont acceptés à l'envoi (20 Mo maximum), en plus des JPEG, PNG et WebP. Pour les compétences mythiques, le prompt à copier demande à l'IA un GIF animé si elle sait en produire. Avec les effets visuels coupés, les illustrations animées restent figées.",
+      "Les cartes mythiques peuvent maintenant recevoir une illustration animée : pour elles, les GIF sont acceptés à l'envoi (20 Mo maximum), en plus des JPEG, PNG et WebP. Avec les effets visuels coupés, les illustrations animées restent figées.",
       "Accessibilité : un bouton « Effets visuels » en bas de chaque page permet de couper les animations décoratives. Ton choix est mémorisé sur cet appareil.",
     ],
     en: [
-      "Mythic cards can now get an animated illustration: for them, GIFs are accepted on upload (20 MB max), alongside JPEG, PNG and WebP. For mythic skills, the prompt to copy asks the AI for an animated GIF if it can make one. With visual effects turned off, animated illustrations stay still.",
+      "Mythic cards can now get an animated illustration: for them, GIFs are accepted on upload (20 MB max), alongside JPEG, PNG and WebP. With visual effects turned off, animated illustrations stay still.",
       "Accessibility: a \"Visual effects\" button at the bottom of every page turns off decorative animations. Your choice is remembered on this device.",
     ],
   },

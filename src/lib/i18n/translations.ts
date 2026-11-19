@@ -320,8 +320,6 @@ export const translations = {
       "Utilise l'image jointe (capture de la fiche du wiki officiel) uniquement comme référence de forme et de couleurs pour rester fidèle à l'objet/personnage/lieu du jeu — ne la recopie pas et n'en fais pas un simple screenshot amélioré : livre une réinterprétation artistique originale, avec une nouvelle composition et un nouveau cadrage.",
     "art.promptFormat":
       "Format paysage, ratio environ {ratio} (par exemple {resolution}). Sujet principal centré. Pas de texte, pas de logo, pas de watermark, pas d'interface de jeu visible, et aucune bordure ni cadre décoratif : l'image doit aller jusqu'aux bords.",
-    "art.promptMythicGif":
-      "Cette carte est de rareté mythique : si tu es capable de générer un GIF animé, livre un GIF animé plutôt qu'une image fixe — une boucle courte et fluide (2 à 3 secondes, moins de 20 Mo) où l'effet de la compétence s'anime, avec le même cadrage et les mêmes contraintes. Sinon, livre simplement une image fixe.",
     "art.subject.SKILL": "un effet de compétence ou de sort",
     "art.subject.BOSS": "un personnage (boss / monstre)",
     "art.subject.HERO_NPC": "un personnage (héros / PNJ)",
@@ -754,8 +752,6 @@ export const translations = {
       "Use the attached image (a capture of the official wiki page) only as a reference for shape and colors to stay faithful to the game's object/character/location — don't copy it and don't just make an enhanced screenshot: deliver an original artistic reinterpretation, with a new composition and framing.",
     "art.promptFormat":
       "Landscape format, ratio around {ratio} (e.g. {resolution}). Main subject centered. No text, no logo, no watermark, no game UI visible, and no border or decorative frame: the image must run all the way to the edges.",
-    "art.promptMythicGif":
-      "This card is of mythic rarity: if you are able to generate an animated GIF, deliver an animated GIF instead of a still image — a short, seamless loop (2 to 3 seconds, under 20 MB) in which the skill's effect comes alive, with the same framing and the same constraints. Otherwise, just deliver a still image.",
     "art.subject.SKILL": "a skill or spell effect",
     "art.subject.BOSS": "a character (boss / monster)",
     "art.subject.HERO_NPC": "a character (hero / NPC)",

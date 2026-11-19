@@ -64,7 +64,7 @@ function skillTargetsFoes(attributes: CardData["attributes"]): boolean {
 
 export function buildArtPrompt(
   locale: Locale,
-  card: Pick<CardData, "title" | "family" | "rarity" | "campaign" | "extract" | "profession" | "attributes">,
+  card: Pick<CardData, "title" | "family" | "campaign" | "extract" | "profession" | "attributes">,
 ): string {
   const familyKey = `art.subject.${card.family}`;
   const hasFamilyKey = Object.prototype.hasOwnProperty.call(translations.fr, familyKey);
@@ -91,7 +91,5 @@ export function buildArtPrompt(
     // instruction instead of the generic "reinterpret it freely" one.
     t(locale, card.family === "WEAPON" ? "art.promptReferenceWeapon" : "art.promptReference"),
     t(locale, "art.promptFormat", { ratio: RECOMMENDED_ART_RATIO, resolution: RECOMMENDED_ART_RESOLUTION }),
-    // Mythic skills may be animated: uploads accept GIFs, so ask for one when the AI can make it.
-    ...(isSkill && card.rarity === "MYTHIC" ? [t(locale, "art.promptMythicGif")] : []),
   ].join("\n");
 }
