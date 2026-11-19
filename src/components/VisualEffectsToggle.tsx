@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 import { setReducedEffects } from "@/lib/visualEffects";
 
 /**
- * Footer switch that turns the holographic foil and decorative animations off
+ * Footer switch that turns decorative animations off
  * (RGAA 13.8 / WCAG 2.3.3). `initialReduced` comes from the server-read cookie so
  * the first render matches the <html> attribute.
  */

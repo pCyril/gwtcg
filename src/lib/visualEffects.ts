@@ -1,10 +1,8 @@
-import { useSyncExternalStore } from "react";
-
 /**
  * "Reduce visual effects" preference (accessibility): switched from the footer, stored
  * in the `gm_effects` cookie so the server can set `data-reduce-effects` on <html> on
- * the first render (no flash of effects). globals.css then hides the holographic foil
- * and stops decorative animations, like it does for `prefers-reduced-motion`.
+ * the first render (no flash of effects). globals.css then
+ * stops decorative animations, like it does for `prefers-reduced-motion`.
  */
 export const EFFECTS_COOKIE = "gm_effects";
 export const EFFECTS_REDUCED_VALUE = "reduced";
@@ -29,20 +27,4 @@ export function prefersReducedEffects(): boolean {
   if (typeof window === "undefined") return false;
   if (document.documentElement.hasAttribute(REDUCE_EFFECTS_ATTR)) return true;
   return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function subscribeToReducedEffects(onChange: () => void) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: [REDUCE_EFFECTS_ATTR] });
-  const media = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
-  media?.addEventListener("change", onChange);
-  return () => {
-    observer.disconnect();
-    media?.removeEventListener("change", onChange);
-  };
-}
-
-/** `prefersReducedEffects()` as live state, for what can't be switched off from CSS (animated GIFs). */
-export function useReducedEffects(): boolean {
-  return useSyncExternalStore(subscribeToReducedEffects, prefersReducedEffects, () => false);
 }

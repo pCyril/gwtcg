@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { axe } from "vitest-axe";
 import { CardTile } from "./CardTile";
 import { AXE_OPTIONS, makeCard, routeFetch } from "@/test/l4-fixtures";
@@ -37,65 +37,8 @@ describe("CardTile (RGAA 8.7, 10.2)", () => {
   });
 });
 
-describe("CardTile holographic foil", () => {
-  it("tags the card with its rarity and keeps the foil layers decorative", () => {
-    const { container } = render(<CardTile card={makeCard(1, { rarity: "MYTHIC" })} />);
-    const root = container.querySelector(".holo-card") as HTMLElement;
-    expect(root).toHaveAttribute("data-rarity", "MYTHIC");
-    for (const cls of [".holo-shine", ".holo-glare", ".holo-art"]) {
-      expect(container.querySelector(cls)).toHaveAttribute("aria-hidden", "true");
-    }
-  });
-
-  it("lights up and tilts under the pointer, even when a sibling overlay catches the events", () => {
-    const { container } = render(
-      <div>
-        <button type="button" aria-label="open" />
-        <CardTile card={makeCard(1, { rarity: "RARE" })} underOverlay />
-      </div>,
-    );
-    const root = container.querySelector(".holo-card") as HTMLElement;
-    root.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 140 }) as DOMRect;
-    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
-      cb(0);
-      return 1;
-    });
-
-    // jsdom's PointerEvent drops the coordinates: a MouseEvent of the same type carries them.
-    fireEvent(
-      screen.getByRole("button", { name: "open" }),
-      new MouseEvent("pointermove", { bubbles: true, clientX: 75, clientY: 35 }),
-    );
-    expect(root).toHaveClass("is-active");
-    expect(root.style.getPropertyValue("--px")).toBe("0.7500");
-    expect(root.style.getPropertyValue("--py")).toBe("0.2500");
-    expect(root.style.getPropertyValue("--ry")).toBe("4.50deg");
-
-    fireEvent.pointerLeave(root.parentElement!);
-    expect(root).not.toHaveClass("is-active");
-    expect(root.style.getPropertyValue("--ry")).toBe("0deg");
-  });
-
-  it("uses a given light position without tracking the pointer", () => {
-    const { container } = render(<CardTile card={makeCard(1)} holoPointer={{ x: 0, y: 1 }} />);
-    const root = container.querySelector(".holo-card") as HTMLElement;
-    expect(root).toHaveClass("is-active");
-    expect(root.style.getPropertyValue("--px")).toBe("0.0000");
-    expect(root.style.getPropertyValue("--rx")).toBe("0deg");
-  });
-});
-
 describe("CardTile with visual effects turned off", () => {
   afterEach(() => document.documentElement.removeAttribute("data-reduce-effects"));
-
-  it("ignores the pointer", () => {
-    document.documentElement.setAttribute("data-reduce-effects", "");
-    const { container } = render(<CardTile card={makeCard(1, { rarity: "MYTHIC" })} />);
-    const root = container.querySelector(".holo-card") as HTMLElement;
-    root.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 140 }) as DOMRect;
-    fireEvent(root, new MouseEvent("pointermove", { bubbles: true, clientX: 75, clientY: 35 }));
-    expect(root).not.toHaveClass("is-active");
-  });
 
   it("freezes an animated GIF illustration, and only that", () => {
     const gif = makeCard(1, { imageUrls: ["/uploads/card-art/a.gif"] });

@@ -11,8 +11,8 @@ const ROTATION_X_LIMIT = 60;
 const ROTATION_STEP = 45;
 
 /**
- * A card you can grab and turn in 3D (mouse or touch), with a holographic foil
- * (by rarity) that follows the tilt and the card back on the reverse. `className` sets its size.
+ * A card you can grab and turn in 3D (mouse or touch), with a light sheen that
+ * follows the tilt and the card back on the reverse. `className` sets its size.
  * Buttons under the card offer the same rotation with a single tap or the
  * keyboard (RGAA 7.3 / 13.10: dragging is never the only way).
  */
@@ -61,12 +61,9 @@ export function TiltableCard({ card, className }: { card: CardData; className: s
     setDragging(false);
   }
 
-  // The holographic light follows the tilt so the foil shifts as you turn the card.
-  const rad = Math.PI / 180;
-  const holoPointer = {
-    x: 0.5 + 0.5 * Math.sin(rotation.y * rad),
-    y: 0.5 - 0.5 * Math.sin(rotation.x * rad),
-  };
+  // Sheen follows the tilt so the card catches the light as you turn it.
+  const sheenAngle = 115 + rotation.y * 0.6;
+  const sheenStrength = 0.12 + Math.min(Math.abs(rotation.x) + Math.abs(rotation.y), 40) / 250;
 
   function rotateBy(degrees: number) {
     setRotation((r) => ({ ...r, y: r.y + degrees }));
@@ -97,7 +94,14 @@ export function TiltableCard({ card, className }: { card: CardData; className: s
           }}
         >
           <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-            <CardTile card={card} size="lg" holoPointer={holoPointer} />
+            <CardTile card={card} size="lg" />
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[10px]"
+              style={{
+                background: `linear-gradient(${sheenAngle}deg, transparent 35%, rgba(255,255,255,${sheenStrength}) 50%, transparent 65%)`,
+                mixBlendMode: "overlay",
+              }}
+            />
           </div>
           <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
             <CardBackVisual />
