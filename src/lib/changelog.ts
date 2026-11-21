@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-11-21",
+    fr: [
+      "Les illustrations envoyées par les joueurs sont maintenant allégées automatiquement : les cartes s'affichent plus vite, sans différence visible. Les GIF animés ne sont pas touchés.",
+    ],
+    en: [
+      "Player-submitted illustrations are now automatically made lighter: cards load faster, with no visible difference. Animated GIFs are left untouched.",
+    ],
+  },
+  {
     date: "2026-11-19",
     fr: [
       "Les cartes mythiques peuvent maintenant recevoir une illustration animée : pour elles, les GIF sont acceptés à l'envoi (20 Mo maximum), en plus des JPEG, PNG et WebP. Avec les effets visuels coupés, les illustrations animées restent figées.",

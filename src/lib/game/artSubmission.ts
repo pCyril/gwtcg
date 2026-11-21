@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import type { CardFamily } from "@prisma/client";
+import { optimizeCardArt, sniffImageMimeType } from "./cardArtOptimizer";
 
 // Matches the fixed family order shown in the collection filters.
 const FAMILY_ORDER: CardFamily[] = ["SKILL", "BOSS", "HERO_NPC", "LOCATION", "ITEM", "WEAPON", "LORE"];
@@ -22,43 +23,6 @@ export const ALLOWED_MIME_TYPES: Record<string, string> = {
 };
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "card-art");
-
-/**
- * Identifies the actual image format from its magic bytes - the browser-
- * supplied `file.type` is just a client-asserted multipart header and is
- * trivially spoofable (e.g. an HTML/JS payload declared as "image/jpeg"),
- * so it must never be trusted for validation or for picking the stored
- * file's extension/content-type.
- */
-function sniffImageMimeType(bytes: Buffer): string | null {
-  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
-    return "image/jpeg";
-  }
-  if (
-    bytes.length >= 8 &&
-    bytes[0] === 0x89 &&
-    bytes[1] === 0x50 &&
-    bytes[2] === 0x4e &&
-    bytes[3] === 0x47 &&
-    bytes[4] === 0x0d &&
-    bytes[5] === 0x0a &&
-    bytes[6] === 0x1a &&
-    bytes[7] === 0x0a
-  ) {
-    return "image/png";
-  }
-  if (
-    bytes.length >= 12 &&
-    bytes.subarray(0, 4).toString("ascii") === "RIFF" &&
-    bytes.subarray(8, 12).toString("ascii") === "WEBP"
-  ) {
-    return "image/webp";
-  }
-  if (bytes.length >= 6 && ["GIF87a", "GIF89a"].includes(bytes.subarray(0, 6).toString("ascii"))) {
-    return "image/gif";
-  }
-  return null;
-}
 
 export async function createArtSubmission(
   submitterId: string,
@@ -101,9 +65,21 @@ export async function createArtSubmission(
     if (pendingCount >= MAX_PENDING_PER_USER) throw new Error("TOO_MANY_PENDING");
   }
 
+  // Stills are downscaled and re-encoded as WebP before they ever hit the
+  // disk; GIFs are stored as sent so their animation survives.
+  let stored: Buffer = bytes;
+  if (!isGif) {
+    try {
+      stored = await optimizeCardArt(bytes);
+    } catch {
+      throw new Error("UNSUPPORTED_FILE_TYPE"); // right magic bytes, but not a decodable image
+    }
+  }
+  const storedExtension = stored === bytes ? extension : "webp";
+
   await mkdir(UPLOAD_DIR, { recursive: true });
-  const filename = `${randomUUID()}.${extension}`;
-  await writeFile(path.join(UPLOAD_DIR, filename), bytes);
+  const filename = `${randomUUID()}.${storedExtension}`;
+  await writeFile(path.join(UPLOAD_DIR, filename), stored);
   const imageUrl = `/uploads/card-art/${filename}`;
 
   // Admins skip the moderation queue entirely - their submission goes
